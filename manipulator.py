@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 10 16:23:57 2015
+# Created: Fri Jul 10 16:59:22 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(546, 884)
+        MainWindow.resize(500, 884)
         MainWindow.setMinimumSize(QtCore.QSize(500, 700))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
@@ -45,6 +45,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setMargin(6)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.label_2 = QtGui.QLabel(self.gridFrame)
+        self.label_2.setMinimumSize(QtCore.QSize(0, 16))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -147,6 +148,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.addWidget(self.minMaxZLocationValueLabel)
         self.gridLayout_8.addWidget(self.horizontalWidget1, 2, 1, 1, 1)
         self.label_8 = QtGui.QLabel(self.gridFrame1)
+        self.label_8.setMinimumSize(QtCore.QSize(0, 16))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -399,6 +401,7 @@ class Ui_MainWindow(object):
         self.cellListTable.verticalHeader().setDefaultSectionSize(22)
         self.gridLayout_2.addWidget(self.cellListTable, 4, 0, 1, 2)
         self.label_25 = QtGui.QLabel(self.gridFrame2)
+        self.label_25.setMinimumSize(QtCore.QSize(0, 16))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -418,7 +421,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.gridFrame2, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 546, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 500, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -431,16 +434,16 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_2.setText(_translate("MainWindow", "Connection Panel", None))
-        self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev1", None))
+        self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "Switch Off XYZ of Dev1", None))
         self.connectBtn.setText(_translate("MainWindow", "Connect SM-5 and C-843", None))
-        self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev2", None))
+        self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "Switch Off XYZ of Dev2", None))
         self.label_3.setText(_translate("MainWindow", "Luigs&Neumann SM-5", None))
         self.label_4.setText(_translate("MainWindow", "Physik Instrumente C-843", None))
         self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
-        self.C843XYPowerBtn.setText(_translate("MainWindow", "Switch On XY", None))
+        self.C843XYPowerBtn.setText(_translate("MainWindow", "Switch Off XY", None))
         self.refLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
         self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
-        self.C843ZPowerBtn.setText(_translate("MainWindow", "Switch On Z", None))
+        self.C843ZPowerBtn.setText(_translate("MainWindow", "Switch Off Z", None))
         self.label_13.setText(_translate("MainWindow", "set pos. (μm)", None))
         self.minMaxXLocationValueLabel.setText(_translate("MainWindow", ".", None))
         self.minMaxYLocationValueLabel.setText(_translate("MainWindow", ".", None))

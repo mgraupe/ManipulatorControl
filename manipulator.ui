@@ -85,7 +85,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Switch On XYZ of Dev1</string>
+          <string>Switch Off XYZ of Dev1</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -123,7 +123,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Switch On XYZ of Dev2</string>
+          <string>Switch Off XYZ of Dev2</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -178,7 +178,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Switch On XY</string>
+          <string>Switch Off XY</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
@@ -238,7 +238,7 @@
           </size>
          </property>
          <property name="text">
-          <string>Switch On Z</string>
+          <string>Switch Off Z</string>
          </property>
          <property name="checkable">
           <bool>true</bool>
