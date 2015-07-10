@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'manipulator.ui'
+# Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 10 13:47:52 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Fri Jul 10 14:22:02 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(546, 960)
+        MainWindow.resize(546, 884)
         MainWindow.setMinimumSize(QtCore.QSize(500, 700))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
@@ -419,7 +419,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.gridFrame2, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 546, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 546, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
