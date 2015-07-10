@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 10 14:22:02 2015
+# Created: Fri Jul 10 14:30:50 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -52,10 +52,11 @@ class Ui_MainWindow(object):
         self.label_2.setStyleSheet(_fromUtf8("background-color: rgb(0, 196, 255);"))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 2)
-        self.SM5_1PowerBtn = QtGui.QPushButton(self.gridFrame)
-        self.SM5_1PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5_1PowerBtn.setObjectName(_fromUtf8("SM5_1PowerBtn"))
-        self.gridLayout.addWidget(self.SM5_1PowerBtn, 6, 1, 1, 1)
+        self.SM5Dev1PowerBtn = QtGui.QPushButton(self.gridFrame)
+        self.SM5Dev1PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.SM5Dev1PowerBtn.setCheckable(True)
+        self.SM5Dev1PowerBtn.setObjectName(_fromUtf8("SM5Dev1PowerBtn"))
+        self.gridLayout.addWidget(self.SM5Dev1PowerBtn, 6, 1, 1, 1)
         self.connectBtn = QtGui.QPushButton(self.gridFrame)
         self.connectBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.connectBtn.setCheckable(True)
@@ -63,10 +64,11 @@ class Ui_MainWindow(object):
         self.connectBtn.setFlat(False)
         self.connectBtn.setObjectName(_fromUtf8("connectBtn"))
         self.gridLayout.addWidget(self.connectBtn, 3, 0, 1, 2)
-        self.SM5_2PowerBtn = QtGui.QPushButton(self.gridFrame)
-        self.SM5_2PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5_2PowerBtn.setObjectName(_fromUtf8("SM5_2PowerBtn"))
-        self.gridLayout.addWidget(self.SM5_2PowerBtn, 7, 1, 1, 1)
+        self.SM5Dev2PowerBtn = QtGui.QPushButton(self.gridFrame)
+        self.SM5Dev2PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.SM5Dev2PowerBtn.setCheckable(True)
+        self.SM5Dev2PowerBtn.setObjectName(_fromUtf8("SM5Dev2PowerBtn"))
+        self.gridLayout.addWidget(self.SM5Dev2PowerBtn, 7, 1, 1, 1)
         self.label_3 = QtGui.QLabel(self.gridFrame)
         font = QtGui.QFont()
         font.setBold(True)
@@ -432,9 +434,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_2.setText(_translate("MainWindow", "Connection Panel", None))
-        self.SM5_1PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev1", None))
+        self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev1", None))
         self.connectBtn.setText(_translate("MainWindow", "Connect SM-5 and C-843", None))
-        self.SM5_2PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev2", None))
+        self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "Switch On XYZ of Dev2", None))
         self.label_3.setText(_translate("MainWindow", "Luigs&Neumann SM-5", None))
         self.label_4.setText(_translate("MainWindow", "Physik Instrumente C-843", None))
         self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))

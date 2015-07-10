@@ -81,6 +81,9 @@
          <property name="text">
           <string>Switch On XYZ of Dev1</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
@@ -115,6 +118,9 @@
          </property>
          <property name="text">
           <string>Switch On XYZ of Dev2</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
