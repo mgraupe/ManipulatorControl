@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 10 14:30:50 2015
+# Created: Fri Jul 10 16:23:57 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -104,10 +104,6 @@ class Ui_MainWindow(object):
         self.refLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.refLocationBtn.setObjectName(_fromUtf8("refLocationBtn"))
         self.horizontalLayout_2.addWidget(self.refLocationBtn)
-        self.refPositiveBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refPositiveBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refPositiveBtn.setObjectName(_fromUtf8("refPositiveBtn"))
-        self.horizontalLayout_2.addWidget(self.refPositiveBtn)
         self.refNegativeBtn = QtGui.QPushButton(self.horizontalWidget)
         self.refNegativeBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.refNegativeBtn.setObjectName(_fromUtf8("refNegativeBtn"))
@@ -115,6 +111,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.horizontalWidget, 9, 0, 1, 2)
         self.C843ZPowerBtn = QtGui.QPushButton(self.gridFrame)
         self.C843ZPowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.C843ZPowerBtn.setCheckable(True)
         self.C843ZPowerBtn.setObjectName(_fromUtf8("C843ZPowerBtn"))
         self.gridLayout.addWidget(self.C843ZPowerBtn, 7, 0, 1, 1)
         self.gridLayout_3.addWidget(self.gridFrame, 0, 0, 1, 2)
@@ -442,7 +439,6 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
         self.C843XYPowerBtn.setText(_translate("MainWindow", "Switch On XY", None))
         self.refLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
-        self.refPositiveBtn.setText(_translate("MainWindow", "Positive Switch Limit", None))
         self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
         self.C843ZPowerBtn.setText(_translate("MainWindow", "Switch On Z", None))
         self.label_13.setText(_translate("MainWindow", "set pos. (μm)", None))
