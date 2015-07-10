@@ -487,13 +487,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.coarseBtn.repaint()
     #################################################################################################
     def setStatusMessage(self,statusText):
-        self.statusValue.setText(statusText+' ...')
-        self.statusValue.setStyleSheet('color: red')
-        self.statusValue.repaint()
+        self.statusbar.setText(statusText+' ...')
+        self.statusbar.setStyleSheet('color: red')
+        self.statusbar.repaint()
     #################################################################################################
     def unSetStatusMessage(self,statusText):
-        self.statusValue.setText(statusText+' ... done')
-        self.statusValue.setStyleSheet('color: black')
+        self.statusbar.setText(statusText+' ... done')
+        self.statusbar.setStyleSheet('color: black')
     #self.statusValue.repaint()
 
 
