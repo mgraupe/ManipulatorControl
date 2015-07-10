@@ -65,6 +65,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.cells = {}
         # precision of values to show and store
         self.precision = 1
+        self.locationDiscrepancy = 0.1
         
         # movement parameters
         self.stepWidths = {'fine':1.,'small':10.,'medium':100.,'coarse':1000.}
@@ -132,8 +133,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.connectBtn.clicked.connect(self.connectSM5_c843)
         self.C843XYPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'xy'))
         self.C843ZPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'z'))
-        self.SM5_1PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,1))
-        self.SM5_2PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,2))
+        self.SM5Dev1PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,1))
+        self.SM5Dev2PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,2))
         
         #self.yzPowerBtn.clicked.connect(self.yzPower)
         #self.xPowerBtn.clicked.connect(self.xPower)
@@ -143,7 +144,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.x2NegStepBtn.clicked.connect(self.x2NegStep)
         
         self.refLocationBtn.clicked.connect(self.referenceLocations)
-        self.refPositiveBtn.clicked.connect(self.referencePositiveMove)
         self.refNegativeBtn.clicked.connect(self.referenceNegativeMove)
         
         ################################################
@@ -154,8 +154,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
         self.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
         self.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
-        self.stepLineEdit.textChanged.connect(self.getMovementValues)
-        self.speedLineEdit.textChanged.connect(self.getMovementValues)
+        self.stepLineEdit.textChanged.connect(self.getStepValue)
+        self.speedLineEdit.textChanged.connect(self.getSpeedValue)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -173,6 +173,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             #self.switchOnOffC843Motors('xy')
             #self.switchOnOffC843Motors('z')
             #self.connectBtn.setChecked(True)
+            self.C843XYPowerBtn.setChecked(True)
+            self.C843ZPowerBtn.setChecked(True)
+            self.SM5Dev1PowerBtn.setChecked(True)
+            self.SM5Dev2PowerBtn.setChecked(True)
             self.connectBtn.setText('Disconnect SM-5 and C-843')
             #self.enableReferenceButtons()
         else:
@@ -185,9 +189,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
                 print 'controller deactive'
             del self.c843
             #self.connectBtn.setChecked(False)
+            self.C843XYPowerBtn.setChecked(False)
+            self.C843ZPowerBtn.setChecked(False)
+            self.SM5Dev1PowerBtn.setChecked(False)
+            self.SM5Dev2PowerBtn.setChecked(False)
             self.connectBtn.setText('Connect SM-5 and C-843')
-            self.switchOnOffC843Motors('xy')
-            self.switchOnOffC843Motors('z')
+            #self.switchOnOffC843Motors('xy')
+            #self.switchOnOffC843Motors('z')
             #self.disableButtons()
             #self.motorPowerBtn.setEnabled(False)
         
@@ -196,13 +204,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.luigsNeumann
         except AttributeError:
             self.luigsNeumann = LandNSM5.LandNSM5()
-            self.switchOnOffSM5Motors(1)
-            self.switchOnOffSM5Motors(2)
+            #self.switchOnOffSM5Motors(1)
+            #self.switchOnOffSM5Motors(2)
         else:
             del self.luigsNeumann
-            self.switchOnOffSM5Motors(1)
-            self.switchOnOffSM5Motors(2)
+            #self.switchOnOffSM5Motors(1)
+            #self.switchOnOffSM5Motors(2)
         #
+        
+        self.enableReferenceBtns()
         self.unSetStatusMessage('initializing stages')
 
     #################################################################################################
@@ -214,36 +224,40 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         if axes == 'xy':
             self.c843.switch_servo_on_off(2)
             self.c843.switch_servo_on_off(1)
-            if C843XYPowerBtn.isChecked():
+            if self.C843XYPowerBtn.isChecked():
                 self.C843XYPowerBtn.setText('Switch Off XY')
             else:
                 self.C843XYPowerBtn.setText('Switch On XY')
         #
         elif axes=='z':
             self.c843.switch_servo_on_off(3)
-            if C843ZPowerBtn.isChecked():
+            if self.C843ZPowerBtn.isChecked():
                 self.C843ZPowerBtn.setText('Switch Off Z')
             else:
                 self.C843ZPowerBtn.setText('Switch On Z')
     #################################################################################################
     def switchOnOffSM5Motors(self,device):
-        if SM5Dev1PowerBtn.isChecked():
+        if self.SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(1,'x')
             self.luigsNeumann.switchOnAxis(1,'y')
             self.luigsNeumann.switchOnAxis(1,'z')
-        elif not SM5Dev1PowerBtn.isChecked():
+            self.SM5Dev1PowerBtn.setText('Switch Off XYZ of Dev1')
+        elif not self.SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(1,'x')
             self.luigsNeumann.switchOffAxis(1,'y')
             self.luigsNeumann.switchOffAxis(1,'z')
+            self.SM5Dev1PowerBtn.setText('Switch On XYZ of Dev1')
         
-        if SM5Dev2PowerBtn.isChecked():
+        if self.SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(2,'x')
             self.luigsNeumann.switchOnAxis(2,'y')
             self.luigsNeumann.switchOnAxis(2,'z')
-        elif not SM5Dev2PowerBtn.isChecked():
+            self.SM5Dev2PowerBtn.setText('Switch Off XYZ of Dev2')
+        elif not self.SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(2,'x')
             self.luigsNeumann.switchOffAxis(2,'y')
             self.luigsNeumann.switchOffAxis(2,'z')
+            self.SM5Dev2PowerBtn.setText('Switch On XYZ of Dev2')
     #################################################################################################
     def referenceLocations(self):
         #
@@ -266,26 +280,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.unSetStatusMessage('referencing axes using location')
 
     #################################################################################################
-    def referencePositiveMove(self):
-        #
-        self.setStatusMessage('referencing axes to pos. limit')
-        #
-        ref1 = self.c843.reference_stage(1,True,'pos')
-        ref2 = self.c843.reference_stage(2,True,'pos')
-        ref3 = self.c843.reference_stage(3,True,'pos')
-        if not all((ref1,ref2,ref3)):
-            reply = QtGui.QMessageBox.warning(self, 'Warning','Reference at pos. limit failed.',  QtGui.QMessageBox.Ok )
-        else:
-            #self.refLabel.setText('xyz referenced')
-            self.refLocationBtn.setEnabled(False)
-            self.refPositiveBtn.setEnabled(False)
-            self.refNegativeBtn.setEnabled(False)
-            self.updateStageLocations()
-            self.initializeStageSpeed()
-        #
-        self.unSetStatusMessage('referencing axes to pos. limit')
-        #
-    #################################################################################################
     def referenceNegativeMove(self):
         #
         self.setStatusMessage('referencing axes to neg. limit')
@@ -298,7 +292,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         else:
             #self.refLabel.setText('xyz referenced')
             self.refLocationBtn.setEnabled(False)
-            self.refPositiveBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
             self.initializeStageSpeed()
@@ -310,7 +303,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #
         if self.activate.is_alive():
             self.controllerActivateBtn.setText('Activate controller')
-            s#elf.controlerActivateBtn.setStyleSheet('background-color:None')
+            self.controllerActivateBtn.setStyleSheet('background-color:None')
             self.done=True
             #self.activate._stop()
             self.activate = Thread(target=self.controlerInput)
@@ -318,7 +311,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             print 'controler deactive'
         else:
             self.controllerActivateBtn.setText('Deactivate Controller')
-            #self.controlerActivateBtn.setStyleSheet('background-color:red')
+            self.controllerActivateBtn.setStyleSheet('background-color:red')
             self.activate.start()
             print 'controler active'
 
@@ -385,9 +378,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             
             # Limit to 20 frames per second
             self.clock.tick(10)
-            self.setXLocationValueLabel.setText(str(round(self.setX,self.precision)))
-            self.setYLocationValueLabel.setText(str(round(self.setY,self.precision)))
-            self.setZLocationValueLabel.setText(str(round(self.setZ,self.precision)))
+            self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
+            self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
+            self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
             if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
                 self.moveToNewLocation()
     #################################################################################################
@@ -440,10 +433,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
         self.setZLocationLineEdit.setText(str(round(self.setY,self.precision)))
         
-        if self.isHomeSet :
-            self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
-            self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
-            self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
+        #if self.isHomeSet :
+        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
+        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
+        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
         
     #################################################################################################
     def initializeStageSpeed(self):
@@ -457,8 +450,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.minMaxZLocationValueLabel.setText(str(round(self.zMax,self.precision)))
         
         # set default move and speed
-        self.setMovements(self.defaultMoveSpeed)
-
+        self.setMovementValues(self.defaultMoveSpeed)
+        if self.defaultMoveSpeed == 'fine':
+            self.fineBtn.setChecked(True)
+        elif self.defaultMoveSpeed == 'small':
+            self.smallBtn.setChecked(True)
+        elif self.defaultMoveSpeed == 'medium':
+            self.mediumBtn.setChecked(True)
+        elif self.defaultMoveSpeed == 'coarse':
+            self.coarseBtn.setChecked(True)
         #self.enableButtons()
     #################################################################################################
     def setMovementValues(self,moveSize):
@@ -466,10 +466,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.moveSpeed = self.speeds[moveSize]
         self.stepLineEdit.setText(str(self.moveStep))
         self.speedLineEdit.setText(str(self.moveSpeed))
-        self.propagateSpeeds()
+        #self.propagateSpeeds()
     #################################################################################################
-    def getMovementValues(self,moveSize):
+    def getStepValue(self,moveSize):
         self.moveStep = float(self.stepLineEdit.text())
+    #################################################################################################
+    def getSpeedValue(self,moveSize):
         self.moveSpeed = float(self.speedLineEdit.text())
         self.propagateSpeeds()
     #################################################################################################
@@ -494,9 +496,17 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     def unSetStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ... done')
         self.statusbar.setStyleSheet('color: black')
-    #self.statusValue.repaint()
-
-
+        #self.statusValue.repaint()
+    #################################################################################################
+    def enableReferenceBtns(self):
+        self.refLocationBtn.setEnabled(True)
+        self.refNegativeBtn.setEnabled(True)
+    #################################################################################################
+    def enableBtns(self):
+        self.C843XYPowerBtn.setEnabled(True)
+        self.refLocationBtn.setEnabled(True)
+        self.refNegativeBtn.setEnabled(True)
+        
 ##########################################################
 if __name__ == "__main__":
     app = QApplication(sys.argv)
