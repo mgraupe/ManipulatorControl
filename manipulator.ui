@@ -71,7 +71,7 @@
         </widget>
        </item>
        <item row="6" column="1">
-        <widget class="QPushButton" name="SM5_1PowerBtn">
+        <widget class="QPushButton" name="SM5Dev1PowerBtn">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -80,6 +80,9 @@
          </property>
          <property name="text">
           <string>Switch On XYZ of Dev1</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -106,7 +109,7 @@
         </widget>
        </item>
        <item row="7" column="1">
-        <widget class="QPushButton" name="SM5_2PowerBtn">
+        <widget class="QPushButton" name="SM5Dev2PowerBtn">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
@@ -115,6 +118,9 @@
          </property>
          <property name="text">
           <string>Switch On XYZ of Dev2</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
