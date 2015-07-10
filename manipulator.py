@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'manipulator.ui'
 #
-# Created: Thu Jul  9 12:58:41 2015
+# Created: Fri Jul 10 13:47:52 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -253,13 +253,13 @@ class Ui_MainWindow(object):
         self.label_9 = QtGui.QLabel(self.gridFrame1)
         self.label_9.setObjectName(_fromUtf8("label_9"))
         self.gridLayout_8.addWidget(self.label_9, 2, 0, 1, 1)
-        self.pushButton_9 = QtGui.QPushButton(self.gridFrame1)
-        self.pushButton_9.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.pushButton_9.setStyleSheet(_fromUtf8(""))
-        self.pushButton_9.setCheckable(True)
-        self.pushButton_9.setChecked(False)
-        self.pushButton_9.setObjectName(_fromUtf8("pushButton_9"))
-        self.gridLayout_8.addWidget(self.pushButton_9, 1, 0, 1, 2)
+        self.controllerActivateBtn = QtGui.QPushButton(self.gridFrame1)
+        self.controllerActivateBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.controllerActivateBtn.setStyleSheet(_fromUtf8(""))
+        self.controllerActivateBtn.setCheckable(True)
+        self.controllerActivateBtn.setChecked(False)
+        self.controllerActivateBtn.setObjectName(_fromUtf8("controllerActivateBtn"))
+        self.gridLayout_8.addWidget(self.controllerActivateBtn, 1, 0, 1, 2)
         self.horizontalWidget7 = QtGui.QWidget(self.gridFrame1)
         self.horizontalWidget7.setObjectName(_fromUtf8("horizontalWidget7"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.horizontalWidget7)
@@ -280,12 +280,12 @@ class Ui_MainWindow(object):
         self.smallBtn.setObjectName(_fromUtf8("smallBtn"))
         self.buttonGroup.addButton(self.smallBtn)
         self.horizontalLayout.addWidget(self.smallBtn)
-        self.MediumBtn = QtGui.QPushButton(self.horizontalWidget7)
-        self.MediumBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.MediumBtn.setCheckable(True)
-        self.MediumBtn.setObjectName(_fromUtf8("MediumBtn"))
-        self.buttonGroup.addButton(self.MediumBtn)
-        self.horizontalLayout.addWidget(self.MediumBtn)
+        self.mediumBtn = QtGui.QPushButton(self.horizontalWidget7)
+        self.mediumBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.mediumBtn.setCheckable(True)
+        self.mediumBtn.setObjectName(_fromUtf8("mediumBtn"))
+        self.buttonGroup.addButton(self.mediumBtn)
+        self.horizontalLayout.addWidget(self.mediumBtn)
         self.coarseBtn = QtGui.QPushButton(self.horizontalWidget7)
         self.coarseBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.coarseBtn.setCheckable(True)
@@ -458,10 +458,10 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Speed", None))
         self.label_23.setText(_translate("MainWindow", "set pos. (μm)", None))
         self.label_9.setText(_translate("MainWindow", "max pos. (μm)", None))
-        self.pushButton_9.setText(_translate("MainWindow", "Activate Controller", None))
+        self.controllerActivateBtn.setText(_translate("MainWindow", "Activate Controller", None))
         self.fineBtn.setText(_translate("MainWindow", "Fine", None))
         self.smallBtn.setText(_translate("MainWindow", "Small", None))
-        self.MediumBtn.setText(_translate("MainWindow", "Medium", None))
+        self.mediumBtn.setText(_translate("MainWindow", "Medium", None))
         self.coarseBtn.setText(_translate("MainWindow", "Coarse", None))
         self.label_17.setText(_translate("MainWindow", "current pos. (μm)", None))
         self.label_18.setText(_translate("MainWindow", "Step (μm)", None))

@@ -152,7 +152,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         ################################################
         # Move panel
-        self.controlerActivateBtn.clicked.connect(self.activateControler)
+        self.controllerActivateBtn.clicked.connect(self.activateController)
         
         self.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
         self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
@@ -181,8 +181,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.enableReferenceButtons()
         else:
             if self.activate.is_alive():
-                self.controlerActivateBtn.setChecked(False)
-                self.controlerActivateBtn.setText('Activate Controller')
+                self.controllerActivateBtn.setChecked(False)
+                self.controllerActivateBtn.setText('Activate Controller')
                 self.done=True
                 self.activate = Thread(target=self.controlerInput)
                 #self.activate = Thread(ThreadStart(self.controlerInput))
@@ -310,10 +310,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.unSetStatusMessage('referencing axes to neg. limit')
     
     #################################################################################################
-    def activateControler(self):
+    def activateController(self):
         #
         if self.activate.is_alive():
-            self.controlerActivateBtn.setText('Activate controller')
+            self.controllerActivateBtn.setText('Activate controller')
             s#elf.controlerActivateBtn.setStyleSheet('background-color:None')
             self.done=True
             #self.activate._stop()
@@ -321,7 +321,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             #self.activate = Thread(ThreadStart(self.controlerInput))
             print 'controler deactive'
         else:
-            self.controlerActivateBtn.setText('Deactivate Controller')
+            self.controllerActivateBtn.setText('Deactivate Controller')
             #self.controlerActivateBtn.setStyleSheet('background-color:red')
             self.activate.start()
             print 'controler active'
