@@ -247,6 +247,9 @@
          <property name="text">
           <string>Switch On Z</string>
          </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
       </layout>
