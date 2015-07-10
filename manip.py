@@ -170,11 +170,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.c843.init_stage(1)
             self.c843.init_stage(2)
             self.c843.init_stage(3)
-            self.switchOnOffC843Motors('xy')
-            self.switchOnOffC843Motors('z')
+            #self.switchOnOffC843Motors('xy')
+            #self.switchOnOffC843Motors('z')
             #self.connectBtn.setChecked(True)
             self.connectBtn.setText('Disconnect SM-5 and C-843')
-            self.enableReferenceButtons()
+            #self.enableReferenceButtons()
         else:
             if self.activate.is_alive():
                 self.controllerActivateBtn.setChecked(False)
@@ -227,20 +227,20 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
                 self.C843ZPowerBtn.setText('Switch On Z')
     #################################################################################################
     def switchOnOffSM5Motors(self,device):
-        if SM5_1PowerBtn.isChecked():
+        if SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(1,'x')
             self.luigsNeumann.switchOnAxis(1,'y')
             self.luigsNeumann.switchOnAxis(1,'z')
-        elif not SM5_1PowerBtn.isChecked():
+        elif not SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(1,'x')
             self.luigsNeumann.switchOffAxis(1,'y')
             self.luigsNeumann.switchOffAxis(1,'z')
         
-        if SM5_2PowerBtn.isChecked():
+        if SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(2,'x')
             self.luigsNeumann.switchOnAxis(2,'y')
             self.luigsNeumann.switchOnAxis(2,'z')
-        elif not SM5_2PowerBtn.isChecked():
+        elif not SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(2,'x')
             self.luigsNeumann.switchOffAxis(2,'y')
             self.luigsNeumann.switchOffAxis(2,'z')
