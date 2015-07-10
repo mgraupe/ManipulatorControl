@@ -50,7 +50,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle('Manipulator Control')
         #
-        self.create_status_bar()
+        #self.create_status_bar()
         # 
         self.connectSignals()
         
@@ -222,9 +222,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         elif axes=='z':
             self.c843.switch_servo_on_off(3)
             if C843ZPowerBtn.isChecked():
-                self.C843XYPowerBtn.setText('Switch Off Z')
+                self.C843ZPowerBtn.setText('Switch Off Z')
             else:
-                self.C843XYPowerBtn.setText('Switch On Z')
+                self.C843ZPowerBtn.setText('Switch On Z')
     #################################################################################################
     def switchOnOffSM5Motors(self,device):
         if SM5_1PowerBtn.isChecked():
@@ -487,12 +487,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.coarseBtn.repaint()
     #################################################################################################
     def setStatusMessage(self,statusText):
-        self.statusbar.setText(statusText+' ...')
+        self.statusbar.showMessage(statusText+' ...')
         self.statusbar.setStyleSheet('color: red')
-        self.statusbar.repaint()
+        #self.statusbar.repaint()
     #################################################################################################
     def unSetStatusMessage(self,statusText):
-        self.statusbar.setText(statusText+' ... done')
+        self.statusbar.showMessage(statusText+' ... done')
         self.statusbar.setStyleSheet('color: black')
     #self.statusValue.repaint()
 
