@@ -31,7 +31,7 @@ import c843_class
 import LandNSM5
 
 # files
-from manipulator.py import Ui_MainWindow
+from manipulator import Ui_MainWindow
 #from internal_ipkernel import InternalIPKernel
 
 
@@ -95,6 +95,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.cellListTable.setColumnWidth(2,30)
         self.cellListTable.setColumnWidth(3,58)
         self.cellListTable.setColumnWidth(4,150)
+        
+        self.activate = Thread(target=self.controlerInput)
         
         #self.saveAttributeChangeBtn.setEnabled(False)
         #self.restoreAttributesBtn.setEnabled(False)
@@ -182,7 +184,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
                 self.controlerActivateBtn.setChecked(False)
                 self.controlerActivateBtn.setText('Activate Controller')
                 self.done=True
-                #self.activate._stop()
                 self.activate = Thread(target=self.controlerInput)
                 #self.activate = Thread(ThreadStart(self.controlerInput))
                 print 'controller deactive'
@@ -307,6 +308,123 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.initializeStageSpeed()
         #
         self.unSetStatusMessage('referencing axes to neg. limit')
+    
+    #################################################################################################
+    def activateControler(self):
+        #
+        if self.activate.is_alive():
+            self.controlerActivateBtn.setText('Activate controller')
+            s#elf.controlerActivateBtn.setStyleSheet('background-color:None')
+            self.done=True
+            #self.activate._stop()
+            self.activate = Thread(target=self.controlerInput)
+            #self.activate = Thread(ThreadStart(self.controlerInput))
+            print 'controler deactive'
+        else:
+            self.controlerActivateBtn.setText('Deactivate Controller')
+            #self.controlerActivateBtn.setStyleSheet('background-color:red')
+            self.activate.start()
+            print 'controler active'
+
+    #################################################################################################
+    def controlerInput(self):
+        # Initialize the joysticks
+        pygame.init()
+        pygame.joystick.init()
+        
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        
+        self.done = False
+        while self.done==False:
+            for event in pygame.event.get(): # User did something
+                #	# Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
+                if event.type == pygame.JOYBUTTONDOWN:
+                    pass
+                    #print ("Joystick button pressed.")
+                if event.type == pygame.JOYBUTTONUP:
+                    pass
+                    #print ("Joystick button released.")
+            #
+            
+            #print 'test'
+            xAxis = joystick.get_axis( 0 )
+            yAxis = joystick.get_axis( 1 )
+            #print xAxis, yAxis
+            # x-Axis
+            if abs(xAxis) > 0.5 :
+                self.setX += self.moveStep*np.sign(xAxis)
+            if self.setX < self.xMin:
+                self.setX = self.xMin
+            elif self.setX > self.xMax:
+                self.setX = self.xMax
+            
+            # y-Axis
+            if abs(yAxis) > 0.5 :
+                self.setY -= self.moveStep*np.sign(yAxis)
+            if self.setY < self.yMin:
+                self.setY = self.yMin
+            elif self.setY > self.yMax:
+                self.setY = self.yMax
+            
+            # z-Axis up and down is button 4 and 6
+            if joystick.get_button( 4 ):
+                self.setZ -= self.moveStep
+            if joystick.get_button( 6 ) :
+                self.setZ += self.moveStep
+            if self.setZ < self.zMin:
+                self.setZ = self.zMin
+            elif self.setX > self.zMax:
+                self.setZ = self.zMax
+            
+            # change speed settings
+            if joystick.get_button( 0 ):
+                self.setMovementValues('fine')
+            if joystick.get_button( 1 ):
+                self.setMovementValues('small')
+            if joystick.get_button( 2 ):
+                self.setMovementValues('medium')
+            if joystick.get_button( 3 ):
+                self.setMovementValues('coarse')
+            
+            # Limit to 20 frames per second
+            self.clock.tick(10)
+            self.setXLocationValueLabel.setText(str(round(self.setX,self.precision)))
+            self.setYLocationValueLabel.setText(str(round(self.setY,self.precision)))
+            self.setZLocationValueLabel.setText(str(round(self.setZ,self.precision)))
+            if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
+                self.moveToNewLocation()
+    #################################################################################################
+    def moveToNewLocation(self):
+
+        wait = True
+        while wait:
+            xIsMoving = self.c843.check_for_movement(1)
+            yIsMoving = self.c843.check_for_movement(2)
+            zIsMoving = self.c843.check_for_movement(3)
+            if any((not xIsMoving, not yIsMoving, not zIsMoving)):
+                wait = False
+        self.c843.move_to_absolute_position(1,self.setX)
+        self.c843.move_to_absolute_position(2,self.setY)
+        self.c843.move_to_absolute_position(3,self.setZ)
+        
+        #self.updateStageLocation()
+        self.isX = self.c843.get_position(1)
+        self.isY = self.c843.get_position(2)
+        self.isZ = self.c843.get_position(3)
+        self.isXLocationValueLabel.setText(str(round(self.isX,self.precision)))
+        self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
+        self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
+        
+        #if self.isHomeSet :
+        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
+        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
+        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
+        #
+        #self.statusValue.setText('moving stages ... done')
+        #self.statusValue.setStyleSheet('color: black')
+        #self.statusValue.repaint()
+        #self.unSetStatusMessage('moving axes')
     
     #################################################################################################
     def updateStageLocations(self):
