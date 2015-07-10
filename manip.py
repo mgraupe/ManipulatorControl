@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib.ticker import MultipleLocator
 from matplotlib.widgets import Slider, RadioButtons
+from threading import *
 import re
 import pickle
 from functools import partial
@@ -83,11 +84,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         # Used to manage how fast the screen updates
         self.clock = pygame.time.Clock()
         
-        if setExits:
-            DDir = h5Settings['dataDirectory']
-            if os.path.isdir(DDir):
-                self.dataDirectory = DDir
-                self.fillOutFileList()
+        #if setExits:
+        #    DDir = h5Settings['dataDirectory']
+        #    if os.path.isdir(DDir):
+        #        self.dataDirectory = DDir
+        #        self.fillOutFileList()
         
         # configure column widths in cellListTable
         self.cellListTable.setColumnWidth(0,30)
@@ -122,11 +123,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         else:
             del self.luigsNeumann
     
-    ####################################################
-    # set status bar
-    def create_status_bar(self):
-        self.statusBar().addWidget(QLabel("Ready"), 1)
-        
     ####################################################
     # connect signals to actions
     def connectSignals(self):
