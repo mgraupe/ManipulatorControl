@@ -86,8 +86,11 @@ class LandNSM5 :
 	def __init__(self):
 		self.verbose = 1 # level of messages
 		self.timeOut = 1 # timeout in sec
+		self.establishConnectionHold = 3. # time in seconds a connection remains established
 		self.sleepTime = 0.1
 		self.maxLoops = 10
+		# make sure connection is established at the first call
+		self.timeWhenEstablished = time.time() - self.establishConnectionHold
 		# initialize serial connection to controller
 		try:
 			self.ser = serial.Serial(port='COM5',baudrate=38400,bytesize=serial.EIGHTBITS,parity=serial.PARITY_NONE,stopbits=serial.STOPBITS_ONE,timeout=self.timeOut)
@@ -110,7 +113,10 @@ class LandNSM5 :
 	def sendCommand(self,ID,nBytes,deviceData,response,nBytesRes):
 		#
 		# establish connection before each command (connection is lost after 3 sec)
-		self.establishConnection()
+		self.timePassed = time.time()
+		if (self.timePassed-self.timeWhenEstablished)>self.establishConnectionHold:
+            self.establishConnection()
+            self.timeWhenEstablished = time.time()
 		# calcuate CRC checksum and extract MSB and LSB 
 		(high,low) = self.serialCalculateCRC(deviceData,len(deviceData))
 		# consistency check between number of bytes sent and data array length

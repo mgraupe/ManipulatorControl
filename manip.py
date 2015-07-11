@@ -66,6 +66,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         # precision of values to show and store
         self.precision = 1
         self.locationDiscrepancy = 0.1
+        # angles of the manipulators with respect to a vertical line
+        self.alphaDev1 = 30.
+        self.alphaDev2 = 30.
         
         # movement parameters
         self.stepWidths = {'fine':1.,'small':10.,'medium':100.,'coarse':1000.}
@@ -157,6 +160,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.stepLineEdit.textChanged.connect(self.getStepValue)
         self.speedLineEdit.textChanged.connect(self.getSpeedValue)
         
+        
+        
     #################################################################################################
     def connectSM5_c843(self):
         
@@ -178,7 +183,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.SM5Dev1PowerBtn.setChecked(True)
             self.SM5Dev2PowerBtn.setChecked(True)
             self.connectBtn.setText('Disconnect SM-5 and C-843')
-            #self.enableReferenceButtons()
+            self.enableReferencePowerBtns()
         else:
             if self.activate.is_alive():
                 self.controllerActivateBtn.setChecked(False)
@@ -194,10 +199,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.SM5Dev1PowerBtn.setChecked(False)
             self.SM5Dev2PowerBtn.setChecked(False)
             self.connectBtn.setText('Connect SM-5 and C-843')
-            #self.switchOnOffC843Motors('xy')
-            #self.switchOnOffC843Motors('z')
-            #self.disableButtons()
-            #self.motorPowerBtn.setEnabled(False)
+            self.disableAndEnableBtns(False)
         
         # SM5
         try :
@@ -210,9 +212,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             del self.luigsNeumann
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
-        #
         
-        self.enableReferenceBtns()
+        #
         self.unSetStatusMessage('initializing stages')
 
     #################################################################################################
@@ -275,8 +276,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             #self.refPositiveBtn.setEnabled(False)
             #self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
+            self.initializeSetLocations()
             self.initializeStageSpeed()
         #
+        self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes using location')
 
     #################################################################################################
@@ -294,8 +297,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.refLocationBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
+            self.initializeSetLocations()
             self.initializeStageSpeed()
         #
+        self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes to neg. limit')
     
     #################################################################################################
@@ -307,11 +312,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.done=True
             #self.activate._stop()
             self.activate = Thread(target=self.controlerInput)
+            self.enableDiableControllerBtns(False)
             #self.activate = Thread(ThreadStart(self.controlerInput))
             print 'controler deactive'
         else:
             self.controllerActivateBtn.setText('Deactivate Controller')
             self.controllerActivateBtn.setStyleSheet('background-color:red')
+            self.enableDiableControllerBtns(True)
             self.activate.start()
             print 'controler active'
 
@@ -376,7 +383,39 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             if joystick.get_button( 3 ):
                 self.setMovementValues('coarse')
             
-            # Limit to 20 frames per second
+            # manipulator steps
+            if joystick.get_button( 7 ):
+                if self.activateDev1.isChecked():
+                    self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
+                if self.activateDev2.isChecked():
+                    self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
+            if joystick.get_button( 7 ):
+                if self.activateDev1.isChecked():
+                    self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
+                if self.activateDev2.isChecked():
+                    self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
+            
+            # Dev 1
+            if self.trackStageZMovementDev1Btn.isChecked():
+                mov = self.oldSetZ - self.setZ
+                if mov:
+                    self.goVariableFastToRelativePosition(1,'z',mov)
+            elif self.trackStageXMovementDev1Btn.isChecked():
+                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev1*pi/180.)
+                if mov:
+                    self.goVariableFastToRelativePosition(1,'x',mov)
+            # Dev 2
+            if self.trackStageZMovementDev2Btn.isChecked():
+                mov = self.oldSetZ - self.setZ
+                if mov:
+                    self.goVariableFastToRelativePosition(2,'z',mov)
+            elif self.trackStageXMovementDev2Btn.isChecked():
+                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev2*pi/180.)
+                if mov:
+                    self.goVariableFastToRelativePosition(2,'x',mov)
+            self.oldSetZ = self.setZ
+            
+            # Limit to 10 frames per second
             self.clock.tick(10)
             self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
             self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
@@ -397,14 +436,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.c843.move_to_absolute_position(2,self.setY)
         self.c843.move_to_absolute_position(3,self.setZ)
         
-        #self.updateStageLocation()
-        self.isX = self.c843.get_position(1)
-        self.isY = self.c843.get_position(2)
-        self.isZ = self.c843.get_position(3)
-        self.isXLocationValueLabel.setText(str(round(self.isX,self.precision)))
-        self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
-        self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
-        
+        self.updateStageLocation()
+
         #if self.isHomeSet :
         #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
         #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
@@ -417,7 +450,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     
     #################################################################################################
     def updateStageLocations(self):
-        #
+        # C843
         self.isX = self.c843.get_position(1)
         self.isY = self.c843.get_position(2)
         self.isZ = self.c843.get_position(3)
@@ -425,13 +458,50 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.isXLocationValueLabel.setText(str(round(self.isX,self.precision)))
         self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
         self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
+        #
+        # SM5 : Dev1
+        self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+        self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+        self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+        # SM5 : Dev2
+        self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+        self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+        self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+        #
+        self.xIsPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
+        self.yIsPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
+        self.zIsPosDev1LE.setText(str(round(self.isZDev1,self.precision)))
         
+        self.xIsPosDev2LE.setText(str(round(self.isXDev2,self.precision)))
+        self.yIsPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
+        self.zIsPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
+        
+    #################################################################################################
+    def initializeSetLocations(self):
         self.setX = self.isX
         self.setY = self.isY
         self.setZ = self.isZ
         self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
         self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
         self.setZLocationLineEdit.setText(str(round(self.setY,self.precision)))
+        self.oldSetZ = self.setZ
+        
+        self.setXDev1 = self.isXDev1
+        self.setYDev1 = self.isYDev1
+        self.setZDev1 = self.isZDev1
+        
+        self.setXDev2 = self.isXDev2
+        self.setYDev2 = self.isYDev2
+        self.setZDev2 = self.isZDev2
+        
+        self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
+        self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
+        self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
+        
+        self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.precision)))
+        self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
+        self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
+        
         
         #if self.isHomeSet :
         #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
@@ -498,14 +568,45 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.statusbar.setStyleSheet('color: black')
         #self.statusValue.repaint()
     #################################################################################################
-    def enableReferenceBtns(self):
+    def enableReferencePowerBtns(self):
+        self.C843XYPowerBtn.setEnabled(True)
+        self.C843ZPowerBtn.setEnabled(True)
+        self.SM5Dev1PowerBtn.setEnabled(True)
+        self.SM5Dev2PowerBtn.setEnabled(True)
         self.refLocationBtn.setEnabled(True)
         self.refNegativeBtn.setEnabled(True)
     #################################################################################################
-    def enableBtns(self):
-        self.C843XYPowerBtn.setEnabled(True)
-        self.refLocationBtn.setEnabled(True)
-        self.refNegativeBtn.setEnabled(True)
+    def disableAndEnableBtns(self,newSetting):
+        # connection panel
+        self.C843XYPowerBtn.setEnabled(newSetting)
+        self.C843ZPowerBtn.setEnabled(newSetting)
+        self.SM5Dev1PowerBtn.setEnabled(newSetting)
+        self.SM5Dev2PowerBtn.setEnabled(newSetting)
+        self.refLocationBtn.setEnabled(newSetting)
+        self.refNegativeBtn.setEnabled(newSetting)
+        # Move panel
+        self.controllerActivateBtn.setEnabled(newSetting)
+        # recorded locations
+        self.moveToItemBtn.setEnabled(newSetting)
+        self.recordDepthBtn.setEnabled(newSetting)
+        self.saveLocationsBtn.setEnabled(newSetting)
+        self.updateItemLocationBtn.setEnabled(newSetting)
+        self.removeItemBtn.setEnabled(newSetting)
+        self.loadLocationsBtn.setEnabled(newSetting)
+    ###################################################################################################
+    self.enableDiableControllerBtns(self, newSetting):
+        self.fineBtn.setEnabled(newSetting)
+        self.smallBtn.setEnabled(newSetting)
+        self.mediumBtn.setEnabled(newSetting)
+        self.coarseBtn.setEnabled(newSetting)
+        
+        self.activateDev1.setEnabled(newSetting)
+        self.activateDev2.setEnabled(newSetting)
+        
+        self.trackStageZMovementDev1Btn.setEnabled(newSetting)
+        self.trackStageXMovementDev1Btn.setEnabled(newSetting)
+        self.trackStageZMovementDev2Btn.setEnabled(newSetting)
+        self.trackStageXMovementDev2Btn.setEnabled(newSetting)
         
 ##########################################################
 if __name__ == "__main__":
