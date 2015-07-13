@@ -51,7 +51,16 @@
        <enum>QFrame::Plain</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item row="0" column="0" colspan="2">
@@ -197,7 +206,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -294,7 +312,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
            <number>4</number>
           </property>
           <item>
@@ -330,7 +357,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -380,7 +416,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -398,7 +443,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="ySetPosDev1LE_2">
+           <widget class="QLineEdit" name="zSetPosDev1LE">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -437,7 +482,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
            <number>4</number>
           </property>
           <item>
@@ -473,7 +527,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
            <number>2</number>
           </property>
           <item>
@@ -510,7 +573,16 @@
        <item row="5" column="0" colspan="3">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -601,7 +673,16 @@
        <item row="4" column="1" colspan="2">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -640,7 +721,16 @@
        <item row="3" column="1" colspan="2">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_9">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
            <number>4</number>
           </property>
           <item>
@@ -670,7 +760,16 @@
        <item row="2" column="1" colspan="2">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>4</number>
+          </property>
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="rightMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
            <number>4</number>
           </property>
           <item>
@@ -750,7 +849,16 @@
        <item row="10" column="2">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -780,7 +888,16 @@
        <item row="13" column="2">
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_10">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -861,7 +978,16 @@
           </size>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>1</number>
+          </property>
+          <property name="topMargin">
+           <number>1</number>
+          </property>
+          <property name="rightMargin">
+           <number>1</number>
+          </property>
+          <property name="bottomMargin">
            <number>1</number>
           </property>
           <item>
@@ -988,7 +1114,16 @@
        <enum>QFrame::StyledPanel</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>6</number>
+       </property>
+       <property name="topMargin">
+        <number>6</number>
+       </property>
+       <property name="rightMargin">
+        <number>6</number>
+       </property>
+       <property name="bottomMargin">
         <number>6</number>
        </property>
        <item row="6" column="1">
@@ -1209,7 +1344,7 @@
      <x>0</x>
      <y>0</y>
      <width>540</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -1218,9 +1353,9 @@
  <resources/>
  <connections/>
  <buttongroups>
+  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
   <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup_4"/>
  </buttongroups>
 </ui>
