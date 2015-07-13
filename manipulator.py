@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Mon Jul 13 14:08:15 2015
+# Created: Mon Jul 13 14:11:54 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -431,12 +431,12 @@ class Ui_MainWindow(object):
         self.buttonGroup_4.setObjectName(_fromUtf8("buttonGroup_4"))
         self.buttonGroup_4.addButton(self.activateDev1)
         self.horizontalLayout_15.addWidget(self.activateDev1)
-        self.acitvateDev2 = QtGui.QPushButton(self.horizontalWidget14)
-        self.acitvateDev2.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.acitvateDev2.setCheckable(True)
-        self.acitvateDev2.setObjectName(_fromUtf8("acitvateDev2"))
-        self.buttonGroup_4.addButton(self.acitvateDev2)
-        self.horizontalLayout_15.addWidget(self.acitvateDev2)
+        self.activateDev2 = QtGui.QPushButton(self.horizontalWidget14)
+        self.activateDev2.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.activateDev2.setCheckable(True)
+        self.activateDev2.setObjectName(_fromUtf8("activateDev2"))
+        self.buttonGroup_4.addButton(self.activateDev2)
+        self.horizontalLayout_15.addWidget(self.activateDev2)
         self.gridLayout_8.addWidget(self.horizontalWidget14, 7, 1, 1, 2)
         self.gridLayout_3.addWidget(self.gridFrame1, 1, 0, 1, 2)
         self.gridFrame2 = QtGui.QFrame(self.centralwidget)
@@ -576,7 +576,7 @@ class Ui_MainWindow(object):
         self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
         self.trackStageXMovementDev1Btn.setText(_translate("MainWindow", "x-Movement", None))
         self.activateDev1.setText(_translate("MainWindow", "Manipulator 1", None))
-        self.acitvateDev2.setText(_translate("MainWindow", "Manipulator 2", None))
+        self.activateDev2.setText(_translate("MainWindow", "Manipulator 2", None))
         self.removeItemBtn.setText(_translate("MainWindow", "Remove Item", None))
         self.recordDepthBtn.setText(_translate("MainWindow", "Record Depth", None))
         self.moveToItemBtn.setText(_translate("MainWindow", "Move to Item", None))
