@@ -928,7 +928,7 @@
         <widget class="QWidget" name="horizontalWidget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout_14">
           <item>
-           <widget class="QPushButton" name="trackStageXMovementDev2Btn">
+           <widget class="QPushButton" name="trackStageZMovementDev2Btn">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
