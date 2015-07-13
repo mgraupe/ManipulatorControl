@@ -145,13 +145,14 @@ class LandNSM5 :
 			# compare answer with answer mask, if true: break, if false : redo
 			if ansb[:len(response)] == response :
 				if self.verbose:
+                                        #print 'answer :', binascii.hexlify(ansb), len(ansb),
 					print 'done'
 				break
 			if nLoops >= self.maxLoops:
 				print 'Command was not successful!'
 				break
 			if self.verbose:
-				print ansb, len(ansb)
+				print 'insufficient answer :', ansb, len(ansb),
 			print '.',
 			nLoops += 1
 		return ansb
@@ -167,6 +168,7 @@ class LandNSM5 :
 			self.ser.write(sendbytes)
 			time.sleep(self.sleepTime)
 			ansConb = self.ser.read(6)
+			print ansConb
 			if ansConb == '\x06\x04\x0b\x00\x00\x00':
 				if self.verbose:
 					print 'established'
@@ -270,7 +272,43 @@ class LandNSM5 :
 		deviceData = ([axisNumber])
 		res = self.sendCommand(IDcode,nBytes,deviceData,response,10)
 		return struct.unpack('f',res[4:8])[0]
-	#########################################################
+	# Queries fast velocity of specified axis.
+        def getPositioningVelocityFast(self,device,axis):
+                IDcode = '0160'
+                nBytes = 1
+                response = '\x06\x00\x01\x02'
+                axisNumber = self.chooseAxis(device,axis)
+                deviceData = ([axisNumber])
+                res = self.sendCommand(IDcode,nBytes,deviceData,response,8)
+                return struct.unpack('H',res[4:6])[0]
+        # Queries slow velocity of specified axis.
+        def getPositioningVelocitySlow(self,device,axis):
+                IDcode = '0161'
+                nBytes = 1
+                response = '\x06\x00\x01\x02'
+                axisNumber = self.chooseAxis(device,axis)
+                deviceData = ([axisNumber])
+                res = self.sendCommand(IDcode,nBytes,deviceData,response,8)
+                return struct.unpack('H',res[4:6])[0]
+        # Queries fast velocity of specified axis.
+        def setPositioningVelocityFast(self,device,axis,speed):
+                IDcode = '003d'
+                nBytes = 3
+                response = '\x06\x04\x0b\x00\x00\x00'
+                axisNumber = self.chooseAxis(device,axis)
+                speed_2hex = binascii.hexlify(struct.pack('>H',speed))
+                deviceData = ([axisNumber,int(speed_2hex[2:],16),int(speed_2hex[:2],16)])
+                res = self.sendCommand(IDcode,nBytes,deviceData,response,len(response))
+        # Queries slow velocity of specified axis.
+        def setPositioningVelocitySlow(self,device,axis,speed):
+                IDcode = '003c'
+                nBytes = 3
+                response = '\x06\x04\x0b\x00\x00\x00'
+                axisNumber = self.chooseAxis(device,axis)
+                speed_2hex = binascii.hexlify(struct.pack('>H',speed))
+                deviceData = ([axisNumber,int(speed_2hex[2:],16),int(speed_2hex[:2],16)])
+                res = self.sendCommand(IDcode,nBytes,deviceData,response,len(response))
+        #########################################################
 	# selects device and axis
 	def chooseAxis(self,device,axis):
 		if (device == 1):

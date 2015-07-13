@@ -69,7 +69,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         # angles of the manipulators with respect to a vertical line
         self.alphaDev1 = 30.
         self.alphaDev2 = 30.
-        
+        self.manip1MoveStep = 2.
+        self.manip2MoveStep = 2.
+
         # movement parameters
         self.stepWidths = {'fine':1.,'small':10.,'medium':100.,'coarse':1000.}
         #self.fineStep = 1.
@@ -159,8 +161,14 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
         self.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
         self.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
-        self.stepLineEdit.textChanged.connect(self.getStepValue)
-        self.speedLineEdit.textChanged.connect(self.getSpeedValue)
+        self.stepLineEdit.editingFinished.connect(self.getStepValue)
+        self.speedLineEdit.editingFinished.connect(self.getSpeedValue)
+        
+        self.device1StepLE.editingFinished.connect(self.setManiplatorStep)
+        self.device2StepLE.editingFinished.connect(self.setManiplatorStep)
+        
+        self.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
+        self.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
         
         
         
@@ -278,8 +286,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             #self.refPositiveBtn.setEnabled(False)
             #self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
+            self.updateManipulatorLocations()
             self.initializeSetLocations()
             self.initializeStageSpeed()
+            self.initializeManipulatorSpeed()
         #
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes using location')
@@ -299,8 +309,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.refLocationBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
+            self.updateManipulatorLocations()
             self.initializeSetLocations()
             self.initializeStageSpeed()
+            self.initializeManipulatorSpeed()
         #
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes to neg. limit')
@@ -335,6 +347,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         self.done = False
         while self.done==False:
+            #self.manip1MoveStep = float(self.device1StepLE.text())
+            #self.manip2MoveStep = float(self.device2StepLE.text())
+            
             for event in pygame.event.get(): # User did something
                 #	# Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
                 if event.type == pygame.JOYBUTTONDOWN:
@@ -385,36 +400,60 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             if joystick.get_button( 3 ):
                 self.setMovementValues('coarse')
             
+            # chose which manipulator to move
+            if joystick.get_button( 8 ):
+                self.activateDev1.setChecked(True)
+            if joystick.get_button( 9 ):
+                self.activateDev2.setChecked(True)
+            
             # manipulator steps
             if joystick.get_button( 7 ):
                 if self.activateDev1.isChecked():
-                    self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
+                    self.setXDev1+= self.manip1MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
+                    time.sleep(0.3)
                 if self.activateDev2.isChecked():
-                    self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
-            if joystick.get_button( 7 ):
+                    self.setXDev2+= self.manip2MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
+                    time.sleep(0.3)
+                #self.updateManipulatorLocations('x')
+            if joystick.get_button( 5 ):
                 if self.activateDev1.isChecked():
-                    self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
+                    self.setXDev1-= self.manip1MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
+                    time.sleep(0.3)
                 if self.activateDev2.isChecked():
-                    self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
+                    self.setXDev2-= self.manip2MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
+                    time.sleep(0.3)
+                #self.updateManipulatorLocations('x')
             
             # Dev 1
             if self.trackStageZMovementDev1Btn.isChecked():
                 mov = self.oldSetZ - self.setZ
                 if mov:
-                    self.goVariableFastToRelativePosition(1,'z',mov)
+                    self.setZDev1-= mov
+                    #self.goVariableFastToRelativePosition(1,'z',mov)
+                    #self.updateManipulatorLocations('z')
             elif self.trackStageXMovementDev1Btn.isChecked():
-                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev1*pi/180.)
+                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev1*np.pi/180.)
                 if mov:
-                    self.goVariableFastToRelativePosition(1,'x',mov)
+                    self.setXDev1-= mov
+                    #self.goVariableFastToRelativePosition(1,'x',mov)
+                    #self.updateManipulatorLocations('x')
             # Dev 2
             if self.trackStageZMovementDev2Btn.isChecked():
                 mov = self.oldSetZ - self.setZ
                 if mov:
-                    self.goVariableFastToRelativePosition(2,'z',mov)
+                    self.setZDev2-= mov
+                    #self.goVariableFastToRelativePosition(2,'z',mov)
+                    #self.updateManipulatorLocations('z')
             elif self.trackStageXMovementDev2Btn.isChecked():
-                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev2*pi/180.)
+                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev2*np.pi/180.)
                 if mov:
-                    self.goVariableFastToRelativePosition(2,'x',mov)
+                    self.setXDev2-= mov
+                    #self.goVariableFastToRelativePosition(2,'x',mov)
+                    #self.updateManipulatorLocations('x')
             self.oldSetZ = self.setZ
             
             # Limit to 10 frames per second
@@ -422,10 +461,29 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
             self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
             self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
+            
+            self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
+            self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
+            self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
+            
+            self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.precision)))
+            self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
+            self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
+            
             if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
-                self.moveToNewLocation()
+                self.moveStageToNewLocation()
+            #
+            if abs(self.setXDev1-self.isXDev1)>self.locationDiscrepancy:
+                print 'difference : ', abs(self.setXDev1-self.isXDev1), self.setXDev1, self.isXDev1
+                self.moveManipulatorToNewLocation(1,'x')
+            if abs(self.setXDev2-self.isXDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'x')
+            if abs(self.setZDev1-self.isZDev1)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(1,'z')
+            if abs(self.setZDev2-self.isZDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'z')
     #################################################################################################
-    def moveToNewLocation(self):
+    def moveStageToNewLocation(self):
 
         wait = True
         while wait:
@@ -438,7 +496,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.c843.move_to_absolute_position(2,self.setY)
         self.c843.move_to_absolute_position(3,self.setZ)
         
-        self.updateStageLocation()
+        self.updateStageLocations()
 
         #if self.isHomeSet :
         #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
@@ -451,6 +509,17 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.unSetStatusMessage('moving axes')
     
     #################################################################################################
+    def moveManipulatorToNewLocation(self,dev,axis):
+        exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
+        #print self.loc
+        if 'z' in axis:
+            mult = 1.
+        else:
+            mult = -1.
+        self.luigsNeumann.goVariableFastToAbsolutePosition(dev,axis,mult*loc)
+        self.updateManipulatorLocations(axis)
+        
+    #################################################################################################
     def updateStageLocations(self):
         # C843
         self.isX = self.c843.get_position(1)
@@ -461,14 +530,28 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
         self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
         #
-        # SM5 : Dev1
-        self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
-        self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
-        self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
-        # SM5 : Dev2
-        self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
-        self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
-        self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+    #################################################################################################
+    def updateManipulatorLocations(self,axis=None):
+        
+        if axis is None:
+            # SM5 : Dev1
+            self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+            self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+            self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+            # SM5 : Dev2
+            self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+            self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+            self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+        else:
+            if 'x' in axis:
+                self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+                self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+            if 'y' in axis:
+                self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+                self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+            if 'z' in axis:
+                self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+                self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
         #
         self.xIsPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
         self.yIsPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
@@ -504,6 +587,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
         self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
         
+        self.device1StepLE.setText(str(self.manip1MoveStep))
+        self.device2StepLE.setText(str(self.manip2MoveStep))
         
         #if self.isHomeSet :
         #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
@@ -523,17 +608,38 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         # set default move and speed
         self.setMovementValues(self.defaultMoveSpeed)
-        if self.defaultMoveSpeed == 'fine':
-            self.fineBtn.setChecked(True)
-        elif self.defaultMoveSpeed == 'small':
-            self.smallBtn.setChecked(True)
-        elif self.defaultMoveSpeed == 'medium':
-            self.mediumBtn.setChecked(True)
-        elif self.defaultMoveSpeed == 'coarse':
-            self.coarseBtn.setChecked(True)
+    #################################################################################################
+    def initializeManipulatorSpeed(self):
+        # Manipulator Speed
+        self.velDev1 = self.luigsNeumann.getPositioningVelocityFast(1,'x')
+        self.device1SpeedLE.setText(str(self.velDev1))
+        self.velDev2 = self.luigsNeumann.getPositioningVelocityFast(2,'x')
+        self.device2SpeedLE.setText(str(self.velDev2))
+        
         #self.enableButtons()
     #################################################################################################
+    def setManiplatorSpeed(self,dev):
+        if dev == 1:
+            self.velDev1 = float(self.device1SpeedLE.text())
+            self.luigsNeumann.setPositioningVelocityFast(1,'x',self.velDev1)
+        elif dev == 2:
+            self.velDev2 = float(self.device2SpeedLE.text())
+            self.luigsNeumann.setPositioningVelocityFast(2,'x',self.velDev2)
+    #################################################################################################
+    def setManiplatorStep(self):
+        self.manip1MoveStep = float(self.device1StepLE.text())
+        self.manip2MoveStep = float(self.device2StepLE.text())
+    #################################################################################################
     def setMovementValues(self,moveSize):
+        if moveSize == 'fine':
+            self.fineBtn.setChecked(True)
+        elif moveSize == 'small':
+            self.smallBtn.setChecked(True)
+        elif moveSize == 'medium':
+            self.mediumBtn.setChecked(True)
+        elif moveSize == 'coarse':
+            self.coarseBtn.setChecked(True)
+        #
         self.moveStep = self.stepWidths[moveSize]
         self.moveSpeed = self.speeds[moveSize]
         self.stepLineEdit.setText(str(self.moveStep))
@@ -589,6 +695,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         # Move panel
         self.controllerActivateBtn.setEnabled(newSetting)
         # recorded locations
+        self.electrode1MLIBtn.setEnabled(newSetting)
+        self.electrode1PCBtn.setEnabled(newSetting)
+        self.electrode2MLIBtn.setEnabled(newSetting)
+        self.electrode2PCBtn.setEnabled(newSetting)
+        
         self.moveToItemBtn.setEnabled(newSetting)
         self.recordDepthBtn.setEnabled(newSetting)
         self.saveLocationsBtn.setEnabled(newSetting)
