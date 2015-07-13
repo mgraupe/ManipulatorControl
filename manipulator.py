@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Mon Jul 13 16:59:26 2015
+# Created: Mon Jul 13 18:04:36 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -379,15 +379,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
         self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget12)
         self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.trackStageZMovementDev2Btn.setCheckable(True)
         self.trackStageZMovementDev2Btn.setObjectName(_fromUtf8("trackStageZMovementDev2Btn"))
-        self.buttonGroup_3 = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup_3.setObjectName(_fromUtf8("buttonGroup_3"))
-        self.buttonGroup_3.addButton(self.trackStageZMovementDev2Btn)
         self.horizontalLayout_14.addWidget(self.trackStageZMovementDev2Btn)
         self.trackStageXMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget12)
         self.trackStageXMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.trackStageXMovementDev2Btn.setCheckable(True)
         self.trackStageXMovementDev2Btn.setObjectName(_fromUtf8("trackStageXMovementDev2Btn"))
-        self.buttonGroup_3.addButton(self.trackStageXMovementDev2Btn)
         self.horizontalLayout_14.addWidget(self.trackStageXMovementDev2Btn)
         self.gridLayout_8.addWidget(self.horizontalWidget12, 14, 2, 1, 1)
         self.label_5 = QtGui.QLabel(self.gridFrame1)
@@ -405,15 +403,11 @@ class Ui_MainWindow(object):
         self.trackStageZMovementDev1Btn.setIconSize(QtCore.QSize(16, 16))
         self.trackStageZMovementDev1Btn.setCheckable(True)
         self.trackStageZMovementDev1Btn.setObjectName(_fromUtf8("trackStageZMovementDev1Btn"))
-        self.buttonGroup_2 = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup_2.setObjectName(_fromUtf8("buttonGroup_2"))
-        self.buttonGroup_2.addButton(self.trackStageZMovementDev1Btn)
         self.horizontalLayout_6.addWidget(self.trackStageZMovementDev1Btn)
         self.trackStageXMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget13)
         self.trackStageXMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.trackStageXMovementDev1Btn.setCheckable(True)
         self.trackStageXMovementDev1Btn.setObjectName(_fromUtf8("trackStageXMovementDev1Btn"))
-        self.buttonGroup_2.addButton(self.trackStageXMovementDev1Btn)
         self.horizontalLayout_6.addWidget(self.trackStageXMovementDev1Btn)
         self.gridLayout_8.addWidget(self.horizontalWidget13, 14, 1, 1, 1)
         self.horizontalWidget14 = QtGui.QWidget(self.gridFrame1)

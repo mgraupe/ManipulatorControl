@@ -938,9 +938,9 @@
             <property name="text">
              <string>z-Movement</string>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_3</string>
-            </attribute>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item>
@@ -954,9 +954,9 @@
             <property name="text">
              <string>x-Movement</string>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_3</string>
-            </attribute>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
          </layout>
@@ -1016,9 +1016,6 @@
             <property name="checkable">
              <bool>true</bool>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_2</string>
-            </attribute>
            </widget>
           </item>
           <item>
@@ -1035,9 +1032,6 @@
             <property name="checkable">
              <bool>true</bool>
             </property>
-            <attribute name="buttonGroup">
-             <string notr="true">buttonGroup_2</string>
-            </attribute>
            </widget>
           </item>
          </layout>
@@ -1353,9 +1347,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_3"/>
   <buttongroup name="buttonGroup"/>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_4"/>
  </buttongroups>
 </ui>
