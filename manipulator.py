@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'manipulator.ui'
+# Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Sat Jul 11 17:11:02 2015
-#      by: PyQt4 UI code generator 4.11.3
+# Created: Mon Jul 13 14:08:15 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -182,10 +182,10 @@ class Ui_MainWindow(object):
         self.ySetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.ySetPosDev1LE.setObjectName(_fromUtf8("ySetPosDev1LE"))
         self.horizontalLayout_12.addWidget(self.ySetPosDev1LE)
-        self.ySetPosDev1LE_2 = QtGui.QLineEdit(self.horizontalWidget3)
-        self.ySetPosDev1LE_2.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.ySetPosDev1LE_2.setObjectName(_fromUtf8("ySetPosDev1LE_2"))
-        self.horizontalLayout_12.addWidget(self.ySetPosDev1LE_2)
+        self.zSetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget3)
+        self.zSetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.zSetPosDev1LE.setObjectName(_fromUtf8("zSetPosDev1LE"))
+        self.horizontalLayout_12.addWidget(self.zSetPosDev1LE)
         self.gridLayout_8.addWidget(self.horizontalWidget3, 10, 1, 1, 1)
         self.label_9 = QtGui.QLabel(self.gridFrame1)
         self.label_9.setObjectName(_fromUtf8("label_9"))
@@ -519,7 +519,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.gridFrame2, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 540, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 540, 21))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
