@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Mon Jul 13 14:15:33 2015
+# Created: Mon Jul 13 15:26:04 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -153,10 +153,10 @@ class Ui_MainWindow(object):
         self.label_24 = QtGui.QLabel(self.horizontalWidget2)
         self.label_24.setObjectName(_fromUtf8("label_24"))
         self.horizontalLayout_13.addWidget(self.label_24)
-        self.lineEdit_9 = QtGui.QLineEdit(self.horizontalWidget2)
-        self.lineEdit_9.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEdit_9.setObjectName(_fromUtf8("lineEdit_9"))
-        self.horizontalLayout_13.addWidget(self.lineEdit_9)
+        self.device1StepLE = QtGui.QLineEdit(self.horizontalWidget2)
+        self.device1StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.device1StepLE.setObjectName(_fromUtf8("device1StepLE"))
+        self.horizontalLayout_13.addWidget(self.device1StepLE)
         self.label_6 = QtGui.QLabel(self.horizontalWidget2)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.horizontalLayout_13.addWidget(self.label_6)
@@ -360,10 +360,10 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10 = QtGui.QHBoxLayout(self.horizontalWidget11)
         self.horizontalLayout_10.setMargin(1)
         self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
-        self.lineEdit_2 = QtGui.QLineEdit(self.horizontalWidget11)
-        self.lineEdit_2.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEdit_2.setObjectName(_fromUtf8("lineEdit_2"))
-        self.horizontalLayout_10.addWidget(self.lineEdit_2)
+        self.device2StepLE = QtGui.QLineEdit(self.horizontalWidget11)
+        self.device2StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.device2StepLE.setObjectName(_fromUtf8("device2StepLE"))
+        self.horizontalLayout_10.addWidget(self.device2StepLE)
         self.label_12 = QtGui.QLabel(self.horizontalWidget11)
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.horizontalLayout_10.addWidget(self.label_12)
