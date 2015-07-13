@@ -103,6 +103,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         self.activate = Thread(target=self.controlerInput)
         
+        self.disableAndEnableBtns(False)
         #self.saveAttributeChangeBtn.setEnabled(False)
         #self.restoreAttributesBtn.setEnabled(False)
         
@@ -594,7 +595,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.removeItemBtn.setEnabled(newSetting)
         self.loadLocationsBtn.setEnabled(newSetting)
     ###################################################################################################
-    self.enableDiableControllerBtns(self, newSetting):
+    def enableDiableControllerBtns(self, newSetting):
         self.fineBtn.setEnabled(newSetting)
         self.smallBtn.setEnabled(newSetting)
         self.mediumBtn.setEnabled(newSetting)

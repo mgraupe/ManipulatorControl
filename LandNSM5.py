@@ -115,8 +115,7 @@ class LandNSM5 :
 		# establish connection before each command (connection is lost after 3 sec)
 		self.timePassed = time.time()
 		if (self.timePassed-self.timeWhenEstablished)>self.establishConnectionHold:
-            self.establishConnection()
-            self.timeWhenEstablished = time.time()
+                        self.establishConnection()
 		# calcuate CRC checksum and extract MSB and LSB 
 		(high,low) = self.serialCalculateCRC(deviceData,len(deviceData))
 		# consistency check between number of bytes sent and data array length
@@ -137,6 +136,7 @@ class LandNSM5 :
 		nLoops = 0
 		while True:
 			# write bytes to interface
+			self.timeWhenEstablished = time.time()
 			self.ser.write(sendbytes)
 			# wait
 			time.sleep(self.sleepTime)
