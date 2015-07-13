@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Mon Jul 13 14:11:54 2015
+# Created: Mon Jul 13 14:14:09 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -377,13 +377,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_14 = QtGui.QHBoxLayout(self.horizontalWidget12)
         self.horizontalLayout_14.setMargin(0)
         self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
-        self.trackStageXMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget12)
-        self.trackStageXMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageXMovementDev2Btn.setObjectName(_fromUtf8("trackStageXMovementDev2Btn"))
+        self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget12)
+        self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.trackStageZMovementDev2Btn.setObjectName(_fromUtf8("trackStageZMovementDev2Btn"))
         self.buttonGroup_3 = QtGui.QButtonGroup(MainWindow)
         self.buttonGroup_3.setObjectName(_fromUtf8("buttonGroup_3"))
-        self.buttonGroup_3.addButton(self.trackStageXMovementDev2Btn)
-        self.horizontalLayout_14.addWidget(self.trackStageXMovementDev2Btn)
+        self.buttonGroup_3.addButton(self.trackStageZMovementDev2Btn)
+        self.horizontalLayout_14.addWidget(self.trackStageZMovementDev2Btn)
         self.trackStageXMovementDev2Btn_2 = QtGui.QPushButton(self.horizontalWidget12)
         self.trackStageXMovementDev2Btn_2.setMaximumSize(QtCore.QSize(16777215, 24))
         self.trackStageXMovementDev2Btn_2.setObjectName(_fromUtf8("trackStageXMovementDev2Btn_2"))
@@ -570,7 +570,7 @@ class Ui_MainWindow(object):
         self.controllerActivateBtn.setText(_translate("MainWindow", "Activate Controller", None))
         self.label_8.setText(_translate("MainWindow", "Move Panel", None))
         self.label_12.setText(_translate("MainWindow", ":", None))
-        self.trackStageXMovementDev2Btn.setText(_translate("MainWindow", "z-Movement", None))
+        self.trackStageZMovementDev2Btn.setText(_translate("MainWindow", "z-Movement", None))
         self.trackStageXMovementDev2Btn_2.setText(_translate("MainWindow", "x-Movement", None))
         self.label_5.setText(_translate("MainWindow", "Track Stage", None))
         self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
