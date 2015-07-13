@@ -104,6 +104,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.activate = Thread(target=self.controlerInput)
         
         self.disableAndEnableBtns(False)
+        self.enableDiableControllerBtns(False)
         #self.saveAttributeChangeBtn.setEnabled(False)
         #self.restoreAttributesBtn.setEnabled(False)
         
