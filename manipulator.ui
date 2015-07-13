@@ -377,7 +377,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit_9">
+           <widget class="QLineEdit" name="device1StepLE">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
@@ -901,7 +901,7 @@
            <number>1</number>
           </property>
           <item>
-           <widget class="QLineEdit" name="lineEdit_2">
+           <widget class="QLineEdit" name="device2StepLE">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
