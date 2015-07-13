@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Mon Jul 13 15:26:04 2015
+# Created: Mon Jul 13 16:59:26 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -160,10 +160,10 @@ class Ui_MainWindow(object):
         self.label_6 = QtGui.QLabel(self.horizontalWidget2)
         self.label_6.setObjectName(_fromUtf8("label_6"))
         self.horizontalLayout_13.addWidget(self.label_6)
-        self.lineEdit_10 = QtGui.QLineEdit(self.horizontalWidget2)
-        self.lineEdit_10.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEdit_10.setObjectName(_fromUtf8("lineEdit_10"))
-        self.horizontalLayout_13.addWidget(self.lineEdit_10)
+        self.device1SpeedLE = QtGui.QLineEdit(self.horizontalWidget2)
+        self.device1SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.device1SpeedLE.setObjectName(_fromUtf8("device1SpeedLE"))
+        self.horizontalLayout_13.addWidget(self.device1SpeedLE)
         self.gridLayout_8.addWidget(self.horizontalWidget2, 13, 0, 1, 2)
         self.label_23 = QtGui.QLabel(self.gridFrame1)
         self.label_23.setObjectName(_fromUtf8("label_23"))
@@ -367,10 +367,10 @@ class Ui_MainWindow(object):
         self.label_12 = QtGui.QLabel(self.horizontalWidget11)
         self.label_12.setObjectName(_fromUtf8("label_12"))
         self.horizontalLayout_10.addWidget(self.label_12)
-        self.lineEdit = QtGui.QLineEdit(self.horizontalWidget11)
-        self.lineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
-        self.horizontalLayout_10.addWidget(self.lineEdit)
+        self.device2SpeedLE = QtGui.QLineEdit(self.horizontalWidget11)
+        self.device2SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.device2SpeedLE.setObjectName(_fromUtf8("device2SpeedLE"))
+        self.horizontalLayout_10.addWidget(self.device2SpeedLE)
         self.gridLayout_8.addWidget(self.horizontalWidget11, 13, 2, 1, 1)
         self.horizontalWidget12 = QtGui.QWidget(self.gridFrame1)
         self.horizontalWidget12.setObjectName(_fromUtf8("horizontalWidget12"))
