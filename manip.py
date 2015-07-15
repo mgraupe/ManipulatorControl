@@ -170,7 +170,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
         self.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
         
-        
+        ################################################
+        # Location panel 
+        self.electrode1MLIBtn.clicked.connect(functools.partial(self.recordCell,1,'MLI'))
+		self.electrode1PCBtn.clicked.connect(functools.partial(self.recordCell,1,'PC'))
+		self.electrode2MLIBtn.clicked.connect(functools.partial(self.recordCell,2,'MLI'))
+		self.electrode2PCBtn.clicked.connect(functools.partial(self.recordCell,2,'PC'))
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -665,6 +670,66 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.fineBtn.repaint()
         #self.mediumBtn.repaint()
         #self.coarseBtn.repaint()
+    #################################################################################################
+    def recordCell(self,nElectrode,identity):
+        #self.cellListTable.insertRow(3)
+        xyzU = self.c843.get_all_positions()
+        nC = len(self.cells)
+        
+        self.cells[nC] = {}
+        self.cells[nC]['number'] = self.nItem
+        self.cells[nC]['type'] = identity # 'MLI'
+        self.cells[nC]['electrode'] = nElectrode
+        self.cells[nC]['location'] = np.array([round(xyzU[0],self.precision),round(xyzU[1],self.precision),round(xyzU[2],self.precision)])
+        self.cells[nC]['depth'] = 0.
+        
+        self.updateTable()
+        print 'added ',str(nC),'item'	
+        self.nItem+=1
+        self.repaint()
+    
+    #################################################################################################
+    def updateTable(self):
+        print len(self.cells), self.rowC
+        # add row if table gets filled up
+        if (len(self.cells)+1) == (self.rowC):
+            self.cellListTable.insertRow(self.rowC)
+            self.cellListTable.setRowHeight(self.rowC,17)
+            self.rowC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.cells)+1) > (self.rowC):
+            self.cellListTable.insertRow(self.rowC)
+            self.cellListTable.setRowHeight(self.rowC,17)
+            self.rowC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #	for r in range(len(self.cells)):
+        #		if self.cells[r]['type']=='surface':
+        #			zSurface = self.cells[r]['location'][2]
+        
+        for r in range(len(self.cells)):
+            for c in range(5):
+                if c==0:
+                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['number'])))
+                elif c==1:
+                    if self.cells[r]['type']=='PC':
+                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('PC'))
+                    elif  self.cells[r]['type']=='MLI':
+                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('MLI'))
+                    #elif  self.cells[r]['type']=='surface':
+                    #	self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('S'))
+                elif c==2:
+                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['electrode'])))
+                elif c==3:
+                    if not self.cells[r]['depth'] == 0.:
+                        depth = self.cells[r]['depth']
+                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(depth)))
+                    #pass
+                elif c==4:
+                    loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
+                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(loc))
     #################################################################################################
     def setStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ...')
