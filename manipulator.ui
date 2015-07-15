@@ -271,7 +271,7 @@
       <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>10</height>
+        <height>0</height>
        </size>
       </property>
       <property name="frameShape">
@@ -1120,7 +1120,21 @@
        <property name="bottomMargin">
         <number>6</number>
        </property>
-       <item row="6" column="1">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="recordHomeLocationBtn">
+         <property name="text">
+          <string>Record Home Location</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="moveToHomeLocationBtn">
+         <property name="text">
+          <string>Move to Home Location</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
         <widget class="QPushButton" name="removeItemBtn">
          <property name="maximumSize">
           <size>
@@ -1133,7 +1147,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="12" column="0">
         <widget class="QPushButton" name="recordDepthBtn">
          <property name="maximumSize">
           <size>
@@ -1146,7 +1160,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
+       <item row="11" column="0">
         <widget class="QPushButton" name="moveToItemBtn">
          <property name="maximumSize">
           <size>
@@ -1159,7 +1173,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="11" column="1">
         <widget class="QPushButton" name="updateItemLocationBtn">
          <property name="maximumSize">
           <size>
@@ -1172,7 +1186,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
+       <item row="7" column="1">
         <widget class="QPushButton" name="electrode2MLIBtn">
          <property name="maximumSize">
           <size>
@@ -1185,7 +1199,7 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="7" column="0">
         <widget class="QPushButton" name="electrode1MLIBtn">
          <property name="maximumSize">
           <size>
@@ -1198,7 +1212,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="8" column="0">
         <widget class="QPushButton" name="electrode1PCBtn">
          <property name="maximumSize">
           <size>
@@ -1211,7 +1225,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="8" column="1">
         <widget class="QPushButton" name="electrode2PCBtn">
          <property name="maximumSize">
           <size>
@@ -1224,7 +1238,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
+       <item row="10" column="0" colspan="2">
         <widget class="QTableWidget" name="cellListTable">
          <property name="maximumSize">
           <size>
@@ -1246,6 +1260,9 @@
          </attribute>
          <attribute name="verticalHeaderDefaultSectionSize">
           <number>22</number>
+         </attribute>
+         <attribute name="verticalHeaderMinimumSectionSize">
+          <number>16</number>
          </attribute>
          <row/>
          <row/>
@@ -1301,7 +1318,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
+       <item row="13" column="0">
         <widget class="QPushButton" name="saveLocationsBtn">
          <property name="maximumSize">
           <size>
@@ -1314,7 +1331,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="13" column="1">
         <widget class="QPushButton" name="loadLocationsBtn">
          <property name="maximumSize">
           <size>
@@ -1324,6 +1341,70 @@
          </property>
          <property name="text">
           <string>Load Locations</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="updateHomeLocationBtn">
+         <property name="text">
+          <string>Update Home Location</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QTableWidget" name="homeLocationsTable">
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
+         </property>
+         <property name="rowCount">
+          <number>4</number>
+         </property>
+         <property name="columnCount">
+          <number>4</number>
+         </property>
+         <attribute name="horizontalHeaderStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+         <attribute name="verticalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+         <row/>
+         <row/>
+         <row/>
+         <row/>
+         <column>
+          <property name="text">
+           <string>#</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>x</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>y</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>z</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QPushButton" name="removeHomeLocationBtn">
+         <property name="text">
+          <string>Remove Home Location</string>
          </property>
         </widget>
        </item>
