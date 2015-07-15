@@ -63,6 +63,14 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #else:
         #	setExits = True
         self.cells = {}
+        self.nItem = 0
+        self.rowC = 6
+        self.rowHeight = 16
+        self.cellListTable.setRowCount(self.rowC)
+        for i in range(self.rowC):
+            self.cellListTable.setRowHeight(i,self.rowHeight)
+        self.cellListTable.setSelectionMode(self.cellListTable.ContiguousSelection)
+        self.cellListTable.setSelectionBehavior(QAbstractItemView.SelectRows)
         # precision of values to show and store
         self.precision = 1
         self.locationDiscrepancy = 0.1
@@ -172,11 +180,18 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         ################################################
         # Location panel 
-        self.electrode1MLIBtn.clicked.connect(functools.partial(self.recordCell,1,'MLI'))
-		self.electrode1PCBtn.clicked.connect(functools.partial(self.recordCell,1,'PC'))
-		self.electrode2MLIBtn.clicked.connect(functools.partial(self.recordCell,2,'MLI'))
-		self.electrode2PCBtn.clicked.connect(functools.partial(self.recordCell,2,'PC'))
+        self.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
+        self.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
+        self.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
+        self.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
         
+        self.moveToItemBtn.clicked.connect(self.moveToLocation)
+        self.updateItemLocationBtn.clicked.connect(self.updateLocation)
+        self.recordDepthBtn.clicked.connect(self.recordDepth)
+        self.removeItemBtn.clicked.connect(self.removeLocation)
+        self.saveLocationsBtn.clicked.connect(self.saveLocations)
+        self.loadLocationsBtn.clicked.connect(self.loadLocations)
+                
     #################################################################################################
     def connectSM5_c843(self):
         
@@ -283,7 +298,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         ref2 = self.c843.reference_stage(2,False,'neg')
         ref3 = self.c843.reference_stage(3,False,'neg')
         if not all((ref1,ref2,ref3)):
-            reply = QtGui.QMessageBox.warning(self, 'Warning','Reference with saved locations failed.',  QtGui.QMessageBox.Ok )
+            reply = QMessageBox.warning(self, 'Warning','Reference with saved locations failed.',  QMessageBox.Ok )
             #break
         else:
             #self.refLabel.setText('xyz referenced')
@@ -308,7 +323,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         ref2 = self.c843.reference_stage(2,True,'neg')
         ref3 = self.c843.reference_stage(3,True,'neg')
         if not all((ref1,ref2,ref3)):
-            reply = QtGui.QMessageBox.warning(self, 'Warning','Reference at neg. limit failed.',  QtGui.QMessageBox.Ok )
+            reply = QMessageBox.warning(self, 'Warning','Reference at neg. limit failed.',  QMessageBox.Ok )
         else:
             #self.refLabel.setText('xyz referenced')
             self.refLocationBtn.setEnabled(False)
@@ -712,24 +727,126 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         for r in range(len(self.cells)):
             for c in range(5):
                 if c==0:
-                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['number'])))
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['number'])))
                 elif c==1:
                     if self.cells[r]['type']=='PC':
-                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('PC'))
+                        self.cellListTable.setItem(r, c, QTableWidgetItem('PC'))
                     elif  self.cells[r]['type']=='MLI':
-                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('MLI'))
+                        self.cellListTable.setItem(r, c, QTableWidgetItem('MLI'))
                     #elif  self.cells[r]['type']=='surface':
                     #	self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('S'))
                 elif c==2:
-                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['electrode'])))
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['electrode'])))
                 elif c==3:
                     if not self.cells[r]['depth'] == 0.:
                         depth = self.cells[r]['depth']
-                        self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(depth)))
+                        self.cellListTable.setItem(r, c, QTableWidgetItem(str(depth)))
                     #pass
                 elif c==4:
                     loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
-                    self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(loc))
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(loc))
+    #################################################################################################
+    def moveToLocation(self):
+        
+        self.setStatusMessage('moving stage to cell')
+
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        print 'row: ',row
+        xyz = ([self.cells[row]['location'][0],self.cells[row]['location'][1],self.cells[row]['location'][2]])
+        print xyz
+        
+        #for i in range(3):
+        self.setX = self.cells[row]['location'][0]
+        self.setY = self.cells[row]['location'][1]
+        self.setZ = self.cells[row]['location'][2]
+        #self.c843.move_to_absolute_position(i+1,self.cells[row]['location'][i])
+        #self.sutter.gotoPosition(xyz)
+        self.moveStageToNewLocation()
+        print 'moved'
+        #self.updateStageLocations()
+        
+        self.unSetStatusMessage('moving stage to cell')
+    #################################################################################################
+    def updateLocation(self):
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        xyz = self.c843.get_all_positions()
+        self.cells[row]['location'] = np.array([round(xyz[0],self.precision),round(xyz[1],self.precision),round(xyz[2],self.precision)])
+        self.updateTable()
+        self.repaint()
+    
+    #################################################################################################
+    def removeLocation(self):
+        #print self.cells
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        
+        nCells = len(self.cells)
+        print nCells, row
+
+        del self.cells[row]
+        if (nCells-1) != row:
+            for i in range(row,(nCells-1)):
+                self.cells[i] = self.cells[i+1]
+            del self.cells[(nCells-1)]
+        #print self.cells
+        self.updateTable()
+        self.cellListTable.removeRow((nCells-1))
+        self.cellListTable.insertRow((nCells-1))
+        self.cellListTable.setRowHeight((nCells-1),self.rowHeight)
+        self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def recordDepth(self):
+        
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        
+        xyzU = self.c843.get_all_positions()
+        
+        self.cells[row]['depth'] = (self.cells[row]['location'][2] - round(xyzU[2],self.precision))
+
+        self.updateTable()
+        print 'recorded depth of cell # ',str(self.cells[row]['number'])        
+      
+    #################################################################################################
+    def saveLocations(self):
+        print self.today_date
+        saveDir = 'C:\\Users\\2-photon\\experiments\\pi_motors\\locations_'+self.today_date+'.p'
+        #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
+        filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
+        print str(filename),filename
+        if filename:
+            pickle.dump(self.cells,open(filename,"wb"))
+            self.fileSaved = True
+    #################################################################################################
+    def loadLocations(self):
+        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
+            
+        if len(filename)>0:
+            self.cells = pickle.load(open(filename))
+            
+            nItems = len(self.cells)
+            self.nItem = self.cells[(nItems-1)]['number'] + 1
+        
+            self.updateTable()
+            print 'loaded ',str(nItems),'items'
+            self.repaint()
+                
     #################################################################################################
     def setStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ...')
