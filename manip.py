@@ -73,6 +73,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.homeLocationsTable.setSelectionMode(self.homeLocationsTable.ContiguousSelection)
         self.homeLocationsTable.setSelectionBehavior(QAbstractItemView.SelectRows)
         
+        self.homeLocationsTable.setColumnWidth(0,30)
+        self.homeLocationsTable.setColumnWidth(1,100)
+        self.homeLocationsTable.setColumnWidth(2,100)
+        self.homeLocationsTable.setColumnWidth(3,100)
         
         self.cells = {}
         self.nItem = 0
@@ -83,6 +87,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.cellListTable.setRowHeight(i,self.rowHeight)
         self.cellListTable.setSelectionMode(self.cellListTable.ContiguousSelection)
         self.cellListTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        
         # precision of values to show and store
         self.precision = 1
         self.locationDiscrepancy = 0.1
@@ -684,13 +689,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.moveSpeed = self.speeds[moveSize]
         self.stepLineEdit.setText(str(self.moveStep))
         self.speedLineEdit.setText(str(self.moveSpeed))
+        self.propagateSpeeds()
         #self.propagateSpeeds()
     #################################################################################################
-    def getStepValue(self,moveSize):
+    def getStepValue(self):
         self.moveStep = float(self.stepLineEdit.text())
     #################################################################################################
-    def getSpeedValue(self,moveSize):
+    def getSpeedValue(self):
         self.moveSpeed = float(self.speedLineEdit.text())
+        print "new speed :", self.moveSpeed
         self.propagateSpeeds()
     #################################################################################################
     def propagateSpeeds(self):
