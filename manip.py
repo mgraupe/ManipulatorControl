@@ -61,11 +61,23 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #	print 'No settings fils found.'
         #	setExits = False
         #else:
-        #	setExits = True
+
+        self.rowHeight = 16
+
+        self.homeLocs = {}
+        self.nHomeItem = 0
+        self.rowHomeC = 4
+        self.homeLocationsTable.setRowCount(self.rowHomeC)
+        for i in range(self.rowHomeC):
+            self.homeLocationsTable.setRowHeight(i,self.rowHeight)
+        self.homeLocationsTable.setSelectionMode(self.homeLocationsTable.ContiguousSelection)
+        self.homeLocationsTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        
+        
         self.cells = {}
         self.nItem = 0
         self.rowC = 6
-        self.rowHeight = 16
+        
         self.cellListTable.setRowCount(self.rowC)
         for i in range(self.rowC):
             self.cellListTable.setRowHeight(i,self.rowHeight)
@@ -191,6 +203,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.removeItemBtn.clicked.connect(self.removeLocation)
         self.saveLocationsBtn.clicked.connect(self.saveLocations)
         self.loadLocationsBtn.clicked.connect(self.loadLocations)
+        
+        self.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
+        self.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
+        self.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
+        self.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)
+        
                 
     #################################################################################################
     def connectSM5_c843(self):
@@ -549,6 +567,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.isXLocationValueLabel.setText(str(round(self.isX,self.precision)))
         self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
         self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
+        
+        self.updateHomeTable()
         #
     #################################################################################################
     def updateManipulatorLocations(self,axis=None):
@@ -707,15 +727,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     def updateTable(self):
         print len(self.cells), self.rowC
         # add row if table gets filled up
-        if (len(self.cells)+1) == (self.rowC):
-            self.cellListTable.insertRow(self.rowC)
-            self.cellListTable.setRowHeight(self.rowC,17)
-            self.rowC+=1
+        #if (len(self.cells)+1) == (self.rowC):
+        #    self.cellListTable.insertRow(self.rowC)
+        #    self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
+        #    self.rowC+=1
         
         # expand table when list is loaded directly from file
         while (len(self.cells)+1) > (self.rowC):
             self.cellListTable.insertRow(self.rowC)
-            self.cellListTable.setRowHeight(self.rowC,17)
+            self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
             self.rowC+=1
             
         
@@ -848,6 +868,113 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.repaint()
                 
     #################################################################################################
+    def updateHomeTable(self):
+        #print len(self.homeLocs), self.rowHomeC
+        # add row if table gets filled up
+        #if (len(self.homeLocs)+1) == (self.rowHomeC):
+        #    self.homeLocationsTable.insertRow(self.rowHomeC)
+        #    self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+        #    self.rowHomeC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.homeLocs)+1) > (self.rowHomeC):
+            self.homeLocationsTable.insertRow(self.rowHomeC)
+            self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+            self.rowHomeC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #       for r in range(len(self.homeLocs)):
+        #               if self.homeLocs[r]['type']=='surface':
+        #                       zSurface = self.homeLocs[r]['location'][2]
+        
+        for r in range(len(self.homeLocs)):
+            for c in range(4):
+                if c==0:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(self.homeLocs[r]['number'])))
+                elif c==1:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isX-self.homeLocs[r]['x'],self.precision))))
+                elif c==2:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isY-self.homeLocs[r]['y'],self.precision))))
+                elif c==3:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isZ-self.homeLocs[r]['z'],self.precision))))
+    #################################################################################################
+    def recordHomeLocation(self):
+        #self.cellListTable.insertRow(3)
+        xyzU = self.c843.get_all_positions()
+        nC = len(self.homeLocs)
+        
+        self.homeLocs[nC] = {}
+        self.homeLocs[nC]['number'] = self.nHomeItem
+        
+        self.homeLocs[nC]['x'] = round(xyzU[0],self.precision)
+        self.homeLocs[nC]['y'] = round(xyzU[1],self.precision)
+        self.homeLocs[nC]['z'] = round(xyzU[2],self.precision) 
+        
+        self.updateHomeTable()
+        print 'added ',str(nC),'home item'   
+        self.nHomeItem+=1
+        self.repaint()
+    #################################################################################################
+    def updateHomeLocation(self):
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        xyz = self.c843.get_all_positions()
+        self.homeLocs[row]['x'] = round(xyz[0],self.precision) 
+        self.homeLocs[row]['y'] = round(xyz[1],self.precision) 
+        self.homeLocs[row]['z'] = round(xyz[2],self.precision)
+        self.updateHomeTable()
+        self.repaint()
+    #################################################################################################
+    def removeHomeLocation(self):
+        #print self.cells
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        nLocations = len(self.homeLocs)
+        #print nCells, row
+
+        del self.homeLocs[row]
+        if (nLocations-1) != row:
+            for i in range(row,(nLocations-1)):
+                self.homeLocs[i] = self.homeLocs[i+1]
+            del self.homeLocs[(nLocations-1)]
+        #print self.cells
+        self.updateHomeTable()
+        self.homeLocationsTable.removeRow((nLocations-1))
+        self.homeLocationsTable.insertRow((nLocations-1))
+        self.homeLocationsTable.setRowHeight((nLocations-1),self.rowHeight)
+        self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def moveToHomeLocation(self):
+        
+        self.setStatusMessage('moving stage to home location')
+
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        print 'row: ',row
+        xyz = ([self.homeLocs[row]['x'],self.homeLocs[row]['y'],self.homeLocs[row]['z']])
+        print xyz
+        
+        #for i in range(3):
+        self.setX = self.homeLocs[row]['x']
+        self.setY = self.homeLocs[row]['y']
+        self.setZ = self.homeLocs[row]['z']
+        #self.c843.move_to_absolute_position(i+1,self.cells[row]['location'][i])
+        #self.sutter.gotoPosition(xyz)
+        self.moveStageToNewLocation()
+        print 'moved'
+        #self.updateStageLocations()
+        
+        self.unSetStatusMessage('moving stage to home location')
+    #################################################################################################
     def setStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ...')
         self.statusbar.setStyleSheet('color: red')
@@ -881,6 +1008,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.electrode1PCBtn.setEnabled(newSetting)
         self.electrode2MLIBtn.setEnabled(newSetting)
         self.electrode2PCBtn.setEnabled(newSetting)
+        
+        self.recordHomeLocationBtn.setEnabled(newSetting)
+        self.updateHomeLocationBtn.setEnabled(newSetting)
+        self.moveToHomeLocationBtn.setEnabled(newSetting)
+        self.removeHomeLocationBtn.setEnabled(newSetting)
         
         self.moveToItemBtn.setEnabled(newSetting)
         self.recordDepthBtn.setEnabled(newSetting)
