@@ -1017,6 +1017,9 @@ selection-background-color: rgb(255, 85, 0);
      <bold>true</bold>
     </font>
    </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
    <property name="windowTitle">
     <string>Location Panel</string>
    </property>

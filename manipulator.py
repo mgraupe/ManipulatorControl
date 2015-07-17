@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'manipulator.ui'
 #
-# Created: Fri Jul 17 16:58:00 2015
+# Created: Fri Jul 17 16:58:34 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -458,6 +458,7 @@ class Ui_MainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.dockWidget_6.setFont(font)
+        self.dockWidget_6.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
         self.dockWidget_6.setObjectName(_fromUtf8("dockWidget_6"))
         self.dockWidgetContents_6 = QtGui.QWidget()
         self.dockWidgetContents_6.setObjectName(_fromUtf8("dockWidgetContents_6"))
