@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>1091</height>
+    <width>537</width>
+    <height>989</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -43,8 +43,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>539</width>
-     <height>25</height>
+     <width>537</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -59,8 +59,8 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>403</width>
-     <height>216</height>
+     <width>395</width>
+     <height>127</height>
     </size>
    </property>
    <property name="font">
@@ -70,9 +70,7 @@
     </font>
    </property>
    <property name="styleSheet">
-    <string notr="true">border-top-color: rgb(0, 0, 255);
-selection-background-color: rgb(255, 85, 0);
-</string>
+    <string notr="true">QDockWidget::title{background:rgb(85, 85, 255);}</string>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -88,65 +86,58 @@ selection-background-color: rgb(255, 85, 0);
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_6">
-     <item row="1" column="0" colspan="2">
-      <widget class="QPushButton" name="connectBtn">
-       <property name="maximumSize">
+     <item row="5" column="0" colspan="2">
+      <widget class="QWidget" name="horizontalWidget" native="true">
+       <property name="minimumSize">
         <size>
-         <width>16777215</width>
-         <height>24</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
-       <property name="text">
-        <string>Connect</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="default">
-        <bool>false</bool>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Luigs&amp;Neumann SM-5</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Physik Instrumente C-843</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>C-843 Reference </string>
-       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_16">
+        <property name="margin">
+         <number>1</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>C-843 Reference </string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refLocationBtn">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Saved Stage Location</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="refNegativeBtn">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Negative Switch Limit</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item row="3" column="0" colspan="2">
@@ -161,6 +152,13 @@ selection-background-color: rgb(255, 85, 0);
         <property name="margin">
          <number>1</number>
         </property>
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Power Off</string>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QPushButton" name="C843XYPowerBtn">
           <property name="maximumSize">
@@ -231,45 +229,47 @@ selection-background-color: rgb(255, 85, 0);
        </layout>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Power Off</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
+     <item row="1" column="0" colspan="2">
       <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_16">
+       <layout class="QHBoxLayout" name="horizontalLayout_17">
         <item>
-         <widget class="QPushButton" name="refLocationBtn">
+         <widget class="QLabel" name="label_8">
           <property name="maximumSize">
            <size>
-            <width>16777215</width>
-            <height>24</height>
+            <width>100</width>
+            <height>16777215</height>
            </size>
           </property>
           <property name="text">
-           <string>Saved Stage Location</string>
+           <string>Connect</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="refNegativeBtn">
+         <widget class="QPushButton" name="connectBtn">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
             <height>24</height>
            </size>
           </property>
+          <property name="font">
+           <font>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="text">
-           <string>Negative Switch Limit</string>
+           <string>Physik Instrumente C-843  &amp;  Luigs&amp;Neumann SM-5</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="default">
+           <bool>false</bool>
+          </property>
+          <property name="flat">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -289,7 +289,7 @@ selection-background-color: rgb(255, 85, 0);
    <property name="minimumSize">
     <size>
      <width>538</width>
-     <height>398</height>
+     <height>427</height>
     </size>
    </property>
    <property name="font">
@@ -297,6 +297,10 @@ selection-background-color: rgb(255, 85, 0);
      <weight>75</weight>
      <bold>true</bold>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QDockWidget::title{background:rgb(85, 85, 255);}
+</string>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
@@ -309,36 +313,6 @@ selection-background-color: rgb(255, 85, 0);
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QGridLayout" name="gridLayout_5">
-     <item row="2" column="1" colspan="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_9">
-        <property name="margin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="isXLocationValueLabel">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="isYLocationValueLabel">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="isZLocationValueLabel">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
      <item row="0" column="0" colspan="3">
       <widget class="QPushButton" name="controllerActivateBtn">
        <property name="maximumSize">
@@ -361,653 +335,697 @@ selection-background-color: rgb(255, 85, 0);
        </property>
       </widget>
      </item>
-     <item row="9" column="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_10">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="device2StepLE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_12">
-          <property name="text">
-           <string>:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="device2SpeedLE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="xSetPosDev2LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="ySetPosDev2LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="zSetPosDev2LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="1" colspan="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="setXLocationLineEdit">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="setYLocationLineEdit">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="setZLocationLineEdit">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="3">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="fineBtn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Fine</string>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="smallBtn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Small</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="mediumBtn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Medium</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="coarseBtn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Coarse</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>cur. pos. (μm)</string>
+     <item row="1" column="0" colspan="3">
+      <widget class="QGroupBox" name="groupBox_3">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
        </property>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="3">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
+       <property name="title">
+        <string>Stage</string>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_11">
-        <property name="margin">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="leftMargin">
          <number>2</number>
         </property>
-        <item>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
+        <item row="3" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="setXLocationLineEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="setYLocationLineEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="setZLocationLineEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>max pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0" colspan="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="fineBtn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Fine</string>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="smallBtn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Small</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="mediumBtn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Medium</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="coarseBtn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Coarse</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>set pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_17">
+          <property name="text">
+           <string>cur. pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="minMaxXLocationValueLabel">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="minMaxYLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="minMaxZLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="isXLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="isYLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="isZLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="5" column="0">
          <widget class="QLabel" name="label_18">
           <property name="text">
            <string>Step (μm) : Speed</string>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLineEdit" name="stepLineEdit">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_19">
-          <property name="text">
-           <string>:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="speedLineEdit">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_24">
-       <property name="text">
-        <string>Step (μm) : Speed</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_12">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="xSetPosDev1LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="ySetPosDev1LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="zSetPosDev1LE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_13">
-       <property name="text">
-        <string>set pos. (μm)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Track Stage</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <property name="margin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="xIsPosDev2LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="yIsPosDev2LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="zIsPosDev2LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_23">
-       <property name="text">
-        <string>set pos. (μm)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_13">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QLineEdit" name="device1StepLE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="device1SpeedLE">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_7">
-        <property name="margin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="minMaxXLocationValueLabel">
-          <property name="font">
-           <font>
-            <weight>50</weight>
-            <bold>false</bold>
-           </font>
-          </property>
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="minMaxYLocationValueLabel">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="minMaxZLocationValueLabel">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>max pos. (μm)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <property name="margin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="xIsPosDev1LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="yIsPosDev1LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="zIsPosDev1LE">
-          <property name="text">
-           <string>.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="6" column="1" colspan="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_15">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="activateDev1">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="sizeIncrement">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Manipulator 1</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_4</string>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="activateDev2">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Manipulator 2</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup_4</string>
-          </attribute>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_17">
-       <property name="text">
-        <string>cur. pos. (μm)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="trackStageZMovementDev1Btn">
+        <item row="5" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>0</height>
            </size>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>z-Movement</string>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>16</width>
-            <height>16</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="trackStageXMovementDev1Btn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>x-Movement</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <property name="margin">
+            <number>2</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="stepLineEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_19">
+             <property name="text">
+              <string>:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="speedLineEdit">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
       </widget>
      </item>
-     <item row="10" column="2">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <layout class="QHBoxLayout" name="horizontalLayout_14">
-        <property name="spacing">
-         <number>1</number>
-        </property>
-        <property name="margin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="trackStageZMovementDev2Btn">
-          <property name="maximumSize">
+     <item row="2" column="0" colspan="3">
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="title">
+        <string>Eletrode Manipulators</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="3" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
            <size>
-            <width>16777215</width>
-            <height>24</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
-          <property name="text">
-           <string>z-Movement</string>
+          <layout class="QHBoxLayout" name="horizontalLayout_12">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="xSetPosDev1LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="ySetPosDev1LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="zSetPosDev1LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="device2StepLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_12">
+             <property name="text">
+              <string>:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="device2SpeedLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
           </property>
-          <property name="checkable">
-           <bool>true</bool>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="xIsPosDev2LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="yIsPosDev2LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="zIsPosDev2LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_13">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="device1StepLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="device1SpeedLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="xSetPosDev2LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="ySetPosDev2LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="zSetPosDev2LE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="xIsPosDev1LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="yIsPosDev1LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="zIsPosDev1LE">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>10</height>
+           </size>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_15">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="activateDev1">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="sizeIncrement">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string> # 1</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_4</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="activateDev2">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string># 2</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroup_4</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>cur. pos. (μm)</string>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QPushButton" name="trackStageXMovementDev2Btn">
-          <property name="maximumSize">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_23">
+          <property name="text">
+           <string>set pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string>Step (μm) : Speed</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Track Stage</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <property name="minimumSize">
            <size>
-            <width>16777215</width>
-            <height>24</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
-          <property name="text">
-           <string>x-Movement</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="trackStageZMovementDev1Btn">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>z-Movement</string>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>16</width>
+               <height>16</height>
+              </size>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="trackStageXMovementDev1Btn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>x-Movement</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
+           <property name="spacing">
+            <number>1</number>
+           </property>
+           <property name="margin">
+            <number>1</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="trackStageZMovementDev2Btn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>z-Movement</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="trackStageXMovementDev2Btn">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>24</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>x-Movement</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
       </widget>
      </item>
     </layout>
-    <zorder>controllerActivateBtn</zorder>
-    <zorder>label</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>label_13</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>label_17</zorder>
-    <zorder>label_9</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>label_23</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>label_24</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>label_5</zorder>
-    <zorder>horizontalWidget</zorder>
-    <zorder>horizontalWidget</zorder>
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_6">
@@ -1016,6 +1034,9 @@ selection-background-color: rgb(255, 85, 0);
      <weight>75</weight>
      <bold>true</bold>
     </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QDockWidget::title{background:rgb(85, 85, 255);}</string>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
@@ -1030,6 +1051,12 @@ selection-background-color: rgb(255, 85, 0);
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0" rowspan="2" colspan="4">
       <widget class="QGroupBox" name="groupBox">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="title">
         <string>Home Locations</string>
        </property>
@@ -1038,13 +1065,16 @@ selection-background-color: rgb(255, 85, 0);
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
          <number>1</number>
         </property>
         <property name="rightMargin">
-         <number>1</number>
+         <number>2</number>
         </property>
         <property name="bottomMargin">
-         <number>1</number>
+         <number>2</number>
         </property>
         <item row="1" column="0" colspan="4">
          <widget class="QTableWidget" name="homeLocationsTable">
@@ -1140,13 +1170,16 @@ selection-background-color: rgb(255, 85, 0);
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
         <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
          <number>1</number>
         </property>
         <property name="rightMargin">
-         <number>1</number>
+         <number>2</number>
         </property>
         <property name="bottomMargin">
-         <number>1</number>
+         <number>2</number>
         </property>
         <item row="0" column="0">
          <widget class="QPushButton" name="electrode1MLIBtn">
