@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 17:57:14 2015
+# Created: Fri Jul 17 18:01:50 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -482,13 +482,13 @@ class Ui_MainWindow(object):
         self.trackStageZMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.trackStageZMovementDev1Btn.setIconSize(QtCore.QSize(16, 16))
         self.trackStageZMovementDev1Btn.setCheckable(True)
-        self.trackStageZMovementDev1Btn.setAutoExclusive(True)
+        self.trackStageZMovementDev1Btn.setAutoExclusive(False)
         self.trackStageZMovementDev1Btn.setObjectName(_fromUtf8("trackStageZMovementDev1Btn"))
         self.horizontalLayout_6.addWidget(self.trackStageZMovementDev1Btn)
         self.trackStageXMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget15)
         self.trackStageXMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.trackStageXMovementDev1Btn.setCheckable(True)
-        self.trackStageXMovementDev1Btn.setAutoExclusive(True)
+        self.trackStageXMovementDev1Btn.setAutoExclusive(False)
         self.trackStageXMovementDev1Btn.setObjectName(_fromUtf8("trackStageXMovementDev1Btn"))
         self.horizontalLayout_6.addWidget(self.trackStageXMovementDev1Btn)
         self.gridLayout_8.addWidget(self.horizontalWidget15, 5, 1, 1, 1)
