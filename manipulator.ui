@@ -1033,6 +1033,9 @@ selection-background-color: rgb(255, 85, 0);
        <property name="title">
         <string>Home Locations</string>
        </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <property name="leftMargin">
          <number>1</number>
@@ -1136,6 +1139,15 @@ selection-background-color: rgb(255, 85, 0);
         <string>Cell Locations</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_7">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item row="0" column="0">
          <widget class="QPushButton" name="electrode1MLIBtn">
           <property name="maximumSize">
