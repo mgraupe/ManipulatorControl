@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 18:01:50 2015
+# Created: Fri Jul 17 18:13:35 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(395, 127))
+        self.dockWidget.setMinimumSize(QtCore.QSize(456, 127))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -58,7 +58,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_16.setMargin(1)
         self.horizontalLayout_16.setObjectName(_fromUtf8("horizontalLayout_16"))
         self.label_7 = QtGui.QLabel(self.horizontalWidget)
-        self.label_7.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.label_7.setMaximumSize(QtCore.QSize(110, 16777215))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.horizontalLayout_16.addWidget(self.label_7)
         self.refLocationBtn = QtGui.QPushButton(self.horizontalWidget)
@@ -77,6 +77,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setMargin(1)
         self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
         self.label_2 = QtGui.QLabel(self.horizontalWidget1)
+        self.label_2.setMinimumSize(QtCore.QSize(110, 0))
+        self.label_2.setMaximumSize(QtCore.QSize(110, 16777215))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.horizontalLayout_2.addWidget(self.label_2)
         self.C843XYPowerBtn = QtGui.QPushButton(self.horizontalWidget1)
@@ -107,7 +109,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_17.setMargin(0)
         self.horizontalLayout_17.setObjectName(_fromUtf8("horizontalLayout_17"))
         self.label_8 = QtGui.QLabel(self.horizontalWidget2)
-        self.label_8.setMaximumSize(QtCore.QSize(100, 16777215))
+        self.label_8.setMaximumSize(QtCore.QSize(110, 16777215))
         self.label_8.setObjectName(_fromUtf8("label_8"))
         self.horizontalLayout_17.addWidget(self.label_8)
         self.connectBtn = QtGui.QPushButton(self.horizontalWidget2)
@@ -656,12 +658,12 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
         self.refLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
         self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
-        self.label_2.setText(_translate("MainWindow", "Power Off", None))
+        self.label_2.setText(_translate("MainWindow", "Power On/Off", None))
         self.C843XYPowerBtn.setText(_translate("MainWindow", " XY", None))
         self.C843ZPowerBtn.setText(_translate("MainWindow", " Z", None))
         self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "XYZ of Manip1", None))
         self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "XYZ of Manip2", None))
-        self.label_8.setText(_translate("MainWindow", "Connect", None))
+        self.label_8.setText(_translate("MainWindow", "Connect/Disconnect", None))
         self.connectBtn.setText(_translate("MainWindow", "Physik Instrumente C-843  &  Luigs&Neumann SM-5", None))
         self.dockWidget_5.setWindowTitle(_translate("MainWindow", "Move Panel", None))
         self.controllerActivateBtn.setText(_translate("MainWindow", "Activate Controller", None))
