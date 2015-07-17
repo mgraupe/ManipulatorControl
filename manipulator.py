@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 17:45:38 2015
+# Created: Fri Jul 17 17:47:48 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -152,8 +152,8 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addWidget(self.controllerActivateBtn, 0, 0, 1, 3)
         self.groupBox_3 = QtGui.QGroupBox(self.dockWidgetContents_5)
         font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(50)
         self.groupBox_3.setFont(font)
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_3)
@@ -296,8 +296,8 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addWidget(self.groupBox_3, 1, 0, 1, 3)
         self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents_5)
         font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(50)
         self.groupBox_4.setFont(font)
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
         self.gridLayout_8 = QtGui.QGridLayout(self.groupBox_4)
@@ -518,8 +518,8 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.groupBox = QtGui.QGroupBox(self.dockWidgetContents_6)
         font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(50)
         self.groupBox.setFont(font)
         self.groupBox.setFlat(False)
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
@@ -563,8 +563,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.line, 3, 0, 1, 4)
         self.groupBox_2 = QtGui.QGroupBox(self.dockWidgetContents_6)
         font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
+        font.setBold(False)
+        font.setWeight(50)
         self.groupBox_2.setFont(font)
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.gridLayout_7 = QtGui.QGridLayout(self.groupBox_2)
