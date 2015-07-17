@@ -500,6 +500,13 @@
            </property>
            <item>
             <widget class="QLabel" name="minMaxXLocationValueLabel">
+             <property name="text">
+              <string>.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="minMaxYLocationValueLabel">
              <property name="font">
               <font>
                <weight>50</weight>
@@ -512,14 +519,13 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="minMaxYLocationValueLabel">
-             <property name="text">
-              <string>.</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QLabel" name="minMaxZLocationValueLabel">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -536,6 +542,12 @@
            </property>
            <item>
             <widget class="QLabel" name="isXLocationValueLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -543,6 +555,12 @@
            </item>
            <item>
             <widget class="QLabel" name="isYLocationValueLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -550,6 +568,12 @@
            </item>
            <item>
             <widget class="QLabel" name="isZLocationValueLabel">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -606,6 +630,12 @@
      </item>
      <item row="2" column="0" colspan="3">
       <widget class="QGroupBox" name="groupBox_4">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="title">
         <string>Eletrode Manipulators</string>
        </property>
@@ -690,6 +720,12 @@
            </property>
            <item>
             <widget class="QLabel" name="xIsPosDev2LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -697,6 +733,12 @@
            </item>
            <item>
             <widget class="QLabel" name="yIsPosDev2LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -704,6 +746,12 @@
            </item>
            <item>
             <widget class="QLabel" name="zIsPosDev2LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -792,6 +840,12 @@
            </property>
            <item>
             <widget class="QLabel" name="xIsPosDev1LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -799,6 +853,12 @@
            </item>
            <item>
             <widget class="QLabel" name="yIsPosDev1LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -806,6 +866,12 @@
            </item>
            <item>
             <widget class="QLabel" name="zIsPosDev1LE">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>.</string>
              </property>
@@ -1147,6 +1213,12 @@
      </item>
      <item row="4" column="0" colspan="4">
       <widget class="QGroupBox" name="groupBox_2">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
        <property name="title">
         <string>Cell Locations</string>
        </property>
