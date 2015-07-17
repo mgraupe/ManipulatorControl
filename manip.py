@@ -49,6 +49,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.setWindowTitle('Manipulator Control')
+        self.setGeometry(10, 30,537,971)
         #
         #self.create_status_bar()
         # 
@@ -235,7 +236,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.C843ZPowerBtn.setChecked(True)
             self.SM5Dev1PowerBtn.setChecked(True)
             self.SM5Dev2PowerBtn.setChecked(True)
-            self.connectBtn.setText('Disconnect SM-5 and C-843')
+            #self.connectBtn.setText('Disconnect SM-5 and C-843')
             self.enableReferencePowerBtns()
         else:
             if self.activate.is_alive():
@@ -251,7 +252,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.C843ZPowerBtn.setChecked(False)
             self.SM5Dev1PowerBtn.setChecked(False)
             self.SM5Dev2PowerBtn.setChecked(False)
-            self.connectBtn.setText('Connect SM-5 and C-843')
+            #self.connectBtn.setText('Connect SM-5 and C-843')
             self.disableAndEnableBtns(False)
         
         # SM5
@@ -273,45 +274,45 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     def switchOnOffC843Motors(self,axes):
         # if active : deactivate controler first
         if self.activate.is_alive():
-            self.activateControler()
+            self.activateController()
         # switch on or off motors
         if axes == 'xy':
             self.c843.switch_servo_on_off(2)
             self.c843.switch_servo_on_off(1)
-            if self.C843XYPowerBtn.isChecked():
-                self.C843XYPowerBtn.setText('Switch Off XY')
-            else:
-                self.C843XYPowerBtn.setText('Switch On XY')
+            #if self.C843XYPowerBtn.isChecked():
+            #    self.C843XYPowerBtn.setText('Switch Off XY')
+            #else:
+            #    self.C843XYPowerBtn.setText('Switch On XY')
         #
         elif axes=='z':
             self.c843.switch_servo_on_off(3)
-            if self.C843ZPowerBtn.isChecked():
-                self.C843ZPowerBtn.setText('Switch Off Z')
-            else:
-                self.C843ZPowerBtn.setText('Switch On Z')
+            #if self.C843ZPowerBtn.isChecked():
+            #    self.C843ZPowerBtn.setText('Switch Off Z')
+            #else:
+            #    self.C843ZPowerBtn.setText('Switch On Z')
     #################################################################################################
     def switchOnOffSM5Motors(self,device):
         if self.SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(1,'x')
             self.luigsNeumann.switchOnAxis(1,'y')
             self.luigsNeumann.switchOnAxis(1,'z')
-            self.SM5Dev1PowerBtn.setText('Switch Off XYZ of Dev1')
+            #self.SM5Dev1PowerBtn.setText('Switch Off XYZ of Dev1')
         elif not self.SM5Dev1PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(1,'x')
             self.luigsNeumann.switchOffAxis(1,'y')
             self.luigsNeumann.switchOffAxis(1,'z')
-            self.SM5Dev1PowerBtn.setText('Switch On XYZ of Dev1')
+            #self.SM5Dev1PowerBtn.setText('Switch On XYZ of Dev1')
         
         if self.SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOnAxis(2,'x')
             self.luigsNeumann.switchOnAxis(2,'y')
             self.luigsNeumann.switchOnAxis(2,'z')
-            self.SM5Dev2PowerBtn.setText('Switch Off XYZ of Dev2')
+            #self.SM5Dev2PowerBtn.setText('Switch Off XYZ of Dev2')
         elif not self.SM5Dev2PowerBtn.isChecked():
             self.luigsNeumann.switchOffAxis(2,'x')
             self.luigsNeumann.switchOffAxis(2,'y')
             self.luigsNeumann.switchOffAxis(2,'z')
-            self.SM5Dev2PowerBtn.setText('Switch On XYZ of Dev2')
+            #self.SM5Dev2PowerBtn.setText('Switch On XYZ of Dev2')
     #################################################################################################
     def referenceLocations(self):
         #
@@ -340,7 +341,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     #################################################################################################
     def referenceNegativeMove(self):
         #
-        self.setStatusMessage('referencing axes to neg. limit')
+        self.setStatusMessage('referencing axes to negative switch limit')
         #
         ref1 = self.c843.reference_stage(1,True,'neg')
         ref2 = self.c843.reference_stage(2,True,'neg')
@@ -358,7 +359,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.initializeManipulatorSpeed()
         #
         self.disableAndEnableBtns(True)
-        self.unSetStatusMessage('referencing axes to neg. limit')
+        self.unSetStatusMessage('referencing axes to negative switch limit')
     
     #################################################################################################
     def activateController(self):
@@ -613,7 +614,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.setZ = self.isZ
         self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
         self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
-        self.setZLocationLineEdit.setText(str(round(self.setY,self.precision)))
+        self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
         self.oldSetZ = self.setZ
         
         self.setXDev1 = self.isXDev1
