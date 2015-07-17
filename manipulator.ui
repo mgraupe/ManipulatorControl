@@ -295,6 +295,12 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_5">
     <layout class="QGridLayout" name="gridLayout_5">
+     <property name="horizontalSpacing">
+      <number>2</number>
+     </property>
+     <property name="verticalSpacing">
+      <number>4</number>
+     </property>
      <item row="0" column="0" colspan="3">
       <widget class="QPushButton" name="controllerActivateBtn">
        <property name="maximumSize">
@@ -340,6 +346,9 @@
         </property>
         <property name="bottomMargin">
          <number>2</number>
+        </property>
+        <property name="spacing">
+         <number>4</number>
         </property>
         <item row="3" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">
@@ -651,6 +660,9 @@
         </property>
         <property name="bottomMargin">
          <number>2</number>
+        </property>
+        <property name="spacing">
+         <number>4</number>
         </property>
         <item row="3" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">

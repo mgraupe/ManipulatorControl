@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 17:54:26 2015
+# Created: Fri Jul 17 17:57:14 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -142,6 +142,8 @@ class Ui_MainWindow(object):
         self.dockWidgetContents_5 = QtGui.QWidget()
         self.dockWidgetContents_5.setObjectName(_fromUtf8("dockWidgetContents_5"))
         self.gridLayout_5 = QtGui.QGridLayout(self.dockWidgetContents_5)
+        self.gridLayout_5.setHorizontalSpacing(2)
+        self.gridLayout_5.setVerticalSpacing(4)
         self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
         self.controllerActivateBtn = QtGui.QPushButton(self.dockWidgetContents_5)
         self.controllerActivateBtn.setMaximumSize(QtCore.QSize(16777215, 24))
@@ -157,6 +159,7 @@ class Ui_MainWindow(object):
         self.groupBox_3.setFont(font)
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_3)
+        self.gridLayout_2.setSpacing(4)
         self.gridLayout_2.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.horizontalWidget3 = QtGui.QWidget(self.groupBox_3)
@@ -301,6 +304,7 @@ class Ui_MainWindow(object):
         self.groupBox_4.setFont(font)
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
         self.gridLayout_8 = QtGui.QGridLayout(self.groupBox_4)
+        self.gridLayout_8.setSpacing(4)
         self.gridLayout_8.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_8.setObjectName(_fromUtf8("gridLayout_8"))
         self.horizontalWidget8 = QtGui.QWidget(self.groupBox_4)
