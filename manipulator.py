@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\manipulator.ui'
+# Form implementation generated from reading ui file 'manipulator.ui'
 #
-# Created: Wed Jul 15 18:11:51 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Fri Jul 17 15:49:51 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(540, 983)
+        MainWindow.resize(540, 1062)
         MainWindow.setMinimumSize(QtCore.QSize(500, 700))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
@@ -58,13 +58,6 @@ class Ui_MainWindow(object):
         self.SM5Dev1PowerBtn.setCheckable(True)
         self.SM5Dev1PowerBtn.setObjectName(_fromUtf8("SM5Dev1PowerBtn"))
         self.gridLayout.addWidget(self.SM5Dev1PowerBtn, 6, 1, 1, 1)
-        self.connectBtn = QtGui.QPushButton(self.gridFrame)
-        self.connectBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.connectBtn.setCheckable(True)
-        self.connectBtn.setDefault(False)
-        self.connectBtn.setFlat(False)
-        self.connectBtn.setObjectName(_fromUtf8("connectBtn"))
-        self.gridLayout.addWidget(self.connectBtn, 3, 0, 1, 2)
         self.SM5Dev2PowerBtn = QtGui.QPushButton(self.gridFrame)
         self.SM5Dev2PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.SM5Dev2PowerBtn.setCheckable(True)
@@ -115,6 +108,13 @@ class Ui_MainWindow(object):
         self.C843ZPowerBtn.setCheckable(True)
         self.C843ZPowerBtn.setObjectName(_fromUtf8("C843ZPowerBtn"))
         self.gridLayout.addWidget(self.C843ZPowerBtn, 7, 0, 1, 1)
+        self.connectBtn = QtGui.QPushButton(self.gridFrame)
+        self.connectBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.connectBtn.setCheckable(True)
+        self.connectBtn.setDefault(False)
+        self.connectBtn.setFlat(False)
+        self.connectBtn.setObjectName(_fromUtf8("connectBtn"))
+        self.gridLayout.addWidget(self.connectBtn, 3, 0, 1, 2)
         self.gridLayout_3.addWidget(self.gridFrame, 0, 0, 1, 2)
         self.gridFrame1 = QtGui.QFrame(self.centralwidget)
         self.gridFrame1.setMinimumSize(QtCore.QSize(0, 0))
@@ -375,7 +375,8 @@ class Ui_MainWindow(object):
         self.horizontalWidget12 = QtGui.QWidget(self.gridFrame1)
         self.horizontalWidget12.setObjectName(_fromUtf8("horizontalWidget12"))
         self.horizontalLayout_14 = QtGui.QHBoxLayout(self.horizontalWidget12)
-        self.horizontalLayout_14.setMargin(0)
+        self.horizontalLayout_14.setSpacing(1)
+        self.horizontalLayout_14.setMargin(1)
         self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
         self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget12)
         self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
@@ -414,7 +415,7 @@ class Ui_MainWindow(object):
         self.horizontalWidget14.setMinimumSize(QtCore.QSize(0, 0))
         self.horizontalWidget14.setObjectName(_fromUtf8("horizontalWidget14"))
         self.horizontalLayout_15 = QtGui.QHBoxLayout(self.horizontalWidget14)
-        self.horizontalLayout_15.setMargin(0)
+        self.horizontalLayout_15.setMargin(1)
         self.horizontalLayout_15.setObjectName(_fromUtf8("horizontalLayout_15"))
         self.activateDev1 = QtGui.QPushButton(self.horizontalWidget14)
         self.activateDev1.setMaximumSize(QtCore.QSize(16777215, 24))
@@ -547,12 +548,27 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.gridFrame2, 2, 0, 1, 2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 540, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 540, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
+        self.dockWidget = QtGui.QDockWidget(MainWindow)
+        self.dockWidget.setObjectName(_fromUtf8("dockWidget"))
+        self.dockWidgetContents = QtGui.QWidget()
+        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
+        self.gridWidget = QtGui.QWidget(self.dockWidgetContents)
+        self.gridWidget.setGeometry(QtCore.QRect(9, 0, 521, 16))
+        self.gridWidget.setObjectName(_fromUtf8("gridWidget"))
+        self.gridLayout_4 = QtGui.QGridLayout(self.gridWidget)
+        self.gridLayout_4.setMargin(0)
+        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
+        self.pushButton = QtGui.QPushButton(self.gridWidget)
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.gridLayout_4.addWidget(self.pushButton, 0, 0, 1, 1)
+        self.dockWidget.setWidget(self.dockWidgetContents)
+        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -561,7 +577,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_2.setText(_translate("MainWindow", "Connection Panel", None))
         self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "Switch Off XYZ of Manip1", None))
-        self.connectBtn.setText(_translate("MainWindow", "Connect SM-5 and C-843", None))
         self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "Switch Off XYZ of Manip2", None))
         self.label_3.setText(_translate("MainWindow", "Luigs&Neumann SM-5", None))
         self.label_4.setText(_translate("MainWindow", "Physik Instrumente C-843", None))
@@ -570,6 +585,7 @@ class Ui_MainWindow(object):
         self.refLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
         self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
         self.C843ZPowerBtn.setText(_translate("MainWindow", "Switch Off Z", None))
+        self.connectBtn.setText(_translate("MainWindow", "Connect SM-5 and C-843", None))
         self.label_13.setText(_translate("MainWindow", "set pos. (μm)", None))
         self.xIsPosDev1LE.setText(_translate("MainWindow", ".", None))
         self.yIsPosDev1LE.setText(_translate("MainWindow", ".", None))
@@ -638,4 +654,6 @@ class Ui_MainWindow(object):
         item = self.homeLocationsTable.horizontalHeaderItem(3)
         item.setText(_translate("MainWindow", "z", None))
         self.removeHomeLocationBtn.setText(_translate("MainWindow", "Remove Home Location", None))
+        self.dockWidget.setWindowTitle(_translate("MainWindow", "Connection Panel", None))
+        self.pushButton.setText(_translate("MainWindow", "PushButton", None))
 
