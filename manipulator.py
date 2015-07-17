@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 17:37:03 2015
+# Created: Fri Jul 17 17:39:45 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(537, 989)
+        MainWindow.resize(537, 971)
         MainWindow.setMinimumSize(QtCore.QSize(500, 700))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
@@ -37,14 +37,6 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setSpacing(9)
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 537, 21))
-        self.menubar.setObjectName(_fromUtf8("menubar"))
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setMinimumSize(QtCore.QSize(0, 60))
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
         self.dockWidget = QtGui.QDockWidget(MainWindow)
         self.dockWidget.setMinimumSize(QtCore.QSize(395, 127))
         font = QtGui.QFont()
@@ -593,6 +585,10 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.saveLocationsBtn, 5, 0, 1, 2)
         self.dockWidget_6.setWidget(self.dockWidgetContents_6)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidget_6)
+        self.statusbar = QtGui.QStatusBar(MainWindow)
+        self.statusbar.setMinimumSize(QtCore.QSize(0, 60))
+        self.statusbar.setObjectName(_fromUtf8("statusbar"))
+        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
