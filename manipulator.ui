@@ -924,6 +924,9 @@
              <property name="checkable">
               <bool>true</bool>
              </property>
+             <property name="autoExclusive">
+              <bool>true</bool>
+             </property>
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup_4</string>
              </attribute>
@@ -941,6 +944,9 @@
               <string># 2</string>
              </property>
              <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="autoExclusive">
               <bool>true</bool>
              </property>
              <attribute name="buttonGroup">
