@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 17:47:48 2015
+# Created: Fri Jul 17 17:53:22 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -441,6 +441,7 @@ class Ui_MainWindow(object):
         self.activateDev1.setMaximumSize(QtCore.QSize(16777215, 24))
         self.activateDev1.setSizeIncrement(QtCore.QSize(0, 0))
         self.activateDev1.setCheckable(True)
+        self.activateDev1.setAutoExclusive(True)
         self.activateDev1.setObjectName(_fromUtf8("activateDev1"))
         self.buttonGroup_4 = QtGui.QButtonGroup(MainWindow)
         self.buttonGroup_4.setObjectName(_fromUtf8("buttonGroup_4"))
@@ -449,6 +450,7 @@ class Ui_MainWindow(object):
         self.activateDev2 = QtGui.QPushButton(self.horizontalWidget14)
         self.activateDev2.setMaximumSize(QtCore.QSize(16777215, 24))
         self.activateDev2.setCheckable(True)
+        self.activateDev2.setAutoExclusive(True)
         self.activateDev2.setObjectName(_fromUtf8("activateDev2"))
         self.buttonGroup_4.addButton(self.activateDev2)
         self.horizontalLayout_15.addWidget(self.activateDev2)
