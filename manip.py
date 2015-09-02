@@ -131,6 +131,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         
         self.activate = Thread(target=self.controlerInput)
         
+        self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+        
         self.disableAndEnableBtns(False)
         self.enableDiableControllerBtns(False)
         #self.saveAttributeChangeBtn.setEnabled(False)
@@ -260,9 +262,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.luigsNeumann
         except AttributeError:
             self.luigsNeumann = LandNSM5.LandNSM5()
+            self.autoUpdateManipulatorLocations.start()
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
         else:
+            if self.autoUpdateManipulatorLocationsis_alive():
+                self.updateDone=True
+                self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
             del self.luigsNeumann
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
@@ -380,6 +386,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.activate.start()
             print 'controler active'
 
+    #################################################################################################
+    def autoUpdateManip(self):
+        while self.updateDone==False:
+            self.updateManipulatorLocations()
+            self.clock.tick(10)
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
