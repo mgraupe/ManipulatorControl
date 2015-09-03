@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulator.ui'
 #
-# Created: Fri Jul 17 18:13:35 2015
+# Created: Thu Sep 03 10:54:40 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(456, 127))
+        self.dockWidget.setMinimumSize(QtCore.QSize(456, 143))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -61,10 +61,13 @@ class Ui_MainWindow(object):
         self.label_7.setMaximumSize(QtCore.QSize(110, 16777215))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.horizontalLayout_16.addWidget(self.label_7)
-        self.refLocationBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refLocationBtn.setObjectName(_fromUtf8("refLocationBtn"))
-        self.horizontalLayout_16.addWidget(self.refLocationBtn)
+        self.refChoseLocationBtn = QtGui.QPushButton(self.horizontalWidget)
+        self.refChoseLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
+        self.refChoseLocationBtn.setObjectName(_fromUtf8("refChoseLocationBtn"))
+        self.horizontalLayout_16.addWidget(self.refChoseLocationBtn)
+        self.refSavedLocationBtn = QtGui.QPushButton(self.horizontalWidget)
+        self.refSavedLocationBtn.setObjectName(_fromUtf8("refSavedLocationBtn"))
+        self.horizontalLayout_16.addWidget(self.refSavedLocationBtn)
         self.refNegativeBtn = QtGui.QPushButton(self.horizontalWidget)
         self.refNegativeBtn.setMaximumSize(QtCore.QSize(16777215, 24))
         self.refNegativeBtn.setObjectName(_fromUtf8("refNegativeBtn"))
@@ -656,7 +659,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.dockWidget.setWindowTitle(_translate("MainWindow", "Connection Panel", None))
         self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
-        self.refLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
+        self.refChoseLocationBtn.setText(_translate("MainWindow", "Chose Stage Location", None))
+        self.refSavedLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
         self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
         self.label_2.setText(_translate("MainWindow", "Power On/Off", None))
         self.C843XYPowerBtn.setText(_translate("MainWindow", " XY", None))
@@ -695,7 +699,7 @@ class Ui_MainWindow(object):
         self.activateDev1.setText(_translate("MainWindow", " # 1", None))
         self.activateDev2.setText(_translate("MainWindow", "# 2", None))
         self.label.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.label_23.setText(_translate("MainWindow", "set pos. (μm)", None))
+        self.label_23.setText(_translate("MainWindow", "change pos. (μm)", None))
         self.label_24.setText(_translate("MainWindow", "Step (μm) : Speed", None))
         self.label_5.setText(_translate("MainWindow", "Track Stage", None))
         self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
