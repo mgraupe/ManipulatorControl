@@ -178,7 +178,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.x2PosStepBtn.clicked.connect(self.x2PosStep)
         #self.x2NegStepBtn.clicked.connect(self.x2NegStep)
         
-        self.refLocationBtn.clicked.connect(self.referenceLocations)
+        self.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
+        self.refSavedLocationBtn.clicked.connect(self.referenceSavedLocations)
         self.refNegativeBtn.clicked.connect(self.referenceNegativeMove)
         
         ################################################
@@ -262,13 +263,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.luigsNeumann
         except AttributeError:
             self.luigsNeumann = LandNSM5.LandNSM5()
-            self.autoUpdateManipulatorLocations.start()
+            #self.autoUpdateManipulatorLocations.start()
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
         else:
-            if self.autoUpdateManipulatorLocationsis_alive():
-                self.updateDone=True
-                self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+            #if self.autoUpdateManipulatorLocations.is_alive():
+            #    self.updateDone=True
+            #    self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
             del self.luigsNeumann
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
@@ -320,19 +321,29 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.luigsNeumann.switchOffAxis(2,'z')
             #self.SM5Dev2PowerBtn.setText('Switch On XYZ of Dev2')
     #################################################################################################
-    def referenceLocations(self):
+    def referenceChoseLocations(self):
         #
-        self.setStatusMessage('referencing axes using location')
+        filename = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
+            
+        if len(filename)>0:
+                self.c843.openReferenceFile(fName)
+                self.referenceSavedLocations()
+    
+    #################################################################################################
+    def referenceSavedLocations(self):
         #
-        ref1 = self.c843.reference_stage(1,False,'neg')
-        ref2 = self.c843.reference_stage(2,False,'neg')
-        ref3 = self.c843.reference_stage(3,False,'neg')
+        self.setStatusMessage('referencing axes using saved locations')
+        #
+        ref1 = self.c843.reference_stage(1,False)
+        ref2 = self.c843.reference_stage(2,False)
+        ref3 = self.c843.reference_stage(3,False)
         if not all((ref1,ref2,ref3)):
             reply = QMessageBox.warning(self, 'Warning','Reference with saved locations failed.',  QMessageBox.Ok )
             #break
         else:
             #self.refLabel.setText('xyz referenced')
-            self.refLocationBtn.setEnabled(False)
+            self.refChoseLocationBtn.setEnabled(False)
+            self.refSavedLocationBtn.setEnabled(False)
             #self.refPositiveBtn.setEnabled(False)
             #self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
@@ -349,14 +360,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #
         self.setStatusMessage('referencing axes to negative switch limit')
         #
-        ref1 = self.c843.reference_stage(1,True,'neg')
-        ref2 = self.c843.reference_stage(2,True,'neg')
-        ref3 = self.c843.reference_stage(3,True,'neg')
+        ref1 = self.c843.reference_stage(1,True)
+        ref2 = self.c843.reference_stage(2,True)
+        ref3 = self.c843.reference_stage(3,True)
         if not all((ref1,ref2,ref3)):
             reply = QMessageBox.warning(self, 'Warning','Reference at neg. limit failed.',  QMessageBox.Ok )
         else:
             #self.refLabel.setText('xyz referenced')
-            self.refLocationBtn.setEnabled(False)
+            self.refChoseLocationBtn.setEnabled(False)
+            self.refSavedLocationBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
             self.updateManipulatorLocations()
@@ -388,9 +400,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
 
     #################################################################################################
     def autoUpdateManip(self):
+        self.updateDone=False
         while self.updateDone==False:
             self.updateManipulatorLocations()
-            self.clock.tick(10)
+            self.clock.tick(2)
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
@@ -461,6 +474,16 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             if joystick.get_button( 9 ):
                 self.activateDev2.setChecked(True)
             
+            #self.updateManipulatorLocations()
+            # propagate externally updated position to set position
+            #self.xSetPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
+            #self.ySetPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
+            #self.zSetPosDev1LE.setText(str(round(self.isZDev1,self.precision)))
+            
+            #self.xSetPosDev2LE.setText(str(round(self.isXDev2,self.precision)))
+            #self.ySetPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
+            #self.zSetPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
+            
             # manipulator steps
             if joystick.get_button( 7 ):
                 if self.activateDev1.isChecked():
@@ -484,26 +507,26 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
                 #self.updateManipulatorLocations('x')
             
             # Dev 1
-            if self.trackStageZMovementDev1Btn.isChecked():
+            if self.activateDev1.isChecked() and self.trackStageZMovementDev1Btn.isChecked():
                 mov = self.oldSetZ - self.setZ
                 if mov:
                     self.setZDev1-= mov
                     #self.goVariableFastToRelativePosition(1,'z',mov)
                     #self.updateManipulatorLocations('z')
-            elif self.trackStageXMovementDev1Btn.isChecked():
+            elif self.activateDev1.isChecked() and self.trackStageXMovementDev1Btn.isChecked():
                 mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev1*np.pi/180.)
                 if mov:
                     self.setXDev1-= mov
                     #self.goVariableFastToRelativePosition(1,'x',mov)
                     #self.updateManipulatorLocations('x')
             # Dev 2
-            if self.trackStageZMovementDev2Btn.isChecked():
+            if self.activateDev2.isChecked() and self.trackStageZMovementDev2Btn.isChecked():
                 mov = self.oldSetZ - self.setZ
                 if mov:
                     self.setZDev2-= mov
                     #self.goVariableFastToRelativePosition(2,'z',mov)
                     #self.updateManipulatorLocations('z')
-            elif self.trackStageXMovementDev2Btn.isChecked():
+            elif self.activateDev2.isChecked() and self.trackStageXMovementDev2Btn.isChecked():
                 mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev2*np.pi/180.)
                 if mov:
                     self.setXDev2-= mov
@@ -528,15 +551,19 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
                 self.moveStageToNewLocation()
             #
-            if abs(self.setXDev1-self.isXDev1)>self.locationDiscrepancy:
-                print 'difference : ', abs(self.setXDev1-self.isXDev1), self.setXDev1, self.isXDev1
-                self.moveManipulatorToNewLocation(1,'x')
-            if abs(self.setXDev2-self.isXDev2)>self.locationDiscrepancy:
-                self.moveManipulatorToNewLocation(2,'x')
-            if abs(self.setZDev1-self.isZDev1)>self.locationDiscrepancy:
-                self.moveManipulatorToNewLocation(1,'z')
-            if abs(self.setZDev2-self.isZDev2)>self.locationDiscrepancy:
-                self.moveManipulatorToNewLocation(2,'z')
+            if abs(self.setXDev1)>self.locationDiscrepancy:
+                print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
+                self.moveManipulatorToNewLocation(1,'x',self.setXDev1)
+                self.setXDev1 = 0.
+            if abs(self.setXDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'x',self.setXDev2)
+                self.setXDev2 = 0.
+            if abs(self.setZDev1)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(1,'z',self.setZDev1)
+                self.setZDev1 = 0.
+            if abs(self.setZDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
+                self.setZDev2 = 0.
     #################################################################################################
     def moveStageToNewLocation(self):
 
@@ -564,15 +591,16 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.unSetStatusMessage('moving axes')
     
     #################################################################################################
-    def moveManipulatorToNewLocation(self,dev,axis):
-        exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
+    def moveManipulatorToNewLocation(self,dev,axis,move):
+        #exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
         #print self.loc
         if 'z' in axis:
             mult = 1.
         else:
             mult = -1.
-        self.luigsNeumann.goVariableFastToAbsolutePosition(dev,axis,mult*loc)
+        self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
         self.updateManipulatorLocations(axis)
+        self.initializeSetLocations()
         
     #################################################################################################
     def updateStageLocations(self):
@@ -628,13 +656,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
         self.oldSetZ = self.setZ
         
-        self.setXDev1 = self.isXDev1
-        self.setYDev1 = self.isYDev1
-        self.setZDev1 = self.isZDev1
+        self.setXDev1 = 0. #self.isXDev1
+        self.setYDev1 = 0. #self.isYDev1
+        self.setZDev1 = 0. #self.isZDev1
         
-        self.setXDev2 = self.isXDev2
-        self.setYDev2 = self.isYDev2
-        self.setZDev2 = self.isZDev2
+        self.setXDev2 = 0. #self.isXDev2
+        self.setYDev2 = 0. #self.isYDev2
+        self.setZDev2 = 0. #self.isZDev2
         
         self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
         self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
@@ -870,20 +898,30 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
         print str(filename),filename
         if filename:
-            pickle.dump(self.cells,open(filename,"wb"))
+            programData = {}
+            programData['cells'] = self.cells
+            programData['homeLocations'] = self.homeLocs
+            pickle.dump(programData,open(filename,"wb"))
             self.fileSaved = True
     #################################################################################################
     def loadLocations(self):
         filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
             
         if len(filename)>0:
-            self.cells = pickle.load(open(filename))
+            programData = pickle.load(open(filename))
+            self.cells = programData['cells']
+            self.homeLocs = programData['homeLocations']
             
             nItems = len(self.cells)
             self.nItem = self.cells[(nItems-1)]['number'] + 1
-        
             self.updateTable()
             print 'loaded ',str(nItems),'items'
+            
+            nHome = len(self.homeLocs)
+            self.nHomeItem = self.homeLocs[(nHome-1)]['number'] + 1
+            self.updateHomeTable()
+            print 'loaded', str(nHome), 'home locations'
+            
             self.repaint()
                 
     #################################################################################################
@@ -1009,7 +1047,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.C843ZPowerBtn.setEnabled(True)
         self.SM5Dev1PowerBtn.setEnabled(True)
         self.SM5Dev2PowerBtn.setEnabled(True)
-        self.refLocationBtn.setEnabled(True)
+        self.refChoseLocationBtn.setEnabled(True)
+        self.refSavedLocationBtn.setEnabled(True)
         self.refNegativeBtn.setEnabled(True)
     #################################################################################################
     def disableAndEnableBtns(self,newSetting):
@@ -1018,7 +1057,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.C843ZPowerBtn.setEnabled(newSetting)
         self.SM5Dev1PowerBtn.setEnabled(newSetting)
         self.SM5Dev2PowerBtn.setEnabled(newSetting)
-        self.refLocationBtn.setEnabled(newSetting)
+        self.refChoseLocationBtn.setEnabled(True)
+        self.refSavedLocationBtn.setEnabled(True)
         self.refNegativeBtn.setEnabled(newSetting)
         # Move panel
         self.controllerActivateBtn.setEnabled(newSetting)
@@ -1053,6 +1093,44 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.trackStageXMovementDev1Btn.setEnabled(newSetting)
         self.trackStageZMovementDev2Btn.setEnabled(newSetting)
         self.trackStageXMovementDev2Btn.setEnabled(newSetting)
+    #########################################################################################
+    def closeEvent(self, event):
+        self.done = True
+        self.updateDone = True
+        
+        # delete class istances
+        try :
+            self.c843
+        except AttributeError:
+            pass
+        else:
+            del self.c843
+
+        #####################################################
+        try :
+            self.luigsNeumann
+        except AttributeError:
+            pass
+        else:
+            del self.luigsNeumann
+        
+        # save locations and dispaly quitting dialog
+        #if not self.fileSaved and self.nItem>0:
+                #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+                #if reply == QtGui.QMessageBox.Yes:
+                        #self.saveLocations()
+                        #event.accept()
+                #elif reply == QtGui.QMessageBox.No:
+                        #event.accept()
+                #else:
+                        #event.ignore()    
+        #else:
+                   #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to quit?",  QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+                   #if reply == QtGui.QMessageBox.Yes:
+                           #event.accept()
+                   #else:
+                            #event.ignore()    
+        
         
 ##########################################################
 if __name__ == "__main__":

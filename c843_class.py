@@ -64,22 +64,7 @@ class c843_class(object):
 		self.glvar['out_ptr'] = self.c843
 		self.glvar['board_id'] = self.iID
 		
-		if os.path.isfile(self.fnameLocations):
-			if self.verbose:
-				print 'Location file exists'
-			self.loc = pickle.load(open(self.fnameLocations))
-			if all((not self.loc['1']==None, not self.loc['2']==None, not self.loc['3']==None)):
-				self.referenceLocations=True
-			else:
-				self.referenceLocations=False
-		else:
-			if self.verbose:
-				print 'No location file found. New locations evoked.'
-			self.loc = {}
-			self.loc['1'] = None
-			self.loc['2'] = None
-			self.loc['3'] = None
-			self.referenceLocations=False
+		self.openReferenceFile(self.fnameLocations)
 		
 		if self.verbose:
 			print 'C843 ready'
@@ -106,8 +91,24 @@ class c843_class(object):
 		    print 'c843_connected should be 0 is :' , str(self.glvar['c843_connected'])
 		del self.c843
 		print 'Connection to c843 closed.'
-		
-	
+	###############################################################
+	def openReferenceFile(self, fName):
+		if os.path.isfile(fName):
+			if self.verbose:
+				print 'Location file exists'
+			self.loc = pickle.load(open(fName))
+			if all((not self.loc['1']==None, not self.loc['2']==None, not self.loc['3']==None)):
+				self.referenceLocations=True
+			else:
+				self.referenceLocations=False
+		else:
+			if self.verbose:
+				print 'No location file found. New locations evoked.'
+			self.loc = {}
+			self.loc['1'] = None
+			self.loc['2'] = None
+			self.loc['3'] = None
+			self.referenceLocations=False
 	###############################################################
 	def init_stage(self,nAxis):
 		# e.g. 1,2 or 3
@@ -126,8 +127,9 @@ class c843_class(object):
 		check('C843_INI',self.c843.C843_INI(self.iID, szAxes), self.verbose)
 		#
 	###############################################################
-	def reference_stage(self,nAxis,moveForReference,moveDirection):
+	def reference_stage(self,nAxis,moveForReference):
 		
+		#moveDirection='neg'
 		# e.g. 1,2 or 3
 		szAxes = c_char_p(str(nAxis))
 		# read current reference mode
@@ -176,11 +178,11 @@ class c843_class(object):
 						print str(nAxis), 'qLIM : ', haslim.value
 					if haslim.value:
 						# Moves axis 'szAxes' to its negative limit switch. 
-						if moveDirection == 'pos':
-							check('C843_MPL',self.c843.C843_MPL(self.iID, szAxes),self.verbose)
+						#if moveDirection == 'pos':
+						#	check('C843_MPL',self.c843.C843_MPL(self.iID, szAxes),self.verbose)
 						# Moves axis 'szAxes' to its positive limit switch
-						else:
-							check('C843_MNL',self.c843.C843_MNL(self.iID, szAxes),self.verbose)
+						#else:
+						check('C843_MNL',self.c843.C843_MNL(self.iID, szAxes),self.verbose)
 				
 				isreferencing = True
 				if self.verbose:
