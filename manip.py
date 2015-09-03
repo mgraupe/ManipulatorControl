@@ -323,10 +323,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     #################################################################################################
     def referenceChoseLocations(self):
         #
-        filename = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
+        fileName = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
             
-        if len(filename)>0:
-                self.c843.openReferenceFile(fName)
+        if len(fileName)>0:
+                self.c843.openReferenceFile(fileName)
                 self.referenceSavedLocations()
     
     #################################################################################################
@@ -1057,8 +1057,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.C843ZPowerBtn.setEnabled(newSetting)
         self.SM5Dev1PowerBtn.setEnabled(newSetting)
         self.SM5Dev2PowerBtn.setEnabled(newSetting)
-        self.refChoseLocationBtn.setEnabled(True)
-        self.refSavedLocationBtn.setEnabled(True)
+        self.refChoseLocationBtn.setEnabled(newSetting)
+        self.refSavedLocationBtn.setEnabled(newSetting)
         self.refNegativeBtn.setEnabled(newSetting)
         # Move panel
         self.controllerActivateBtn.setEnabled(newSetting)
