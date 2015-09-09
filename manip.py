@@ -355,10 +355,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.initializeStageSpeed()
             #self.sm5lock.acquire()
             with self.sm5Lock:
-                print 'thread halted'
-                #time.sleep(10)
+                #print 'thread halted'
                 self.initializeManipulatorSpeed()
-            #self.sm5lock.release()
         #
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes')
@@ -586,9 +584,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             mult = -1.
         # stop update thread here
         with self.sm5Lock : #.acquire()
-                self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
-                self.updateManipulatorLocations(axis)
-                # release update thread here
+            self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
+            self.updateManipulatorLocations(axis)
+            # release update thread here
         #self.sm5Lock.release()
         self.initializeSetLocations()
         
@@ -696,10 +694,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     def setManiplatorSpeed(self,dev):
         if dev == 1:
             self.velDev1 = float(self.device1SpeedLE.text())
-            self.luigsNeumann.setPositioningVelocityFast(1,'x',self.velDev1)
+            with self.sm5Lock:
+                self.luigsNeumann.setPositioningVelocityFast(1,'x',self.velDev1)
         elif dev == 2:
             self.velDev2 = float(self.device2SpeedLE.text())
-            self.luigsNeumann.setPositioningVelocityFast(2,'x',self.velDev2)
+            with self.sm5Lock:
+                self.luigsNeumann.setPositioningVelocityFast(2,'x',self.velDev2)
     #################################################################################################
     def setManiplatorStep(self):
         self.manip1MoveStep = float(self.device1StepLE.text())
