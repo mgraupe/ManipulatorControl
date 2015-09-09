@@ -135,6 +135,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
         self.sm5Lock = Lock()
         
+        self.listenThread = Thread(target=self.socketListening)
+        self.c843Lock = Lock()
+        
         self.disableAndEnableBtns(False)
         self.enableDiableControllerBtns(False)
         #self.saveAttributeChangeBtn.setEnabled(False)
@@ -187,6 +190,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         ################################################
         # Move panel
         self.controllerActivateBtn.clicked.connect(self.activateController)
+        self.listenToSocketBtn.clicked.connect(self.listenToSocket)
         
         self.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
         self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
@@ -246,9 +250,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         else:
             if self.activate.is_alive():
                 self.controllerActivateBtn.setChecked(False)
+                self.listenToSocketBtn.setChecked(False)
                 self.controllerActivateBtn.setText('Activate Controller')
+                self.listenToSocektBtn.setText('Listen to Socket')
                 self.done=True
+                self.listen = False
                 self.activate = Thread(target=self.controlerInput)
+                self.listenThread = Thread(target=self.socketListening)
                 #self.activate = Thread(ThreadStart(self.controlerInput))
                 print 'controller deactive'
             del self.c843
@@ -381,6 +389,24 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             print 'controler active'
 
     #################################################################################################
+    def listenToSocket(self):
+        #
+        if self.listenThread.is_alive():
+            self.listenToSocketBtn.setText('Listen to Socket')
+            self.listenToSocketBtn.setStyleSheet('background-color:None')
+            self.listen=False
+            #self.activate._stop()
+            self.listenThread = Thread(target=self.socketListening)
+            #self.enableDiableControllerBtns(False)
+            #self.activate = Thread(ThreadStart(self.controlerInput))
+            print 'socket deactive'
+        else:
+            self.listenToSocketBtn.setText('Stop listening to Socket')
+            self.listenToSocketBtn.setStyleSheet('background-color:red')
+            #self.enableDiableControllerBtns(True)
+            self.listenThread.start()
+            print 'socket active'
+    #################################################################################################        
     def autoUpdateManip(self):
         #self.sm5Lock = Lock()
         self.updateDone=False
@@ -388,6 +414,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             with self.sm5Lock:
                 self.updateManipulatorLocations()
             time.sleep(1)
+    #################################################################################################  
+    def socketListening(self):
+        self.listen = True
+        while self.listen:
+            print 'socket'
+            time.sleep(0.5)
+        
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
@@ -1052,6 +1085,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.refNegativeBtn.setEnabled(newSetting)
         # Move panel
         self.controllerActivateBtn.setEnabled(newSetting)
+        self.listenToSocketBtn.setEnabled(newSetting)
         # recorded locations
         self.electrode1MLIBtn.setEnabled(newSetting)
         self.electrode1PCBtn.setEnabled(newSetting)
