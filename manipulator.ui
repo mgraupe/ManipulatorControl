@@ -251,6 +251,18 @@
      <item row="1" column="0" colspan="2">
       <widget class="QWidget" name="horizontalWidget" native="true">
        <layout class="QHBoxLayout" name="horizontalLayout_17">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <widget class="QLabel" name="label_8">
           <property name="maximumSize">
@@ -338,28 +350,6 @@
      <property name="verticalSpacing">
       <number>4</number>
      </property>
-     <item row="0" column="0" colspan="3">
-      <widget class="QPushButton" name="controllerActivateBtn">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>24</height>
-        </size>
-       </property>
-       <property name="styleSheet">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string>Activate Controller</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0" colspan="3">
       <widget class="QGroupBox" name="groupBox_3">
        <property name="font">
@@ -1267,6 +1257,53 @@
             </widget>
            </item>
           </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QWidget" name="horizontalWidget" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <item>
+         <widget class="QPushButton" name="controllerActivateBtn">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Activate Controller</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="listenToSocketBtn">
+          <property name="text">
+           <string>Listen to Socket</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
        </layout>
