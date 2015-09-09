@@ -35,9 +35,10 @@ import LandNSM5
 from manipulator import Ui_MainWindow
 #from internal_ipkernel import InternalIPKernel
 
+#sm5lock = Lock()
 
 #################################################################
-class manipulatorControl(QMainWindow, Ui_MainWindow):
+class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     """Instance of the hdf5 Data Manager Qt interface."""
     def __init__(self):
         
@@ -132,6 +133,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         self.activate = Thread(target=self.controlerInput)
         
         self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+        self.sm5Lock = Lock()
         
         self.disableAndEnableBtns(False)
         self.enableDiableControllerBtns(False)
@@ -179,8 +181,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
         #self.x2NegStepBtn.clicked.connect(self.x2NegStep)
         
         self.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
-        self.refSavedLocationBtn.clicked.connect(self.referenceSavedLocations)
-        self.refNegativeBtn.clicked.connect(self.referenceNegativeMove)
+        self.refSavedLocationBtn.clicked.connect(partial(self.referenceStage,False))
+        self.refNegativeBtn.clicked.connect(partial(self.referenceStage,True))
         
         ################################################
         # Move panel
@@ -263,13 +265,14 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.luigsNeumann
         except AttributeError:
             self.luigsNeumann = LandNSM5.LandNSM5()
-            #self.autoUpdateManipulatorLocations.start()
+            self.autoUpdateManipulatorLocations.start()
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
         else:
-            #if self.autoUpdateManipulatorLocations.is_alive():
-            #    self.updateDone=True
-            #    self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+            if self.autoUpdateManipulatorLocations.is_alive():
+                self.updateDone=True
+                self.autoUpdateManipulatorLocations.join()
+                self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
             del self.luigsNeumann
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
@@ -323,62 +326,43 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     #################################################################################################
     def referenceChoseLocations(self):
         #
-        fileName = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
+        fileName = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
             
         if len(fileName)>0:
                 self.c843.openReferenceFile(fileName)
-                self.referenceSavedLocations()
+                self.referenceStage(False)
     
     #################################################################################################
-    def referenceSavedLocations(self):
+    def referenceStage(self,moveStage=False):
         #
-        self.setStatusMessage('referencing axes using saved locations')
+        self.setStatusMessage('referencing axes')
         #
-        ref1 = self.c843.reference_stage(1,False)
-        ref2 = self.c843.reference_stage(2,False)
-        ref3 = self.c843.reference_stage(3,False)
+        ref1 = self.c843.reference_stage(1,moveStage)
+        ref2 = self.c843.reference_stage(2,moveStage)
+        ref3 = self.c843.reference_stage(3,moveStage)
         if not all((ref1,ref2,ref3)):
-            reply = QMessageBox.warning(self, 'Warning','Reference with saved locations failed.',  QMessageBox.Ok )
+            reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
             #break
         else:
             #self.refLabel.setText('xyz referenced')
             self.refChoseLocationBtn.setEnabled(False)
             self.refSavedLocationBtn.setEnabled(False)
             #self.refPositiveBtn.setEnabled(False)
-            #self.refNegativeBtn.setEnabled(False)
-            self.updateStageLocations()
-            self.updateManipulatorLocations()
-            self.initializeSetLocations()
-            self.initializeStageSpeed()
-            self.initializeManipulatorSpeed()
-        #
-        self.disableAndEnableBtns(True)
-        self.unSetStatusMessage('referencing axes using location')
-
-    #################################################################################################
-    def referenceNegativeMove(self):
-        #
-        self.setStatusMessage('referencing axes to negative switch limit')
-        #
-        ref1 = self.c843.reference_stage(1,True)
-        ref2 = self.c843.reference_stage(2,True)
-        ref3 = self.c843.reference_stage(3,True)
-        if not all((ref1,ref2,ref3)):
-            reply = QMessageBox.warning(self, 'Warning','Reference at neg. limit failed.',  QMessageBox.Ok )
-        else:
-            #self.refLabel.setText('xyz referenced')
-            self.refChoseLocationBtn.setEnabled(False)
-            self.refSavedLocationBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
-            self.updateManipulatorLocations()
+            #self.updateManipulatorLocations()
             self.initializeSetLocations()
             self.initializeStageSpeed()
-            self.initializeManipulatorSpeed()
+            #self.sm5lock.acquire()
+            with self.sm5Lock:
+                print 'thread halted'
+                #time.sleep(10)
+                self.initializeManipulatorSpeed()
+            #self.sm5lock.release()
         #
         self.disableAndEnableBtns(True)
-        self.unSetStatusMessage('referencing axes to negative switch limit')
-    
+        self.unSetStatusMessage('referencing axes')
+
     #################################################################################################
     def activateController(self):
         #
@@ -400,10 +384,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
 
     #################################################################################################
     def autoUpdateManip(self):
+        #self.sm5Lock = Lock()
         self.updateDone=False
         while self.updateDone==False:
-            self.updateManipulatorLocations()
-            self.clock.tick(2)
+            with self.sm5Lock:
+                self.updateManipulatorLocations()
+            time.sleep(1)
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
@@ -598,8 +584,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             mult = 1.
         else:
             mult = -1.
-        self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
-        self.updateManipulatorLocations(axis)
+        # stop update thread here
+        with self.sm5Lock : #.acquire()
+                self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
+                self.updateManipulatorLocations(axis)
+                # release update thread here
+        #self.sm5Lock.release()
         self.initializeSetLocations()
         
     #################################################################################################
@@ -893,7 +883,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
     #################################################################################################
     def saveLocations(self):
         print self.today_date
-        saveDir = 'C:\\Users\\2-photon\\experiments\\pi_motors\\locations_'+self.today_date+'.p'
+        saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\locations_'+self.today_date+'.p'
         #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
         filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
         print str(filename),filename
@@ -905,7 +895,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow):
             self.fileSaved = True
     #################################################################################################
     def loadLocations(self):
-        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\pi_motors\\','Python object file (*.p)')
+        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
             
         if len(filename)>0:
             programData = pickle.load(open(filename))

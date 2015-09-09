@@ -84,7 +84,7 @@ class LandNSM5 :
 	#################################################################
 	# constructor
 	def __init__(self):
-		self.verbose = 1 # level of messages
+		self.verbose = 0 # level of messages
 		self.timeOut = 1 # timeout in sec
 		self.establishConnectionHold = 3. # time in seconds a connection remains established
 		self.sleepTime = 0.1
@@ -168,7 +168,8 @@ class LandNSM5 :
 			self.ser.write(sendbytes)
 			time.sleep(self.sleepTime)
 			ansConb = self.ser.read(6)
-			print ansConb
+			if self.verbose:
+				print ansConb
 			if ansConb == '\x06\x04\x0b\x00\x00\x00':
 				if self.verbose:
 					print 'established'

@@ -77,7 +77,8 @@ class c843_class(object):
 		# save locations in case there is no error
 		#if not errorCode:
 		#date_time = time.strftime("%Y%m%d_%H:%M")[2:]
-		pickle.dump(self.loc,open(self.fnameLocations,"wb"))
+		if refOK:
+			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
 		#else : 
 		#	# delete old reference file
 		#	if os.path.isfile(self.fnameLocations): 
