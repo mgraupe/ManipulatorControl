@@ -17,6 +17,8 @@ import re
 import pickle
 from functools import partial
 import pygame
+import socket
+import select
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -89,6 +91,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.cellListTable.setRowHeight(i,self.rowHeight)
         self.cellListTable.setSelectionMode(self.cellListTable.ContiguousSelection)
         self.cellListTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+        
+        # parameters for socket connection
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
+        host = '172.20.61.180' #socket.gethostname() #Get the local machine name
+        port = 5555 # Reserve a port for your service
+        self.s.bind((host,port)) #Bind to the port
         
         # precision of values to show and store
         self.precision = 1
@@ -273,7 +281,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.luigsNeumann
         except AttributeError:
             self.luigsNeumann = LandNSM5.LandNSM5()
-            self.autoUpdateManipulatorLocations.start()
+            if self.luigsNeumann.connected:
+                self.autoUpdateManipulatorLocations.start()
+            else:
+                reply = QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QMessageBox.Ok )
             #self.switchOnOffSM5Motors(1)
             #self.switchOnOffSM5Motors(2)
         else:
@@ -417,10 +428,85 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################  
     def socketListening(self):
         self.listen = True
+        self.s.listen(1)
+        self.c,addr = self.s.accept()
+        #self.c.settimeout(1)
         while self.listen:
-            print 'socket'
-            time.sleep(0.5)
+            do_read = False
+            try:
+                #print 'waiting for for connection to be established'
+                #self.c,addr = self.s.accept() #Establish a connection with the client
+                #print 'select select'
+                r, _, _ = select.select([self.c], [], [])
+                #data = self.c.recv(1024)
+                #print r
+                do_read = bool(r)
+            except socket.error:
+                pass
+            if do_read:
+                #print 'before recv'
+                data = self.c.recv(1024)
+                if data == 'disconnect':
+                    self.c.send('OK..'+data)
+                    break
+                print "Got data: ", data, 'from', addr[0],':',addr[1]
+                res = self.performRemoteInstructions(data)
+                self.c.send(str(res)+'...'+data)
+                #self.c.close()
+        self.c.close()
+        print 'thread ended by remote host'
+            #print do_read
+            #time.sleep(0.1)
+            
+            #self.c,addr = self.s.accept() #Establish a connection with the client
+            #print "Got connection from", addr
+            #rawDataReceived =  self.c.recv(1024)
+            
+            #print rawDataReceived
+            #self.c.send('successful')
+            #self.c.close()
+            #time.sleep(0.5)
         
+    #################################################################################################
+    def performRemoteInstructions(self,rawData):
+        data = rawData.split(',')
+        if data[0] == 'getPos':
+            pass
+        elif data[0] == 'relativeMoveTo':
+            moveStep = float(data[2])
+            if data[1] == 'x':
+                self.setX += moveStep
+                if self.setX < self.xMin:
+                    self.setX = self.xMin
+                elif self.setX > self.xMax:
+                    self.setX = self.xMax
+                self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
+            elif data[1] == 'y':
+                self.setY += moveStep
+                if self.setY < self.yMin:
+                    self.setY = self.yMin
+                elif self.setY > self.yMax:
+                    self.setY = self.yMax
+                self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
+            elif data[1] == 'z':
+                self.setZ -= moveStep
+                if self.setZ < self.zMin:
+                    self.setZ = self.zMin
+                elif self.setZ > self.zMax:
+                    self.setZ = self.zMax
+                self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
+
+            if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
+                with self.c843Lock:
+                    self.moveStageToNewLocation()
+            return 1
+        elif data[0] == 'absoluteMoveTo':
+            pass
+        else:
+            return 0
+            
+            
+    
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
@@ -566,7 +652,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
             
             if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
-                self.moveStageToNewLocation()
+                with self.c843Lock:
+                    self.moveStageToNewLocation()
             #
             if abs(self.setXDev1)>self.locationDiscrepancy:
                 print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
@@ -1121,7 +1208,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     def closeEvent(self, event):
         self.done = True
         self.updateDone = True
-        
+        self.listen = False
+        self.s.close()
         # delete class istances
         try :
             self.c843

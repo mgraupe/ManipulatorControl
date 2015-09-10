@@ -99,13 +99,19 @@ class LandNSM5 :
 			if self.verbose:
 				print self.ser
 				print 'SM5 ready'
+			#return 0
 		except serial.SerialException:
 			print 'No connection to Luigs and Neumann SM5 could be established!'
-			sys.exit(1)
+			self.connected = 0
+			#sys.exit(1)
+		#return self.connected
 	#################################################################
 	# destructor
 	def __del__(self):
-		self.ser.close()
+		try:
+			self.ser.close()
+		except AttributeError:
+			pass
 		if self.verbose : 
 			print 'Connection to Luigs and Neumann SM5 closed'
 	#################################################################
