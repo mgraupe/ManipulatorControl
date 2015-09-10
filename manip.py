@@ -106,6 +106,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.alphaDev2 = 30.
         self.manip1MoveStep = 2.
         self.manip2MoveStep = 2.
+        
+        self.stageAxes = {'x':0,'y':1,'z':2}
 
         # movement parameters
         self.stepWidths = {'fine':1.,'small':10.,'medium':100.,'coarse':1000.}
@@ -246,6 +248,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.c843.init_stage(1)
             self.c843.init_stage(2)
             self.c843.init_stage(3)
+            self.isStage[3] = zeros(3)
+            self.setStage[3] = zeros(3)
             #self.switchOnOffC843Motors('xy')
             #self.switchOnOffC843Motors('z')
             #self.connectBtn.setChecked(True)
@@ -363,18 +367,14 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
             #break
         else:
-            #self.refLabel.setText('xyz referenced')
             self.refChoseLocationBtn.setEnabled(False)
             self.refSavedLocationBtn.setEnabled(False)
-            #self.refPositiveBtn.setEnabled(False)
             self.refNegativeBtn.setEnabled(False)
             self.updateStageLocations()
-            #self.updateManipulatorLocations()
             self.initializeSetLocations()
-            self.initializeStageSpeed()
-            #self.sm5lock.acquire()
+            self.getMinMaxOfStage()
+            self.setMovementValues(self.defaultMoveSpeed)
             with self.sm5Lock:
-                #print 'thread halted'
                 self.initializeManipulatorSpeed()
         #
         self.disableAndEnableBtns(True)
@@ -387,10 +387,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.controllerActivateBtn.setText('Activate controller')
             self.controllerActivateBtn.setStyleSheet('background-color:None')
             self.done=True
-            #self.activate._stop()
             self.activate = Thread(target=self.controlerInput)
             self.enableDiableControllerBtns(False)
-            #self.activate = Thread(ThreadStart(self.controlerInput))
             print 'controler deactive'
         else:
             self.controllerActivateBtn.setText('Deactivate Controller')
@@ -470,38 +468,21 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def performRemoteInstructions(self,rawData):
         data = rawData.split(',')
+        #
         if data[0] == 'getPos':
-            pass
+            with self.c843Lock:
+                self.updateStageLocations()
+            return (1,self.isStage)
         elif data[0] == 'relativeMoveTo':
             moveStep = float(data[2])
-            if data[1] == 'x':
-                self.setX += moveStep
-                if self.setX < self.xMin:
-                    self.setX = self.xMin
-                elif self.setX > self.xMax:
-                    self.setX = self.xMax
-                self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
-            elif data[1] == 'y':
-                self.setY += moveStep
-                if self.setY < self.yMin:
-                    self.setY = self.yMin
-                elif self.setY > self.yMax:
-                    self.setY = self.yMax
-                self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
-            elif data[1] == 'z':
-                self.setZ -= moveStep
-                if self.setZ < self.zMin:
-                    self.setZ = self.zMin
-                elif self.setZ > self.zMax:
-                    self.setZ = self.zMax
-                self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
-
-            if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
-                with self.c843Lock:
-                    self.moveStageToNewLocation()
-            return 1
+            with self.c843Lock:
+                self.moveStageToNewLocation(self.stageAxes[data[1]],moveStep)
+            return (1,self.isStage)
         elif data[0] == 'absoluteMoveTo':
-            pass
+            movePosition = float(data[2])
+            with self.c843Lock:
+                self.moveStageToNewLocation(self.stageAxes[data[1]],movePosition,moveType='absolute')
+            return (1,self.isStage)
         else:
             return 0
             
@@ -537,29 +518,20 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             #print xAxis, yAxis
             # x-Axis
             if abs(xAxis) > 0.5 :
-                self.setX += self.moveStep*np.sign(xAxis)
-            if self.setX < self.xMin:
-                self.setX = self.xMin
-            elif self.setX > self.xMax:
-                self.setX = self.xMax
-            
+                with self.c843Lock:
+                    self.moveStageToNewLocation(0,self.moveStep*np.sign(xAxis))
             # y-Axis
             if abs(yAxis) > 0.5 :
-                self.setY -= self.moveStep*np.sign(yAxis)
-            if self.setY < self.yMin:
-                self.setY = self.yMin
-            elif self.setY > self.yMax:
-                self.setY = self.yMax
-            
+                with self.c843Lock:
+                    self.moveStageToNewLocation(1,-self.moveStep*np.sign(yAxis))
+
             # z-Axis up and down is button 4 and 6
             if joystick.get_button( 4 ):
-                self.setZ -= self.moveStep
+                with self.c843Lock:
+                    self.moveStageToNewLocation(2,-self.moveStep)
             if joystick.get_button( 6 ) :
-                self.setZ += self.moveStep
-            if self.setZ < self.zMin:
-                self.setZ = self.zMin
-            elif self.setX > self.zMax:
-                self.setZ = self.zMax
+                with self.c843Lock:
+                    self.moveStageToNewLocation(2,self.moveStep)
             
             # change speed settings
             if joystick.get_button( 0 ):
@@ -577,36 +549,26 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             if joystick.get_button( 9 ):
                 self.activateDev2.setChecked(True)
             
-            #self.updateManipulatorLocations()
-            # propagate externally updated position to set position
-            #self.xSetPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
-            #self.ySetPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
-            #self.zSetPosDev1LE.setText(str(round(self.isZDev1,self.precision)))
-            
-            #self.xSetPosDev2LE.setText(str(round(self.isXDev2,self.precision)))
-            #self.ySetPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
-            #self.zSetPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
-            
             # manipulator steps
             if joystick.get_button( 7 ):
                 if self.activateDev1.isChecked():
                     self.setXDev1+= self.manip1MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                 if self.activateDev2.isChecked():
                     self.setXDev2+= self.manip2MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                 #self.updateManipulatorLocations('x')
             if joystick.get_button( 5 ):
                 if self.activateDev1.isChecked():
                     self.setXDev1-= self.manip1MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                 if self.activateDev2.isChecked():
                     self.setXDev2-= self.manip2MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                 #self.updateManipulatorLocations('x')
             
             # Dev 1
@@ -639,9 +601,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             
             # Limit to 10 frames per second
             self.clock.tick(10)
-            self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
-            self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
-            self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
             
             self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
             self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
@@ -651,9 +610,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
             self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
             
-            if any((abs(self.isX - self.setX)> self.locationDiscrepancy,abs(self.isY - self.setY)> self.locationDiscrepancy,abs(self.isZ - self.setZ)> self.locationDiscrepancy)):
-                with self.c843Lock:
-                    self.moveStageToNewLocation()
             #
             if abs(self.setXDev1)>self.locationDiscrepancy:
                 print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
@@ -669,30 +625,37 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                 self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
                 self.setZDev2 = 0.
     #################################################################################################
-    def moveStageToNewLocation(self):
-
-        wait = True
-        while wait:
-            xIsMoving = self.c843.check_for_movement(1)
-            yIsMoving = self.c843.check_for_movement(2)
-            zIsMoving = self.c843.check_for_movement(3)
-            if any((not xIsMoving, not yIsMoving, not zIsMoving)):
-                wait = False
-        self.c843.move_to_absolute_position(1,self.setX)
-        self.c843.move_to_absolute_position(2,self.setY)
-        self.c843.move_to_absolute_position(3,self.setZ)
+    def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
         
-        self.updateStageLocations()
+        # define movement length
+        if moveType == 'relative':
+            self.setStage[axis] += moveDistance
+        if moveType == 'absolute':
+            self.setStage[axis] = moveDistance
+        
+        # check if limits are reached
+        if self.setStage[axis] < self.minStage[axis]:
+            self.setStage[axis] = self.minStage[axis]
+        elif self.setStage[axis] > self.maxStage[axis]:
+            self.setStage[axis] = self.maxStage[axis]
+        
+        # update set locations
+        if axis==0:
+            self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        elif axis==1:
+            self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        elif axis==2:
+            self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+            
+        if any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
+            wait = True
+            while wait:
+                isMoving = self.c843.check_for_movement(axis+1)
+                if not isMoving: 
+                    wait = False
+            self.c843.move_to_absolute_position(axis+1,self.setStage[axis])
+            self.updateStageLocations()
 
-        #if self.isHomeSet :
-        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
-        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
-        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
-        #
-        #self.statusValue.setText('moving stages ... done')
-        #self.statusValue.setStyleSheet('color: black')
-        #self.statusValue.repaint()
-        #self.unSetStatusMessage('moving axes')
     
     #################################################################################################
     def moveManipulatorToNewLocation(self,dev,axis,move):
@@ -713,13 +676,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def updateStageLocations(self):
         # C843
-        self.isX = self.c843.get_position(1)
-        self.isY = self.c843.get_position(2)
-        self.isZ = self.c843.get_position(3)
+        for i in range(3):
+            self.isStage[i] = self.c843.get_position(i+1)
         #
-        self.isXLocationValueLabel.setText(str(round(self.isX,self.precision)))
-        self.isYLocationValueLabel.setText(str(round(self.isY,self.precision)))
-        self.isZLocationValueLabel.setText(str(round(self.isZ,self.precision)))
+        self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
+        self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
+        self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
         
         self.updateHomeTable()
         #
@@ -756,13 +718,16 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         
     #################################################################################################
     def initializeSetLocations(self):
-        self.setX = self.isX
-        self.setY = self.isY
-        self.setZ = self.isZ
-        self.setXLocationLineEdit.setText(str(round(self.setX,self.precision)))
-        self.setYLocationLineEdit.setText(str(round(self.setY,self.precision)))
-        self.setZLocationLineEdit.setText(str(round(self.setZ,self.precision)))
-        self.oldSetZ = self.setZ
+        for i in range(3):
+            self.setStage[i] = self.isStage[i]
+            if i == 0:
+                self.setXLocationLineEdit.setText(str(round(self.setStage[0],self.precision)))
+            elif i == 1:
+                self.setYLocationLineEdit.setText(str(round(self.setStage[1],self.precision)))
+            elif i == 2:
+                self.setZLocationLineEdit.setText(str(round(self.setStage[2],self.precision)))
+
+        self.oldSetZ = self.setStage[2]
         
         self.setXDev1 = 0. #self.isXDev1
         self.setYDev1 = 0. #self.isYDev1
@@ -789,18 +754,17 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
         
     #################################################################################################
-    def initializeStageSpeed(self):
+    def getMinMaxOfStage(self):
         # read maximal and minimal values
-        (self.xMin,self.xMax) = self.c843.get_min_max_travel_range(1)
-        (self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
-        (self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
+        for i in range(3):
+            (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(i+1)
+            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
+            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
         
-        self.minMaxXLocationValueLabel.setText(str(round(self.xMax,self.precision)))
-        self.minMaxYLocationValueLabel.setText(str(round(self.yMax,self.precision)))
-        self.minMaxZLocationValueLabel.setText(str(round(self.zMax,self.precision)))
+        self.minMaxXLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+        self.minMaxYLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+        self.minMaxZLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
         
-        # set default move and speed
-        self.setMovementValues(self.defaultMoveSpeed)
     #################################################################################################
     def initializeManipulatorSpeed(self):
         # Manipulator Speed
@@ -844,24 +808,19 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def getStepValue(self):
         self.moveStep = float(self.stepLineEdit.text())
+
     #################################################################################################
     def getSpeedValue(self):
         self.moveSpeed = float(self.speedLineEdit.text())
         print "new speed :", self.moveSpeed
         self.propagateSpeeds()
+
     #################################################################################################
     def propagateSpeeds(self):
         self.c843.set_velocity(1,self.moveSpeed)
         self.c843.set_velocity(2,self.moveSpeed)
         self.c843.set_velocity(3,self.moveSpeed)
-        # change color according to selection
-        #self.fineBtn.setChecked(True)
-        #self.smallBtn.setChecked(False)
-        #self.mediumBtn.setChecked(False)
-        #self.coarseBtn.setChecked(False)
-        #self.fineBtn.repaint()
-        #self.mediumBtn.repaint()
-        #self.coarseBtn.repaint()
+
     #################################################################################################
     def recordCell(self,nElectrode,identity):
         #self.cellListTable.insertRow(3)
@@ -936,16 +895,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         xyz = ([self.cells[row]['location'][0],self.cells[row]['location'][1],self.cells[row]['location'][2]])
         print xyz
         
-        #for i in range(3):
-        self.setX = self.cells[row]['location'][0]
-        self.setY = self.cells[row]['location'][1]
-        self.setZ = self.cells[row]['location'][2]
-        #self.c843.move_to_absolute_position(i+1,self.cells[row]['location'][i])
-        #self.sutter.gotoPosition(xyz)
-        self.moveStageToNewLocation()
-        print 'moved'
-        #self.updateStageLocations()
-        
+        for i in range(3):
+            self.setStage[i] = self.cells[row]['location'][i]
+            self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
+
         self.unSetStatusMessage('moving stage to cell')
     #################################################################################################
     def updateLocation(self):
@@ -1060,11 +1013,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                 if c==0:
                     self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(self.homeLocs[r]['number'])))
                 elif c==1:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isX-self.homeLocs[r]['x'],self.precision))))
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[0]-self.homeLocs[r]['x'],self.precision))))
                 elif c==2:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isY-self.homeLocs[r]['y'],self.precision))))
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[1]-self.homeLocs[r]['y'],self.precision))))
                 elif c==3:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isZ-self.homeLocs[r]['z'],self.precision))))
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[2]-self.homeLocs[r]['z'],self.precision))))
     #################################################################################################
     def recordHomeLocation(self):
         #self.cellListTable.insertRow(3)
@@ -1130,15 +1083,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         xyz = ([self.homeLocs[row]['x'],self.homeLocs[row]['y'],self.homeLocs[row]['z']])
         print xyz
         
-        #for i in range(3):
-        self.setX = self.homeLocs[row]['x']
-        self.setY = self.homeLocs[row]['y']
-        self.setZ = self.homeLocs[row]['z']
-        #self.c843.move_to_absolute_position(i+1,self.cells[row]['location'][i])
-        #self.sutter.gotoPosition(xyz)
-        self.moveStageToNewLocation()
-        print 'moved'
-        #self.updateStageLocations()
+        for i in range(3):
+            self.setStage[i] = self.homeLocs[row][self.stageAxes.keys()[self.stageAxes.values().index(i)]]
+            self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
         
         self.unSetStatusMessage('moving stage to home location')
     #################################################################################################
