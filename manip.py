@@ -19,6 +19,7 @@ from functools import partial
 import pygame
 import socket
 import select
+import collections
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -107,16 +108,16 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.manip1MoveStep = 2.
         self.manip2MoveStep = 2.
         
-        self.stageAxes = {'x':0,'y':1,'z':2}
+        self.stageAxes = collections.OrderedDict([('x',0),('y',1),('z',2)])
 
         # movement parameters
-        self.stepWidths = {'fine':1.,'small':10.,'medium':100.,'coarse':1000.}
+        self.stepWidths = collections.OrderedDict([('fine',1.),('small',10.),('medium',100.),('coarse',1000.)])
         #self.fineStep = 1.
         #self.smallStep = 10.
         #self.mediumStep = 100.
         #self.coarseStep = 1000.
         
-        self.speeds = {'fine':0.01,'small':0.05,'medium':0.2,'coarse':1.5}
+        self.speeds = collections.OrderedDict([('fine',0.01),('small',0.05),('medium',0.2),('coarse',1.5)])
         
         self.defaultMoveSpeed = 'fine'
         #self.fineSpeed =  np.array([0.01,0.01,0.01])
@@ -248,8 +249,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.c843.init_stage(1)
             self.c843.init_stage(2)
             self.c843.init_stage(3)
-            self.isStage[3] = zeros(3)
-            self.setStage[3] = zeros(3)
+            self.isStage = np.zeros(3)
+            self.setStage = np.zeros(3)
             #self.switchOnOffC843Motors('xy')
             #self.switchOnOffC843Motors('z')
             #self.connectBtn.setChecked(True)
@@ -446,6 +447,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                 data = self.c.recv(1024)
                 if data == 'disconnect':
                     self.c.send('OK..'+data)
+                    self.listenToSocketBtn.setChecked(False)
+                    self.listenToSocketBtn.setText('Listen to Socket')
+                    self.listenToSocketBtn.setStyleSheet('background-color:None')
+                    self.listen = False
+                    self.listenThread = Thread(target=self.socketListening)
                     break
                 print "Got data: ", data, 'from', addr[0],':',addr[1]
                 res = self.performRemoteInstructions(data)
@@ -472,20 +478,47 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         if data[0] == 'getPos':
             with self.c843Lock:
                 self.updateStageLocations()
-            return (1,self.isStage)
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'relativeMoveTo':
             moveStep = float(data[2])
             with self.c843Lock:
+                self.choseRightSpeed(abs(moveStep))
                 self.moveStageToNewLocation(self.stageAxes[data[1]],moveStep)
-            return (1,self.isStage)
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'absoluteMoveTo':
-            movePosition = float(data[2])
+            moveStep = float(data[2])
             with self.c843Lock:
-                self.moveStageToNewLocation(self.stageAxes[data[1]],movePosition,moveType='absolute')
-            return (1,self.isStage)
+                self.choseRightSpeed(abs(moveStep-self.isStage[self.stageAxes[data[1]]]))
+                self.moveStageToNewLocation(self.stageAxes[data[1]],moveStep,moveType='absolute')
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'checkMovement':
+            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
+            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
+            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
+            if any((isXMoving,isYMoving,isZMoving)):
+                return 1
+            else:
+                return 0
+        elif data[0] == 'stop':
+            self.switchOnOffC843Motors('z')
+            self.switchOnOffC843Motors('xy')
+            return 1
         else:
             return 0
-            
+    #################################################################################################
+    def choseRightSpeed(self,stepSize):
+        self.moveSpeedBefore = self.moveSpeed
+        for key, value in self.stepWidths.iteritems():
+            if stepSize >= value:
+                self.moveSpeed = self.speeds[key]
+            else :
+                break
+        print stepSize, self.moveSpeed
+        self.propagateSpeeds()
             
     
     #################################################################################################
@@ -597,7 +630,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                     self.setXDev2-= mov
                     #self.goVariableFastToRelativePosition(2,'x',mov)
                     #self.updateManipulatorLocations('x')
-            self.oldSetZ = self.setZ
+            self.oldSetZ = self.setStage[2]
             
             # Limit to 10 frames per second
             self.clock.tick(10)
@@ -632,7 +665,6 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.setStage[axis] += moveDistance
         if moveType == 'absolute':
             self.setStage[axis] = moveDistance
-        
         # check if limits are reached
         if self.setStage[axis] < self.minStage[axis]:
             self.setStage[axis] = self.minStage[axis]
@@ -756,6 +788,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def getMinMaxOfStage(self):
         # read maximal and minimal values
+        self.minStage = np.zeros(3)
+        self.maxStage = np.zeros(3)
+        
         for i in range(3):
             (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(i+1)
             #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
@@ -817,9 +852,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
 
     #################################################################################################
     def propagateSpeeds(self):
-        self.c843.set_velocity(1,self.moveSpeed)
-        self.c843.set_velocity(2,self.moveSpeed)
-        self.c843.set_velocity(3,self.moveSpeed)
+        for i in range(3):
+            self.c843.set_velocity(i+1,self.moveSpeed)
 
     #################################################################################################
     def recordCell(self,nElectrode,identity):
