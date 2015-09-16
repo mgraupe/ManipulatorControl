@@ -108,8 +108,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.manip1MoveStep = 2.
         self.manip2MoveStep = 2.
         
-        self.stageAxes = collections.OrderedDict([('x',0),('y',1),('z',2)])
-
+        self.axes         = np.array(['x','y','z'])
+        self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
+        self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
+        
         # movement parameters
         self.stepWidths = collections.OrderedDict([('fine',1.),('small',10.),('medium',100.),('coarse',1000.)])
         #self.fineStep = 1.
@@ -246,9 +248,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.c843
         except AttributeError:
             self.c843 = c843_class.c843_class()
-            self.c843.init_stage(1)
-            self.c843.init_stage(2)
-            self.c843.init_stage(3)
+            self.c843.init_stage(self.stageAxes['x'])
+            self.c843.init_stage(self.stageAxes['y'])
+            self.c843.init_stage(self.stageAxes['z'])
             self.isStage = np.zeros(3)
             self.setStage = np.zeros(3)
             #self.switchOnOffC843Motors('xy')
@@ -265,7 +267,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                 self.controllerActivateBtn.setChecked(False)
                 self.listenToSocketBtn.setChecked(False)
                 self.controllerActivateBtn.setText('Activate Controller')
-                self.listenToSocektBtn.setText('Listen to Socket')
+                self.listenToSocketBtn.setText('Listen to Socket')
                 self.done=True
                 self.listen = False
                 self.activate = Thread(target=self.controlerInput)
@@ -311,15 +313,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             self.activateController()
         # switch on or off motors
         if axes == 'xy':
-            self.c843.switch_servo_on_off(2)
-            self.c843.switch_servo_on_off(1)
+            self.c843.switch_servo_on_off(self.stageAxes['x'])
+            self.c843.switch_servo_on_off(self.stageAxes['y'])
             #if self.C843XYPowerBtn.isChecked():
             #    self.C843XYPowerBtn.setText('Switch Off XY')
             #else:
             #    self.C843XYPowerBtn.setText('Switch On XY')
         #
         elif axes=='z':
-            self.c843.switch_servo_on_off(3)
+            self.c843.switch_servo_on_off(self.stageAxes['z'])
             #if self.C843ZPowerBtn.isChecked():
             #    self.C843ZPowerBtn.setText('Switch Off Z')
             #else:
@@ -361,9 +363,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         #
         self.setStatusMessage('referencing axes')
         #
-        ref1 = self.c843.reference_stage(1,moveStage)
-        ref2 = self.c843.reference_stage(2,moveStage)
-        ref3 = self.c843.reference_stage(3,moveStage)
+        ref1 = self.c843.reference_stage(self.stageAxes['x'],moveStage)
+        ref2 = self.c843.reference_stage(self.stageAxes['y'],moveStage)
+        ref3 = self.c843.reference_stage(self.stageAxes['z'],moveStage)
         if not all((ref1,ref2,ref3)):
             reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
             #break
@@ -443,21 +445,29 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             except socket.error:
                 pass
             if do_read:
-                #print 'before recv'
-                data = self.c.recv(1024)
-                if data == 'disconnect':
-                    self.c.send('OK..'+data)
+                try:
+                    #print 'before recv'
+                    data = self.c.recv(1024)
+                    if data == 'disconnect':
+                        self.c.send('OK..'+data)
+                        self.listen = False
+                        self.listenThread = Thread(target=self.socketListening)
+                        break
+                    #print "Got data: ", data, 'from', addr[0],':',addr[1]
+                    res = self.performRemoteInstructions(data)
+                    self.c.send(str(res)+'...'+data)
+                except socket.error:
                     self.listenToSocketBtn.setChecked(False)
                     self.listenToSocketBtn.setText('Listen to Socket')
                     self.listenToSocketBtn.setStyleSheet('background-color:None')
                     self.listen = False
                     self.listenThread = Thread(target=self.socketListening)
                     break
-                print "Got data: ", data, 'from', addr[0],':',addr[1]
-                res = self.performRemoteInstructions(data)
-                self.c.send(str(res)+'...'+data)
                 #self.c.close()
         self.c.close()
+        self.listenToSocketBtn.setChecked(False)
+        self.listenToSocketBtn.setText('Listen to Socket')
+        self.listenToSocketBtn.setStyleSheet('background-color:None')
         print 'thread ended by remote host'
             #print do_read
             #time.sleep(0.1)
@@ -483,15 +493,15 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             moveStep = float(data[2])
             with self.c843Lock:
                 self.choseRightSpeed(abs(moveStep))
-                self.moveStageToNewLocation(self.stageAxes[data[1]],moveStep)
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
                 self.moveSpeed = self.moveSpeedBefore
                 self.propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'absoluteMoveTo':
             moveStep = float(data[2])
             with self.c843Lock:
-                self.choseRightSpeed(abs(moveStep-self.isStage[self.stageAxes[data[1]]]))
-                self.moveStageToNewLocation(self.stageAxes[data[1]],moveStep,moveType='absolute')
+                self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
                 self.moveSpeed = self.moveSpeedBefore
                 self.propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
@@ -552,7 +562,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             # x-Axis
             if abs(xAxis) > 0.5 :
                 with self.c843Lock:
-                    self.moveStageToNewLocation(0,self.moveStep*np.sign(xAxis))
+                    self.moveStageToNewLocation(0,-self.moveStep*np.sign(xAxis))
             # y-Axis
             if abs(yAxis) > 0.5 :
                 with self.c843Lock:
@@ -682,10 +692,10 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         if any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
             wait = True
             while wait:
-                isMoving = self.c843.check_for_movement(axis+1)
+                isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
                 if not isMoving: 
                     wait = False
-            self.c843.move_to_absolute_position(axis+1,self.setStage[axis])
+            self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
             self.updateStageLocations()
 
     
@@ -709,7 +719,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     def updateStageLocations(self):
         # C843
         for i in range(3):
-            self.isStage[i] = self.c843.get_position(i+1)
+            self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
         #
         self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
         self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
@@ -792,7 +802,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.maxStage = np.zeros(3)
         
         for i in range(3):
-            (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(i+1)
+            (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
             #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
             #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
         
@@ -853,12 +863,12 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def propagateSpeeds(self):
         for i in range(3):
-            self.c843.set_velocity(i+1,self.moveSpeed)
+            self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
 
     #################################################################################################
     def recordCell(self,nElectrode,identity):
         #self.cellListTable.insertRow(3)
-        xyzU = self.c843.get_all_positions()
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         nC = len(self.cells)
         
         self.cells[nC] = {}
@@ -941,7 +951,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         for index in sorted(r):
             row = index.row()
             nR +=1
-        xyz = self.c843.get_all_positions()
+        xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         self.cells[row]['location'] = np.array([round(xyz[0],self.precision),round(xyz[1],self.precision),round(xyz[2],self.precision)])
         self.updateTable()
         self.repaint()
@@ -980,7 +990,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             row = index.row()
             nR+=1
         
-        xyzU = self.c843.get_all_positions()
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         
         self.cells[row]['depth'] = (self.cells[row]['location'][2] - round(xyzU[2],self.precision))
 
@@ -1055,7 +1065,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
     #################################################################################################
     def recordHomeLocation(self):
         #self.cellListTable.insertRow(3)
-        xyzU = self.c843.get_all_positions()
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         nC = len(self.homeLocs)
         
         self.homeLocs[nC] = {}
@@ -1075,7 +1085,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         for index in sorted(r):
             row = index.row()
 
-        xyz = self.c843.get_all_positions()
+        xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         self.homeLocs[row]['x'] = round(xyz[0],self.precision) 
         self.homeLocs[row]['y'] = round(xyz[1],self.precision) 
         self.homeLocs[row]['z'] = round(xyz[2],self.precision)
@@ -1118,7 +1128,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         print xyz
         
         for i in range(3):
-            self.setStage[i] = self.homeLocs[row][self.stageAxes.keys()[self.stageAxes.values().index(i)]]
+            self.setStage[i] = self.homeLocs[row][self.axes[i]]
             self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
         
         self.unSetStatusMessage('moving stage to home location')

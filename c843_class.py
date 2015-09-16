@@ -354,6 +354,6 @@ class c843_class(object):
 		return (self.glvar[str(nAxis)]['minMaxTravelRange'])*self.scaling_factor
 	
 	########################################################################################
-	def get_all_positions(self):
-		return ((self.loc[str(1)])*self.scaling_factor,(self.loc[str(2)])*self.scaling_factor,(self.loc[str(3)])*self.scaling_factor)
+	def get_all_positions(self,axesNumbers):
+		return ((self.loc[str(axesNumbers[0])])*self.scaling_factor,(self.loc[str(axesNumbers[1])])*self.scaling_factor,(self.loc[str(axesNumbers[2])])*self.scaling_factor)
 		
