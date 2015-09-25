@@ -95,7 +95,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         
         # parameters for socket connection
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
-        host = '172.20.61.180' #socket.gethostname() #Get the local machine name
+        host = '172.20.61.89' #socket.gethostname() #Get the local machine name
         port = 5555 # Reserve a port for your service
         self.s.bind((host,port)) #Bind to the port
         
