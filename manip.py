@@ -544,7 +544,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         while self.done==False:
             #self.manip1MoveStep = float(self.device1StepLE.text())
             #self.manip2MoveStep = float(self.device2StepLE.text())
-            
+            print '1'
             for event in pygame.event.get(): # User did something
                 #	# Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
                 if event.type == pygame.JOYBUTTONDOWN:
@@ -554,7 +554,7 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                     pass
                     #print ("Joystick button released.")
             #
-            
+            print '2'
             #print 'test'
             xAxis = joystick.get_axis( 0 )
             yAxis = joystick.get_axis( 1 )
@@ -567,15 +567,21 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             if abs(yAxis) > 0.5 :
                 with self.c843Lock:
                     self.moveStageToNewLocation(1,-self.moveStep*np.sign(yAxis))
-
+            print '3'
             # z-Axis up and down is button 4 and 6
+            setZ = self.setStage[2]
             if joystick.get_button( 4 ):
                 with self.c843Lock:
+                    setZ -= self.moveStep
+                    print '3.1'
                     self.moveStageToNewLocation(2,-self.moveStep)
+            print '3.2'
             if joystick.get_button( 6 ) :
                 with self.c843Lock:
+                    setZ += self.moveStep
+                    print '3.3'
                     self.moveStageToNewLocation(2,self.moveStep)
-            
+            print '4'
             # change speed settings
             if joystick.get_button( 0 ):
                 self.setMovementValues('fine')
@@ -585,13 +591,13 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                 self.setMovementValues('medium')
             if joystick.get_button( 3 ):
                 self.setMovementValues('coarse')
-            
+            print '5'
             # chose which manipulator to move
             if joystick.get_button( 8 ):
                 self.activateDev1.setChecked(True)
             if joystick.get_button( 9 ):
                 self.activateDev2.setChecked(True)
-            
+            print '6'
             # manipulator steps
             if joystick.get_button( 7 ):
                 if self.activateDev1.isChecked():
@@ -613,38 +619,38 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
                     #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
                     time.sleep(0.2)
                 #self.updateManipulatorLocations('x')
-            
+            print '7'
             # Dev 1
             if self.activateDev1.isChecked() and self.trackStageZMovementDev1Btn.isChecked():
-                mov = self.oldSetZ - self.setZ
+                mov = self.oldSetZ - setZ
                 if mov:
                     self.setZDev1-= mov
                     #self.goVariableFastToRelativePosition(1,'z',mov)
                     #self.updateManipulatorLocations('z')
             elif self.activateDev1.isChecked() and self.trackStageXMovementDev1Btn.isChecked():
-                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev1*np.pi/180.)
+                mov = (self.oldSetZ - setZ)/np.cos(self.alphaDev1*np.pi/180.)
                 if mov:
                     self.setXDev1-= mov
                     #self.goVariableFastToRelativePosition(1,'x',mov)
                     #self.updateManipulatorLocations('x')
             # Dev 2
             if self.activateDev2.isChecked() and self.trackStageZMovementDev2Btn.isChecked():
-                mov = self.oldSetZ - self.setZ
+                mov = self.oldSetZ - setZ
                 if mov:
                     self.setZDev2-= mov
                     #self.goVariableFastToRelativePosition(2,'z',mov)
                     #self.updateManipulatorLocations('z')
             elif self.activateDev2.isChecked() and self.trackStageXMovementDev2Btn.isChecked():
-                mov = (self.oldSetZ - self.setZ)/np.cos(self.alphaDev2*np.pi/180.)
+                mov = (self.oldSetZ - setZ)/np.cos(self.alphaDev2*np.pi/180.)
                 if mov:
                     self.setXDev2-= mov
                     #self.goVariableFastToRelativePosition(2,'x',mov)
                     #self.updateManipulatorLocations('x')
             self.oldSetZ = self.setStage[2]
-            
+            print '8'
             # Limit to 10 frames per second
             self.clock.tick(10)
-            
+            print '9'
             self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
             self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
             self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
@@ -667,35 +673,40 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
             if abs(self.setZDev2)>self.locationDiscrepancy:
                 self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
                 self.setZDev2 = 0.
+            print '10'
     #################################################################################################
     def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
         
+        print 'mSTNL 1'
         # define movement length
         if moveType == 'relative':
             self.setStage[axis] += moveDistance
         if moveType == 'absolute':
             self.setStage[axis] = moveDistance
         # check if limits are reached
+        print 'mSTNL 2'
         if self.setStage[axis] < self.minStage[axis]:
             self.setStage[axis] = self.minStage[axis]
         elif self.setStage[axis] > self.maxStage[axis]:
             self.setStage[axis] = self.maxStage[axis]
-        
+        print 'mSTNL 3'
         # update set locations
-        if axis==0:
-            self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        elif axis==1:
-            self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        elif axis==2:
-            self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-            
+        #if axis==0:
+        #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==1:
+        #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==2:
+        #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        print 'mSTNL 4'
         if any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
             wait = True
             while wait:
                 isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
                 if not isMoving: 
                     wait = False
+            print 'mSTNL 5', isMoving
             self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            print 'mSTNL 6'
             self.updateStageLocations()
 
     
@@ -721,9 +732,9 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         for i in range(3):
             self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
         #
-        self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
-        self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
-        self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
+        #self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
+        #self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
+        #self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
         
         self.updateHomeTable()
         #
