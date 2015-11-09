@@ -1,23 +1,28 @@
+import sys
+import pygame
+from threading import *
+from functools import partial
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from manipulatorTemplate import Ui_MainWindow
+import manipulatorTemplate 
+#import manipulator
 
 
 #################################################################
-class manipulatorControlGui(QMainWindow,Ui_MainWindow):
+class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
-    def __init__(self, dev, win):
+    def __init__(self,dev):
         
         self.dev = dev
 
         # initialize the UI and parent class
         QMainWindow.__init__(self)
         
-        self.ui = Ui_MainWindow()
+        self.ui = manipulatorTemplate.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.setWindowTitle('Manipulator Control')
-        self.ui.setGeometry(10, 30,537,971)
+        
         #
         self.connectSignals()
         
@@ -30,7 +35,7 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
         self.ui.homeLocationsTable.setRowCount(self.rowHomeC)
         for i in range(self.rowHomeC):
             self.ui.homeLocationsTable.setRowHeight(i,self.rowHeight)
-        self.ui.homeLocationsTable.setSelectionMode(self.homeLocationsTable.ContiguousSelection)
+        self.ui.homeLocationsTable.setSelectionMode(self.ui.homeLocationsTable.ContiguousSelection)
         self.ui.homeLocationsTable.setSelectionBehavior(QAbstractItemView.SelectRows)
         
         self.ui.homeLocationsTable.setColumnWidth(0,30)
@@ -45,7 +50,7 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
         self.ui.cellListTable.setRowCount(self.rowC)
         for i in range(self.rowC):
             self.ui.cellListTable.setRowHeight(i,self.rowHeight)
-        self.ui.cellListTable.setSelectionMode(self.cellListTable.ContiguousSelection)
+        self.ui.cellListTable.setSelectionMode(self.ui.cellListTable.ContiguousSelection)
         self.ui.cellListTable.setSelectionBehavior(QAbstractItemView.SelectRows)
         
         # configure column widths in cellListTable
@@ -63,9 +68,9 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
         self.enableDisableControllerBtns(False)
         
         #self.activate = Thread(target=self.controlerInput)
-        self.receiveControlerInput = Thread(target=self.controlerInput)
-        self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
-        self.socketListenThread = Thread(target=self.socketListening) # listenThread
+        #self.receiveControlerInput = Thread(target=self.controlerInput)
+        #self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+        #self.socketListenThread = Thread(target=self.socketListening) # listenThread
         
         
     ####################################################
@@ -80,49 +85,49 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
         self.ui.SM5Dev1PowerBtn.clicked.connect(self.switchOnOffSM5Dev1Motors)
         self.ui.SM5Dev2PowerBtn.clicked.connect(self.switchOnOffSM5Dev2Motors)
         
-        self.ui.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
-        self.ui.refSavedLocationBtn.clicked.connect(partial(self.referenceStage,False))
-        self.ui.refNegativeBtn.clicked.connect(partial(self.referenceStage,True))
+        #self.ui.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
+        #self.ui.refSavedLocationBtn.clicked.connect(partial(self.referenceStage,False))
+        #self.ui.refNegativeBtn.clicked.connect(partial(self.referenceStage,True))
         
-        ################################################
-        # Move panel
-        self.ui.controllerActivateBtn.clicked.connect(self.activateController)
-        self.ui.listenToSocketBtn.clicked.connect(self.listenToSocket)
+        #################################################
+        ## Move panel
+        #self.ui.controllerActivateBtn.clicked.connect(self.activateController)
+        #self.ui.listenToSocketBtn.clicked.connect(self.listenToSocket)
         
-        self.ui.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
-        self.ui.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
-        self.ui.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
-        self.ui.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
-        self.ui.stepLineEdit.editingFinished.connect(self.getStepValue)
-        self.ui.speedLineEdit.editingFinished.connect(self.getSpeedValue)
+        #self.ui.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
+        #self.ui.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
+        #self.ui.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
+        #self.ui.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
+        #self.ui.stepLineEdit.editingFinished.connect(self.getStepValue)
+        #self.ui.speedLineEdit.editingFinished.connect(self.getSpeedValue)
         
-        self.ui.device1StepLE.editingFinished.connect(self.setManiplatorStep)
-        self.ui.device2StepLE.editingFinished.connect(self.setManiplatorStep)
+        #self.ui.device1StepLE.editingFinished.connect(self.setManiplatorStep)
+        #self.ui.device2StepLE.editingFinished.connect(self.setManiplatorStep)
         
-        self.ui.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
-        self.ui.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
+        #self.ui.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
+        #self.ui.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
         
-        ################################################
-        # Location panel 
-        self.ui.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
-        self.ui.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
-        self.ui.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
-        self.ui.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
+        #################################################
+        ## Location panel 
+        #self.ui.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
+        #self.ui.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
+        #self.ui.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
+        #self.ui.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
         
-        self.ui.moveToItemBtn.clicked.connect(self.moveToLocation)
-        self.ui.updateItemLocationBtn.clicked.connect(self.updateLocation)
-        self.ui.recordDepthBtn.clicked.connect(self.recordDepth)
-        self.ui.removeItemBtn.clicked.connect(self.removeLocation)
-        self.ui.saveLocationsBtn.clicked.connect(self.saveLocations)
-        self.ui.loadLocationsBtn.clicked.connect(self.loadLocations)
+        #self.ui.moveToItemBtn.clicked.connect(self.moveToLocation)
+        #self.ui.updateItemLocationBtn.clicked.connect(self.updateLocation)
+        #self.ui.recordDepthBtn.clicked.connect(self.recordDepth)
+        #self.ui.removeItemBtn.clicked.connect(self.removeLocation)
+        #self.ui.saveLocationsBtn.clicked.connect(self.saveLocations)
+        #self.ui.loadLocationsBtn.clicked.connect(self.loadLocations)
         
-        self.ui.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
-        self.ui.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
-        self.ui.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
-        self.ui.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)        
+        #self.ui.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
+        #self.ui.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
+        #self.ui.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
+        #self.ui.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)        
     
-        self.dev.setPositionChanged.connect(self.update)
-        self.dev.isPositionChanged.connect(self.updateLimits)
+        #self.dev.setPositionChanged.connect(self.update)
+        #self.dev.isPositionChanged.connect(self.updateLimits)
     
     #################################################################################################
     def connectSM5_c843(self):
@@ -131,8 +136,8 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
             self.dev.c843
         except AttributeError:
             self.dev.init_C843()
-            self.C843XYPowerBtn.setChecked(True)
-            self.C843ZPowerBtn.setChecked(True)
+            self.ui.C843XYPowerBtn.setChecked(True)
+            self.ui.C843ZPowerBtn.setChecked(True)
             self.enableReferencePowerBtns()
         else:
             if self.receiveControlerInput.is_alive():
@@ -211,15 +216,60 @@ class manipulatorControlGui(QMainWindow,Ui_MainWindow):
     
     #################################################################################################
     def setStatusMessage(self,statusText):
-        self.statusbar.showMessage(statusText+' ...')
-        self.statusbar.setStyleSheet('color: red')
+        self.ui.statusbar.showMessage(statusText+' ...')
+        self.ui.statusbar.setStyleSheet('color: red')
         #self.statusbar.repaint()
     #################################################################################################
     def unSetStatusMessage(self,statusText):
-        self.statusbar.showMessage(statusText+' ... done')
-        self.statusbar.setStyleSheet('color: black')
+        self.ui.statusbar.showMessage(statusText+' ... done')
+        self.ui.statusbar.setStyleSheet('color: black')
         #self.statusValue.repaint()   
+    #################################################################################################
+    def disableAndEnableBtns(self,newSetting):
+        # connection panel
+        self.ui.C843XYPowerBtn.setEnabled(newSetting)
+        self.ui.C843ZPowerBtn.setEnabled(newSetting)
+        self.ui.SM5Dev1PowerBtn.setEnabled(newSetting)
+        self.ui.SM5Dev2PowerBtn.setEnabled(newSetting)
+        self.ui.refChoseLocationBtn.setEnabled(newSetting)
+        self.ui.refSavedLocationBtn.setEnabled(newSetting)
+        self.ui.refNegativeBtn.setEnabled(newSetting)
+        # Move panel
+        self.ui.controllerActivateBtn.setEnabled(newSetting)
+        self.ui.listenToSocketBtn.setEnabled(newSetting)
+        # recorded locations
+        self.ui.electrode1MLIBtn.setEnabled(newSetting)
+        self.ui.electrode1PCBtn.setEnabled(newSetting)
+        self.ui.electrode2MLIBtn.setEnabled(newSetting)
+        self.ui.electrode2PCBtn.setEnabled(newSetting)
         
+        self.ui.recordHomeLocationBtn.setEnabled(newSetting)
+        self.ui.updateHomeLocationBtn.setEnabled(newSetting)
+        self.ui.moveToHomeLocationBtn.setEnabled(newSetting)
+        self.ui.removeHomeLocationBtn.setEnabled(newSetting)
+        
+        self.ui.moveToItemBtn.setEnabled(newSetting)
+        self.ui.recordDepthBtn.setEnabled(newSetting)
+        self.ui.saveLocationsBtn.setEnabled(newSetting)
+        self.ui.updateItemLocationBtn.setEnabled(newSetting)
+        self.ui.removeItemBtn.setEnabled(newSetting)
+        self.ui.loadLocationsBtn.setEnabled(newSetting)
+    ###################################################################################################
+    def enableDisableControllerBtns(self, newSetting):
+        self.ui.fineBtn.setEnabled(newSetting)
+        self.ui.smallBtn.setEnabled(newSetting)
+        self.ui.mediumBtn.setEnabled(newSetting)
+        self.ui.coarseBtn.setEnabled(newSetting)
+        
+        self.ui.activateDev1.setEnabled(newSetting)
+        self.ui.activateDev2.setEnabled(newSetting)
+        
+        self.ui.trackStageZMovementDev1Btn.setEnabled(newSetting)
+        self.ui.trackStageXMovementDev1Btn.setEnabled(newSetting)
+        self.ui.trackStageZMovementDev2Btn.setEnabled(newSetting)
+        self.ui.trackStageXMovementDev2Btn.setEnabled(newSetting)
+
+    
         
         
         

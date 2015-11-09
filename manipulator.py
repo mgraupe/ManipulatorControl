@@ -21,7 +21,8 @@ import socket
 import select
 import collections
 import params
-
+from PyQt4 import QtCore 
+from PyQt4 import QtGui
 
 #from shapely.geometry import MultiPolygon, Polygon
 #from shapely.topology import TopologicalError
@@ -35,10 +36,8 @@ import LandNSM5
 import manipulatorGUI
 
 
-#sm5lock = Lock()
-
 #################################################################
-class manipulatorControl(Thread):
+class manipulatorControl():
     
     isStagePositionChanged = QtCore.Signal(object)
     setStagePositionsChanged = QtCore.Signal(object)
@@ -47,11 +46,15 @@ class manipulatorControl(Thread):
     def __init__(self):
         
         
-        self.gui = manipulatorControlGui(self)
+        self.gui = manipulatorGUI.manipulatorControlGui(self)
+        self.gui.setWindowTitle('Manipulator Control')
+        self.gui.setGeometry(10, 30,537,971)
+        
+        self.gui.show()
         
         self.today_date = time.strftime("%Y%m%d")[2:]
         
-        self.connectSignals()
+        #self.connectSignals()
         
         # parameters for socket connection
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
@@ -1108,12 +1111,12 @@ class manipulatorControl(Thread):
                            #event.accept()
                    #else:
                             #event.ignore()    
-        
+
 ##########################################################
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QtGui.QApplication(sys.argv)
     form = manipulatorControl()
-    form.show()
-    app.exec_()
-    
+    #form.show()
+    app.exec_()        
+
     
