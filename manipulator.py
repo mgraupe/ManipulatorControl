@@ -1,757 +1,1119 @@
-# -*- coding: utf-8 -*-
+#! python
+import os
+import sys
+from os.path import join, dirname, isdir
+import glob
+import h5py
+import pdb
+import time
+import numpy as np
+import platform
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+from matplotlib.ticker import MultipleLocator
+from matplotlib.widgets import Slider, RadioButtons
+from threading import *
+import re
+import pickle
+from functools import partial
+import pygame
+import socket
+import select
+import collections
+import params
 
-# Form implementation generated from reading ui file '.\manipulator.ui'
-#
-# Created: Wed Sep 09 18:01:00 2015
-#      by: PyQt4 UI code generator 4.10.4
-#
-# WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+#from shapely.geometry import MultiPolygon, Polygon
+#from shapely.topology import TopologicalError
+#from skimage import transform as tf
+#import itertools as it
+#from random import shuffle
+#import warnings as wa
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
+import c843_class
+import LandNSM5
+import manipulatorGUI
 
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.setEnabled(True)
-        MainWindow.resize(534, 971)
-        MainWindow.setMinimumSize(QtCore.QSize(500, 700))
-        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.gridLayout_3 = QtGui.QGridLayout(self.centralwidget)
-        self.gridLayout_3.setSpacing(9)
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(456, 143))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget.setFont(font)
-        self.dockWidget.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}"))
-        self.dockWidget.setFloating(False)
-        self.dockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget.setObjectName(_fromUtf8("dockWidget"))
-        self.dockWidgetContents = QtGui.QWidget()
-        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
-        self.gridLayout_6 = QtGui.QGridLayout(self.dockWidgetContents)
-        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
-        self.horizontalWidget = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget.setObjectName(_fromUtf8("horizontalWidget"))
-        self.horizontalLayout_16 = QtGui.QHBoxLayout(self.horizontalWidget)
-        self.horizontalLayout_16.setMargin(1)
-        self.horizontalLayout_16.setObjectName(_fromUtf8("horizontalLayout_16"))
-        self.label_7 = QtGui.QLabel(self.horizontalWidget)
-        self.label_7.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_7.setObjectName(_fromUtf8("label_7"))
-        self.horizontalLayout_16.addWidget(self.label_7)
-        self.refChoseLocationBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refChoseLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refChoseLocationBtn.setObjectName(_fromUtf8("refChoseLocationBtn"))
-        self.horizontalLayout_16.addWidget(self.refChoseLocationBtn)
-        self.refSavedLocationBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refSavedLocationBtn.setObjectName(_fromUtf8("refSavedLocationBtn"))
-        self.horizontalLayout_16.addWidget(self.refSavedLocationBtn)
-        self.refNegativeBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refNegativeBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refNegativeBtn.setObjectName(_fromUtf8("refNegativeBtn"))
-        self.horizontalLayout_16.addWidget(self.refNegativeBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget, 5, 0, 1, 2)
-        self.horizontalWidget1 = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget1.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget1.setObjectName(_fromUtf8("horizontalWidget1"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.horizontalWidget1)
-        self.horizontalLayout_2.setMargin(1)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.label_2 = QtGui.QLabel(self.horizontalWidget1)
-        self.label_2.setMinimumSize(QtCore.QSize(110, 0))
-        self.label_2.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.horizontalLayout_2.addWidget(self.label_2)
-        self.C843XYPowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.C843XYPowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.C843XYPowerBtn.setCheckable(True)
-        self.C843XYPowerBtn.setChecked(False)
-        self.C843XYPowerBtn.setObjectName(_fromUtf8("C843XYPowerBtn"))
-        self.horizontalLayout_2.addWidget(self.C843XYPowerBtn)
-        self.C843ZPowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.C843ZPowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.C843ZPowerBtn.setCheckable(True)
-        self.C843ZPowerBtn.setObjectName(_fromUtf8("C843ZPowerBtn"))
-        self.horizontalLayout_2.addWidget(self.C843ZPowerBtn)
-        self.SM5Dev1PowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.SM5Dev1PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5Dev1PowerBtn.setCheckable(True)
-        self.SM5Dev1PowerBtn.setObjectName(_fromUtf8("SM5Dev1PowerBtn"))
-        self.horizontalLayout_2.addWidget(self.SM5Dev1PowerBtn)
-        self.SM5Dev2PowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.SM5Dev2PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5Dev2PowerBtn.setCheckable(True)
-        self.SM5Dev2PowerBtn.setObjectName(_fromUtf8("SM5Dev2PowerBtn"))
-        self.horizontalLayout_2.addWidget(self.SM5Dev2PowerBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget1, 3, 0, 1, 2)
-        self.horizontalWidget2 = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget2.setObjectName(_fromUtf8("horizontalWidget2"))
-        self.horizontalLayout_17 = QtGui.QHBoxLayout(self.horizontalWidget2)
-        self.horizontalLayout_17.setMargin(1)
-        self.horizontalLayout_17.setObjectName(_fromUtf8("horizontalLayout_17"))
-        self.label_8 = QtGui.QLabel(self.horizontalWidget2)
-        self.label_8.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_8.setObjectName(_fromUtf8("label_8"))
-        self.horizontalLayout_17.addWidget(self.label_8)
-        self.connectBtn = QtGui.QPushButton(self.horizontalWidget2)
-        self.connectBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.connectBtn.setFont(font)
-        self.connectBtn.setCheckable(True)
-        self.connectBtn.setDefault(False)
-        self.connectBtn.setFlat(False)
-        self.connectBtn.setObjectName(_fromUtf8("connectBtn"))
-        self.horizontalLayout_17.addWidget(self.connectBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget2, 1, 0, 1, 2)
-        self.dockWidget.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget)
-        self.dockWidget_5 = QtGui.QDockWidget(MainWindow)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dockWidget_5.sizePolicy().hasHeightForWidth())
-        self.dockWidget_5.setSizePolicy(sizePolicy)
-        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 427))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget_5.setFont(font)
-        self.dockWidget_5.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}\n"
-""))
-        self.dockWidget_5.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget_5.setObjectName(_fromUtf8("dockWidget_5"))
-        self.dockWidgetContents_5 = QtGui.QWidget()
-        self.dockWidgetContents_5.setObjectName(_fromUtf8("dockWidgetContents_5"))
-        self.gridLayout_5 = QtGui.QGridLayout(self.dockWidgetContents_5)
-        self.gridLayout_5.setHorizontalSpacing(2)
-        self.gridLayout_5.setVerticalSpacing(4)
-        self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
-        self.groupBox_3 = QtGui.QGroupBox(self.dockWidgetContents_5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_3.setFont(font)
-        self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
-        self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_3)
-        self.gridLayout_2.setSpacing(4)
-        self.gridLayout_2.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.horizontalWidget3 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget3.setObjectName(_fromUtf8("horizontalWidget3"))
-        self.horizontalLayout_8 = QtGui.QHBoxLayout(self.horizontalWidget3)
-        self.horizontalLayout_8.setMargin(1)
-        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-        self.setXLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setXLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setXLocationLineEdit.setText(_fromUtf8(""))
-        self.setXLocationLineEdit.setObjectName(_fromUtf8("setXLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setXLocationLineEdit)
-        self.setYLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setYLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setYLocationLineEdit.setText(_fromUtf8(""))
-        self.setYLocationLineEdit.setObjectName(_fromUtf8("setYLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setYLocationLineEdit)
-        self.setZLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setZLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setZLocationLineEdit.setText(_fromUtf8(""))
-        self.setZLocationLineEdit.setObjectName(_fromUtf8("setZLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setZLocationLineEdit)
-        self.gridLayout_2.addWidget(self.horizontalWidget3, 3, 1, 1, 1)
-        self.label_9 = QtGui.QLabel(self.groupBox_3)
-        self.label_9.setObjectName(_fromUtf8("label_9"))
-        self.gridLayout_2.addWidget(self.label_9, 1, 0, 1, 1)
-        self.horizontalWidget4 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget4.setObjectName(_fromUtf8("horizontalWidget4"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.horizontalWidget4)
-        self.horizontalLayout.setMargin(1)
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.fineBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.fineBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.fineBtn.setIconSize(QtCore.QSize(16, 16))
-        self.fineBtn.setCheckable(True)
-        self.fineBtn.setObjectName(_fromUtf8("fineBtn"))
-        self.buttonGroup = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup.setObjectName(_fromUtf8("buttonGroup"))
-        self.buttonGroup.addButton(self.fineBtn)
-        self.horizontalLayout.addWidget(self.fineBtn)
-        self.smallBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.smallBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.smallBtn.setCheckable(True)
-        self.smallBtn.setObjectName(_fromUtf8("smallBtn"))
-        self.buttonGroup.addButton(self.smallBtn)
-        self.horizontalLayout.addWidget(self.smallBtn)
-        self.mediumBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.mediumBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.mediumBtn.setCheckable(True)
-        self.mediumBtn.setObjectName(_fromUtf8("mediumBtn"))
-        self.buttonGroup.addButton(self.mediumBtn)
-        self.horizontalLayout.addWidget(self.mediumBtn)
-        self.coarseBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.coarseBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.coarseBtn.setCheckable(True)
-        self.coarseBtn.setObjectName(_fromUtf8("coarseBtn"))
-        self.buttonGroup.addButton(self.coarseBtn)
-        self.horizontalLayout.addWidget(self.coarseBtn)
-        self.gridLayout_2.addWidget(self.horizontalWidget4, 4, 0, 1, 2)
-        self.label_13 = QtGui.QLabel(self.groupBox_3)
-        self.label_13.setObjectName(_fromUtf8("label_13"))
-        self.gridLayout_2.addWidget(self.label_13, 3, 0, 1, 1)
-        self.label_17 = QtGui.QLabel(self.groupBox_3)
-        self.label_17.setObjectName(_fromUtf8("label_17"))
-        self.gridLayout_2.addWidget(self.label_17, 2, 0, 1, 1)
-        self.horizontalWidget5 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget5.setObjectName(_fromUtf8("horizontalWidget5"))
-        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.horizontalWidget5)
-        self.horizontalLayout_7.setMargin(1)
-        self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.minMaxXLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        self.minMaxXLocationValueLabel.setObjectName(_fromUtf8("minMaxXLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxXLocationValueLabel)
-        self.minMaxYLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.minMaxYLocationValueLabel.setFont(font)
-        self.minMaxYLocationValueLabel.setObjectName(_fromUtf8("minMaxYLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxYLocationValueLabel)
-        self.minMaxZLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.minMaxZLocationValueLabel.setFont(font)
-        self.minMaxZLocationValueLabel.setObjectName(_fromUtf8("minMaxZLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxZLocationValueLabel)
-        self.gridLayout_2.addWidget(self.horizontalWidget5, 1, 1, 1, 1)
-        self.horizontalWidget6 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget6.setObjectName(_fromUtf8("horizontalWidget6"))
-        self.horizontalLayout_9 = QtGui.QHBoxLayout(self.horizontalWidget6)
-        self.horizontalLayout_9.setMargin(1)
-        self.horizontalLayout_9.setObjectName(_fromUtf8("horizontalLayout_9"))
-        self.isXLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isXLocationValueLabel.setFont(font)
-        self.isXLocationValueLabel.setObjectName(_fromUtf8("isXLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isXLocationValueLabel)
-        self.isYLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isYLocationValueLabel.setFont(font)
-        self.isYLocationValueLabel.setObjectName(_fromUtf8("isYLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isYLocationValueLabel)
-        self.isZLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isZLocationValueLabel.setFont(font)
-        self.isZLocationValueLabel.setObjectName(_fromUtf8("isZLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isZLocationValueLabel)
-        self.gridLayout_2.addWidget(self.horizontalWidget6, 2, 1, 1, 1)
-        self.label_18 = QtGui.QLabel(self.groupBox_3)
-        self.label_18.setObjectName(_fromUtf8("label_18"))
-        self.gridLayout_2.addWidget(self.label_18, 5, 0, 1, 1)
-        self.horizontalWidget7 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget7.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget7.setObjectName(_fromUtf8("horizontalWidget7"))
-        self.horizontalLayout_11 = QtGui.QHBoxLayout(self.horizontalWidget7)
-        self.horizontalLayout_11.setMargin(2)
-        self.horizontalLayout_11.setObjectName(_fromUtf8("horizontalLayout_11"))
-        self.stepLineEdit = QtGui.QLineEdit(self.horizontalWidget7)
-        self.stepLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.stepLineEdit.setObjectName(_fromUtf8("stepLineEdit"))
-        self.horizontalLayout_11.addWidget(self.stepLineEdit)
-        self.label_19 = QtGui.QLabel(self.horizontalWidget7)
-        self.label_19.setObjectName(_fromUtf8("label_19"))
-        self.horizontalLayout_11.addWidget(self.label_19)
-        self.speedLineEdit = QtGui.QLineEdit(self.horizontalWidget7)
-        self.speedLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.speedLineEdit.setObjectName(_fromUtf8("speedLineEdit"))
-        self.horizontalLayout_11.addWidget(self.speedLineEdit)
-        self.gridLayout_2.addWidget(self.horizontalWidget7, 5, 1, 1, 1)
-        self.gridLayout_5.addWidget(self.groupBox_3, 1, 0, 1, 3)
-        self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents_5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_4.setFont(font)
-        self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
-        self.gridLayout_8 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_8.setSpacing(4)
-        self.gridLayout_8.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_8.setObjectName(_fromUtf8("gridLayout_8"))
-        self.horizontalWidget8 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget8.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget8.setObjectName(_fromUtf8("horizontalWidget8"))
-        self.horizontalLayout_12 = QtGui.QHBoxLayout(self.horizontalWidget8)
-        self.horizontalLayout_12.setMargin(1)
-        self.horizontalLayout_12.setObjectName(_fromUtf8("horizontalLayout_12"))
-        self.xSetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.xSetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.xSetPosDev1LE.setObjectName(_fromUtf8("xSetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.xSetPosDev1LE)
-        self.ySetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.ySetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.ySetPosDev1LE.setObjectName(_fromUtf8("ySetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.ySetPosDev1LE)
-        self.zSetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.zSetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.zSetPosDev1LE.setObjectName(_fromUtf8("zSetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.zSetPosDev1LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget8, 3, 1, 1, 1)
-        self.horizontalWidget9 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget9.setObjectName(_fromUtf8("horizontalWidget9"))
-        self.horizontalLayout_10 = QtGui.QHBoxLayout(self.horizontalWidget9)
-        self.horizontalLayout_10.setMargin(1)
-        self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
-        self.device2StepLE = QtGui.QLineEdit(self.horizontalWidget9)
-        self.device2StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device2StepLE.setObjectName(_fromUtf8("device2StepLE"))
-        self.horizontalLayout_10.addWidget(self.device2StepLE)
-        self.label_12 = QtGui.QLabel(self.horizontalWidget9)
-        self.label_12.setObjectName(_fromUtf8("label_12"))
-        self.horizontalLayout_10.addWidget(self.label_12)
-        self.device2SpeedLE = QtGui.QLineEdit(self.horizontalWidget9)
-        self.device2SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device2SpeedLE.setObjectName(_fromUtf8("device2SpeedLE"))
-        self.horizontalLayout_10.addWidget(self.device2SpeedLE)
-        self.gridLayout_8.addWidget(self.horizontalWidget9, 4, 2, 1, 1)
-        self.horizontalWidget10 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget10.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget10.setObjectName(_fromUtf8("horizontalWidget10"))
-        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.horizontalWidget10)
-        self.horizontalLayout_3.setMargin(1)
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.xIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.xIsPosDev2LE.setFont(font)
-        self.xIsPosDev2LE.setObjectName(_fromUtf8("xIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.xIsPosDev2LE)
-        self.yIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.yIsPosDev2LE.setFont(font)
-        self.yIsPosDev2LE.setObjectName(_fromUtf8("yIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.yIsPosDev2LE)
-        self.zIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.zIsPosDev2LE.setFont(font)
-        self.zIsPosDev2LE.setObjectName(_fromUtf8("zIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.zIsPosDev2LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget10, 2, 2, 1, 1)
-        self.horizontalWidget11 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget11.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget11.setObjectName(_fromUtf8("horizontalWidget11"))
-        self.horizontalLayout_13 = QtGui.QHBoxLayout(self.horizontalWidget11)
-        self.horizontalLayout_13.setMargin(1)
-        self.horizontalLayout_13.setObjectName(_fromUtf8("horizontalLayout_13"))
-        self.device1StepLE = QtGui.QLineEdit(self.horizontalWidget11)
-        self.device1StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device1StepLE.setObjectName(_fromUtf8("device1StepLE"))
-        self.horizontalLayout_13.addWidget(self.device1StepLE)
-        self.label_6 = QtGui.QLabel(self.horizontalWidget11)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
-        self.horizontalLayout_13.addWidget(self.label_6)
-        self.device1SpeedLE = QtGui.QLineEdit(self.horizontalWidget11)
-        self.device1SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device1SpeedLE.setObjectName(_fromUtf8("device1SpeedLE"))
-        self.horizontalLayout_13.addWidget(self.device1SpeedLE)
-        self.gridLayout_8.addWidget(self.horizontalWidget11, 4, 1, 1, 1)
-        self.horizontalWidget12 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget12.setObjectName(_fromUtf8("horizontalWidget12"))
-        self.horizontalLayout_5 = QtGui.QHBoxLayout(self.horizontalWidget12)
-        self.horizontalLayout_5.setMargin(1)
-        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        self.xSetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.xSetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.xSetPosDev2LE.setObjectName(_fromUtf8("xSetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.xSetPosDev2LE)
-        self.ySetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.ySetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.ySetPosDev2LE.setObjectName(_fromUtf8("ySetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.ySetPosDev2LE)
-        self.zSetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.zSetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.zSetPosDev2LE.setObjectName(_fromUtf8("zSetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.zSetPosDev2LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget12, 3, 2, 1, 1)
-        self.horizontalWidget13 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget13.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget13.setObjectName(_fromUtf8("horizontalWidget13"))
-        self.horizontalLayout_4 = QtGui.QHBoxLayout(self.horizontalWidget13)
-        self.horizontalLayout_4.setMargin(1)
-        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        self.xIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.xIsPosDev1LE.setFont(font)
-        self.xIsPosDev1LE.setObjectName(_fromUtf8("xIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.xIsPosDev1LE)
-        self.yIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.yIsPosDev1LE.setFont(font)
-        self.yIsPosDev1LE.setObjectName(_fromUtf8("yIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.yIsPosDev1LE)
-        self.zIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.zIsPosDev1LE.setFont(font)
-        self.zIsPosDev1LE.setObjectName(_fromUtf8("zIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.zIsPosDev1LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget13, 2, 1, 1, 1)
-        self.horizontalWidget14 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget14.setMinimumSize(QtCore.QSize(0, 10))
-        self.horizontalWidget14.setObjectName(_fromUtf8("horizontalWidget14"))
-        self.horizontalLayout_15 = QtGui.QHBoxLayout(self.horizontalWidget14)
-        self.horizontalLayout_15.setMargin(1)
-        self.horizontalLayout_15.setObjectName(_fromUtf8("horizontalLayout_15"))
-        self.activateDev1 = QtGui.QPushButton(self.horizontalWidget14)
-        self.activateDev1.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.activateDev1.setSizeIncrement(QtCore.QSize(0, 0))
-        self.activateDev1.setCheckable(True)
-        self.activateDev1.setAutoExclusive(False)
-        self.activateDev1.setObjectName(_fromUtf8("activateDev1"))
-        self.buttonGroup_4 = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup_4.setObjectName(_fromUtf8("buttonGroup_4"))
-        self.buttonGroup_4.addButton(self.activateDev1)
-        self.horizontalLayout_15.addWidget(self.activateDev1)
-        self.activateDev2 = QtGui.QPushButton(self.horizontalWidget14)
-        self.activateDev2.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.activateDev2.setCheckable(True)
-        self.activateDev2.setAutoExclusive(False)
-        self.activateDev2.setObjectName(_fromUtf8("activateDev2"))
-        self.buttonGroup_4.addButton(self.activateDev2)
-        self.horizontalLayout_15.addWidget(self.activateDev2)
-        self.gridLayout_8.addWidget(self.horizontalWidget14, 0, 1, 1, 2)
-        self.label = QtGui.QLabel(self.groupBox_4)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout_8.addWidget(self.label, 2, 0, 1, 1)
-        self.label_23 = QtGui.QLabel(self.groupBox_4)
-        self.label_23.setObjectName(_fromUtf8("label_23"))
-        self.gridLayout_8.addWidget(self.label_23, 3, 0, 1, 1)
-        self.label_24 = QtGui.QLabel(self.groupBox_4)
-        self.label_24.setObjectName(_fromUtf8("label_24"))
-        self.gridLayout_8.addWidget(self.label_24, 4, 0, 1, 1)
-        self.label_5 = QtGui.QLabel(self.groupBox_4)
-        self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.gridLayout_8.addWidget(self.label_5, 5, 0, 1, 1)
-        self.horizontalWidget15 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget15.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget15.setObjectName(_fromUtf8("horizontalWidget15"))
-        self.horizontalLayout_6 = QtGui.QHBoxLayout(self.horizontalWidget15)
-        self.horizontalLayout_6.setMargin(1)
-        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
-        self.trackStageZMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget15)
-        self.trackStageZMovementDev1Btn.setMinimumSize(QtCore.QSize(0, 0))
-        self.trackStageZMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageZMovementDev1Btn.setIconSize(QtCore.QSize(16, 16))
-        self.trackStageZMovementDev1Btn.setCheckable(True)
-        self.trackStageZMovementDev1Btn.setAutoExclusive(False)
-        self.trackStageZMovementDev1Btn.setObjectName(_fromUtf8("trackStageZMovementDev1Btn"))
-        self.horizontalLayout_6.addWidget(self.trackStageZMovementDev1Btn)
-        self.trackStageXMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget15)
-        self.trackStageXMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageXMovementDev1Btn.setCheckable(True)
-        self.trackStageXMovementDev1Btn.setAutoExclusive(False)
-        self.trackStageXMovementDev1Btn.setObjectName(_fromUtf8("trackStageXMovementDev1Btn"))
-        self.horizontalLayout_6.addWidget(self.trackStageXMovementDev1Btn)
-        self.gridLayout_8.addWidget(self.horizontalWidget15, 5, 1, 1, 1)
-        self.horizontalWidget16 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget16.setObjectName(_fromUtf8("horizontalWidget16"))
-        self.horizontalLayout_14 = QtGui.QHBoxLayout(self.horizontalWidget16)
-        self.horizontalLayout_14.setSpacing(1)
-        self.horizontalLayout_14.setMargin(1)
-        self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
-        self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget16)
-        self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageZMovementDev2Btn.setCheckable(True)
-        self.trackStageZMovementDev2Btn.setObjectName(_fromUtf8("trackStageZMovementDev2Btn"))
-        self.horizontalLayout_14.addWidget(self.trackStageZMovementDev2Btn)
-        self.trackStageXMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget16)
-        self.trackStageXMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageXMovementDev2Btn.setCheckable(True)
-        self.trackStageXMovementDev2Btn.setObjectName(_fromUtf8("trackStageXMovementDev2Btn"))
-        self.horizontalLayout_14.addWidget(self.trackStageXMovementDev2Btn)
-        self.gridLayout_8.addWidget(self.horizontalWidget16, 5, 2, 1, 1)
-        self.gridLayout_5.addWidget(self.groupBox_4, 2, 0, 1, 3)
-        self.horizontalWidget17 = QtGui.QWidget(self.dockWidgetContents_5)
-        self.horizontalWidget17.setMaximumSize(QtCore.QSize(16777215, 30))
-        self.horizontalWidget17.setObjectName(_fromUtf8("horizontalWidget17"))
-        self.horizontalLayout_18 = QtGui.QHBoxLayout(self.horizontalWidget17)
-        self.horizontalLayout_18.setMargin(0)
-        self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
-        self.controllerActivateBtn = QtGui.QPushButton(self.horizontalWidget17)
-        self.controllerActivateBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.controllerActivateBtn.setStyleSheet(_fromUtf8(""))
-        self.controllerActivateBtn.setCheckable(True)
-        self.controllerActivateBtn.setChecked(False)
-        self.controllerActivateBtn.setObjectName(_fromUtf8("controllerActivateBtn"))
-        self.horizontalLayout_18.addWidget(self.controllerActivateBtn)
-        self.listenToSocketBtn = QtGui.QPushButton(self.horizontalWidget17)
-        self.listenToSocketBtn.setCheckable(True)
+#sm5lock = Lock()
+
+#################################################################
+class manipulatorControl(Thread):
+    
+    isStagePositionChanged = QtCore.Signal(object)
+    setStagePositionsChanged = QtCore.Signal(object)
+    
+    """Instance of the hdf5 Data Manager Qt interface."""
+    def __init__(self):
+        
+        
+        self.gui = manipulatorControlGui(self)
+        
+        self.today_date = time.strftime("%Y%m%d")[2:]
+        
+        self.connectSignals()
+        
+        # parameters for socket connection
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
+        host = params.host #socket.gethostname() #Get the local machine name
+        port = params.port # Reserve a port for your service
+        self.s.bind((host,port)) #Bind to the port
+        
+        # precision of values to show and store
+        self.precision = params.precision
+        self.locationDiscrepancy = params.locationDiscrepancy
+        
+        # angles of the manipulators with respect to a vertical line
+        self.alphaDev1 = params.alphaDev1
+        self.alphaDev2 = params.alphaDev2
+        self.manip1MoveStep = params.manip1MoveStep
+        self.manip2MoveStep = params.manip2MoveStep
+        
+        self.axes         = np.array(['x','y','z'])
+        self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
+        self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
+        
+        # movement parameters
+        self.stepWidths = collections.OrderedDict([('fine',params.fineStepWidth),('small',params.smallStepWidth),('medium',params.mediumStepWidth),('coarse',params.coarseStepWidth)])
+        #self.fineStep = 1.
+        #self.smallStep = 10.
+        #self.mediumStep = 100.
+        #self.coarseStep = 1000.
+        
+        self.speeds = collections.OrderedDict([('fine',params.fineSpeed),('small',params.smallSpeed),('medium',params.mediumSpeed),('coarse',params.coarseSpeed)])
+        
+        self.defaultMoveSpeed = 'fine'
+        #self.fineSpeed =  np.array([0.01,0.01,0.01])
+        #self.smallSpeed =  np.array([0.05,0.05,0.05])
+        #self.mediumSpeed = np.array([0.5,0.5,0.5])
+        #self.coarseSpeed = np.array([1.5,1.5,2.])
+        
+        
+        #if setExits:
+        #    DDir = h5Settings['dataDirectory']
+        #    if os.path.isdir(DDir):
+        #        self.dataDirectory = DDir
+        #        self.fillOutFileList()
+        
+        
+        self.sm5Lock = Lock()
+        self.c843Lock = Lock()
+
+    
+    #################################################################################################
+    # destroy class instances
+    def __del__(self):
+        # sutter class
+        try: 
+            self.c843
+        except AttributeError:
+            pass
+        else:
+            del self.c843
+        # tdt class
+        try: 
+            self.luigsNeumann
+        except AttributeError:
+            pass
+        else:
+            del self.luigsNeumann
+    
+    ####################################################
+    # connect signals to actions
+    def connectSignals(self):
+        
+        ################################################
+        # Connection panel 
+        self.connectBtn.clicked.connect(self.connectSM5_c843)
+        self.C843XYPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'xy'))
+        self.C843ZPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'z'))
+        self.SM5Dev1PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,1))
+        self.SM5Dev2PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,2))
+        
+        #self.yzPowerBtn.clicked.connect(self.yzPower)
+        #self.xPowerBtn.clicked.connect(self.xPower)
+        #self.x1PosStepBtn.clicked.connect(self.x1PosStep)
+        #self.x1NegStepBtn.clicked.connect(self.x1NegStep)
+        #self.x2PosStepBtn.clicked.connect(self.x2PosStep)
+        #self.x2NegStepBtn.clicked.connect(self.x2NegStep)
+        
+        self.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
+        self.refSavedLocationBtn.clicked.connect(partial(self.referenceStage,False))
+        self.refNegativeBtn.clicked.connect(partial(self.referenceStage,True))
+        
+        ################################################
+        # Move panel
+        self.controllerActivateBtn.clicked.connect(self.activateController)
+        self.listenToSocketBtn.clicked.connect(self.listenToSocket)
+        
+        self.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
+        self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
+        self.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
+        self.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
+        self.stepLineEdit.editingFinished.connect(self.getStepValue)
+        self.speedLineEdit.editingFinished.connect(self.getSpeedValue)
+        
+        self.device1StepLE.editingFinished.connect(self.setManiplatorStep)
+        self.device2StepLE.editingFinished.connect(self.setManiplatorStep)
+        
+        self.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
+        self.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
+        
+        ################################################
+        # Location panel 
+        self.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
+        self.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
+        self.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
+        self.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
+        
+        self.moveToItemBtn.clicked.connect(self.moveToLocation)
+        self.updateItemLocationBtn.clicked.connect(self.updateLocation)
+        self.recordDepthBtn.clicked.connect(self.recordDepth)
+        self.removeItemBtn.clicked.connect(self.removeLocation)
+        self.saveLocationsBtn.clicked.connect(self.saveLocations)
+        self.loadLocationsBtn.clicked.connect(self.loadLocations)
+        
+        self.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
+        self.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
+        self.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
+        self.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)
+        
+    #################################################################################################
+    def init_C843(self):
+        
+        self.c843 = c843_class.c843_class()
+        self.c843.init_stage(self.stageAxes['x'])
+        self.c843.init_stage(self.stageAxes['y'])
+        self.c843.init_stage(self.stageAxes['z'])
+    #################################################################################################
+    def delete_C843(self):
+        del self.C843
+    #################################################################################################
+    def init_SM5(self):
+        self.luigsNeumann = LandNSM5.LandNSM5()
+    
+    #################################################################################################
+    def is_SM5_connected():
+        return self.luigsNeumann.connected
+        
+    #################################################################################################
+    def delete_SM5(self):
+        del self.luigsNeumann
+    
+    #################################################################################################
+    def C843_switch_servo_on_off(axis):
+        self.c843.switch_servo_on_off(self.stageAxes[axis])
+    
+    #################################################################################################
+    def SM5_switch_on_axis(device,axis):
+        self.luigsNeumann.switchOnAxis(device,axis)
+        
+    #################################################################################################
+    def SM5_switch_off_axis(device,axis):
+        self.luigsNeumann.switchOffAxis(device,axis)
+     
+    
+    #################################################################################################
+    def referenceChoseLocations(self):
+        #
+        fileName = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
+            
+        if len(fileName)>0:
+                self.c843.openReferenceFile(fileName)
+                self.referenceStage(False)
+    
+    #################################################################################################
+    def referenceStage(self,moveStage=False):
+        #
+        self.setStatusMessage('referencing axes')
+        #
+        ref1 = self.c843.reference_stage(self.stageAxes['x'],moveStage)
+        ref2 = self.c843.reference_stage(self.stageAxes['y'],moveStage)
+        ref3 = self.c843.reference_stage(self.stageAxes['z'],moveStage)
+        if not all((ref1,ref2,ref3)):
+            reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
+            #break
+        else:
+            self.refChoseLocationBtn.setEnabled(False)
+            self.refSavedLocationBtn.setEnabled(False)
+            self.refNegativeBtn.setEnabled(False)
+            self.updateStageLocations()
+            self.initializeSetLocations()
+            self.getMinMaxOfStage()
+            self.setMovementValues(self.defaultMoveSpeed)
+            with self.sm5Lock:
+                self.initializeManipulatorSpeed()
+        #
+        self.disableAndEnableBtns(True)
+        self.unSetStatusMessage('referencing axes')
+
+    #################################################################################################
+    def activateController(self):
+        #
+        if self.activate.is_alive():
+            self.controllerActivateBtn.setText('Activate controller')
+            self.controllerActivateBtn.setStyleSheet('background-color:None')
+            self.done=True
+            self.activate = Thread(target=self.controlerInput)
+            self.enableDisableControllerBtns(False)
+            print 'controler deactive'
+        else:
+            self.controllerActivateBtn.setText('Deactivate Controller')
+            self.controllerActivateBtn.setStyleSheet('background-color:red')
+            self.enableDisableControllerBtns(True)
+            self.activate.start()
+            print 'controler active'
+
+    #################################################################################################
+    def listenToSocket(self):
+        #
+        if self.listenThread.is_alive():
+            self.listenToSocketBtn.setText('Listen to Socket')
+            self.listenToSocketBtn.setStyleSheet('background-color:None')
+            self.listen=False
+            #self.activate._stop()
+            self.listenThread = Thread(target=self.socketListening)
+            #self.enableDisableControllerBtns(False)
+            #self.activate = Thread(ThreadStart(self.controlerInput))
+            print 'socket deactive'
+        else:
+            self.listenToSocketBtn.setText('Stop listening to Socket')
+            self.listenToSocketBtn.setStyleSheet('background-color:red')
+            #self.enableDisableControllerBtns(True)
+            self.listenThread.start()
+            print 'socket active'
+    #################################################################################################        
+    def autoUpdateManip(self):
+        #self.sm5Lock = Lock()
+        self.updateDone=False
+        while self.updateDone==False:
+            with self.sm5Lock:
+                self.updateManipulatorLocations()
+            time.sleep(1)
+    #################################################################################################  
+    def socketListening(self):
+        self.listen = True
+        self.s.listen(1)
+        self.c,addr = self.s.accept()
+        #self.c.settimeout(1)
+        while self.listen:
+            do_read = False
+            try:
+                #print 'waiting for for connection to be established'
+                #self.c,addr = self.s.accept() #Establish a connection with the client
+                #print 'select select'
+                r, _, _ = select.select([self.c], [], [])
+                #data = self.c.recv(1024)
+                #print r
+                do_read = bool(r)
+            except socket.error:
+                pass
+            if do_read:
+                try:
+                    #print 'before recv'
+                    data = self.c.recv(1024)
+                    if data == 'disconnect':
+                        self.c.send('OK..'+data)
+                        self.listen = False
+                        self.listenThread = Thread(target=self.socketListening)
+                        break
+                    #print "Got data: ", data, 'from', addr[0],':',addr[1]
+                    res = self.performRemoteInstructions(data)
+                    self.c.send(str(res)+'...'+data)
+                except socket.error:
+                    self.listenToSocketBtn.setChecked(False)
+                    self.listenToSocketBtn.setText('Listen to Socket')
+                    self.listenToSocketBtn.setStyleSheet('background-color:None')
+                    self.listen = False
+                    self.listenThread = Thread(target=self.socketListening)
+                    break
+                #self.c.close()
+        self.c.close()
         self.listenToSocketBtn.setChecked(False)
-        self.listenToSocketBtn.setObjectName(_fromUtf8("listenToSocketBtn"))
-        self.horizontalLayout_18.addWidget(self.listenToSocketBtn)
-        self.gridLayout_5.addWidget(self.horizontalWidget17, 0, 0, 1, 3)
-        self.dockWidget_5.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_5)
-        self.dockWidget_6 = QtGui.QDockWidget(MainWindow)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget_6.setFont(font)
-        self.dockWidget_6.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}"))
-        self.dockWidget_6.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget_6.setObjectName(_fromUtf8("dockWidget_6"))
-        self.dockWidgetContents_6 = QtGui.QWidget()
-        self.dockWidgetContents_6.setObjectName(_fromUtf8("dockWidgetContents_6"))
-        self.gridLayout = QtGui.QGridLayout(self.dockWidgetContents_6)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.groupBox = QtGui.QGroupBox(self.dockWidgetContents_6)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox.setFont(font)
-        self.groupBox.setFlat(False)
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.gridLayout_4 = QtGui.QGridLayout(self.groupBox)
-        self.gridLayout_4.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
-        self.homeLocationsTable = QtGui.QTableWidget(self.groupBox)
-        self.homeLocationsTable.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.homeLocationsTable.setRowCount(4)
-        self.homeLocationsTable.setColumnCount(4)
-        self.homeLocationsTable.setObjectName(_fromUtf8("homeLocationsTable"))
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(3, item)
-        self.homeLocationsTable.horizontalHeader().setStretchLastSection(True)
-        self.homeLocationsTable.verticalHeader().setVisible(False)
-        self.gridLayout_4.addWidget(self.homeLocationsTable, 1, 0, 1, 4)
-        self.recordHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.recordHomeLocationBtn.setObjectName(_fromUtf8("recordHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.recordHomeLocationBtn, 0, 0, 1, 1)
-        self.removeHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.removeHomeLocationBtn.setObjectName(_fromUtf8("removeHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.removeHomeLocationBtn, 0, 3, 1, 1)
-        self.updateHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.updateHomeLocationBtn.setObjectName(_fromUtf8("updateHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.updateHomeLocationBtn, 0, 1, 1, 1)
-        self.moveToHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.moveToHomeLocationBtn.setObjectName(_fromUtf8("moveToHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.moveToHomeLocationBtn, 0, 2, 1, 1)
-        self.gridLayout.addWidget(self.groupBox, 0, 0, 2, 4)
-        self.line = QtGui.QFrame(self.dockWidgetContents_6)
-        self.line.setMinimumSize(QtCore.QSize(0, 0))
-        self.line.setFrameShape(QtGui.QFrame.HLine)
-        self.line.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line.setObjectName(_fromUtf8("line"))
-        self.gridLayout.addWidget(self.line, 3, 0, 1, 4)
-        self.groupBox_2 = QtGui.QGroupBox(self.dockWidgetContents_6)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_2.setFont(font)
-        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.gridLayout_7 = QtGui.QGridLayout(self.groupBox_2)
-        self.gridLayout_7.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_7.setObjectName(_fromUtf8("gridLayout_7"))
-        self.electrode1MLIBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode1MLIBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode1MLIBtn.setObjectName(_fromUtf8("electrode1MLIBtn"))
-        self.gridLayout_7.addWidget(self.electrode1MLIBtn, 0, 0, 1, 1)
-        self.electrode1PCBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode1PCBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode1PCBtn.setObjectName(_fromUtf8("electrode1PCBtn"))
-        self.gridLayout_7.addWidget(self.electrode1PCBtn, 0, 1, 1, 1)
-        self.cellListTable = QtGui.QTableWidget(self.groupBox_2)
-        self.cellListTable.setMaximumSize(QtCore.QSize(16777215, 115))
-        self.cellListTable.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.cellListTable.setRowCount(4)
-        self.cellListTable.setObjectName(_fromUtf8("cellListTable"))
-        self.cellListTable.setColumnCount(5)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(3, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(4, item)
-        self.cellListTable.horizontalHeader().setStretchLastSection(True)
-        self.cellListTable.verticalHeader().setVisible(False)
-        self.cellListTable.verticalHeader().setDefaultSectionSize(22)
-        self.cellListTable.verticalHeader().setMinimumSectionSize(16)
-        self.gridLayout_7.addWidget(self.cellListTable, 1, 0, 1, 4)
-        self.electrode2MLIBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode2MLIBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode2MLIBtn.setObjectName(_fromUtf8("electrode2MLIBtn"))
-        self.gridLayout_7.addWidget(self.electrode2MLIBtn, 0, 2, 1, 1)
-        self.electrode2PCBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode2PCBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode2PCBtn.setObjectName(_fromUtf8("electrode2PCBtn"))
-        self.gridLayout_7.addWidget(self.electrode2PCBtn, 0, 3, 1, 1)
-        self.moveToItemBtn = QtGui.QPushButton(self.groupBox_2)
-        self.moveToItemBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.moveToItemBtn.setObjectName(_fromUtf8("moveToItemBtn"))
-        self.gridLayout_7.addWidget(self.moveToItemBtn, 2, 0, 1, 1)
-        self.updateItemLocationBtn = QtGui.QPushButton(self.groupBox_2)
-        self.updateItemLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.updateItemLocationBtn.setObjectName(_fromUtf8("updateItemLocationBtn"))
-        self.gridLayout_7.addWidget(self.updateItemLocationBtn, 2, 1, 1, 1)
-        self.recordDepthBtn = QtGui.QPushButton(self.groupBox_2)
-        self.recordDepthBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.recordDepthBtn.setObjectName(_fromUtf8("recordDepthBtn"))
-        self.gridLayout_7.addWidget(self.recordDepthBtn, 2, 2, 1, 1)
-        self.removeItemBtn = QtGui.QPushButton(self.groupBox_2)
-        self.removeItemBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.removeItemBtn.setObjectName(_fromUtf8("removeItemBtn"))
-        self.gridLayout_7.addWidget(self.removeItemBtn, 2, 3, 1, 1)
-        self.gridLayout.addWidget(self.groupBox_2, 4, 0, 1, 4)
-        self.loadLocationsBtn = QtGui.QPushButton(self.dockWidgetContents_6)
-        self.loadLocationsBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.loadLocationsBtn.setObjectName(_fromUtf8("loadLocationsBtn"))
-        self.gridLayout.addWidget(self.loadLocationsBtn, 5, 2, 1, 2)
-        self.saveLocationsBtn = QtGui.QPushButton(self.dockWidgetContents_6)
-        self.saveLocationsBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.saveLocationsBtn.setObjectName(_fromUtf8("saveLocationsBtn"))
-        self.gridLayout.addWidget(self.saveLocationsBtn, 5, 0, 1, 2)
-        self.dockWidget_6.setWidget(self.dockWidgetContents_6)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidget_6)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setMinimumSize(QtCore.QSize(0, 60))
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
+        self.listenToSocketBtn.setText('Listen to Socket')
+        self.listenToSocketBtn.setStyleSheet('background-color:None')
+        print 'thread ended by remote host'
+            #print do_read
+            #time.sleep(0.1)
+            
+            #self.c,addr = self.s.accept() #Establish a connection with the client
+            #print "Got connection from", addr
+            #rawDataReceived =  self.c.recv(1024)
+            
+            #print rawDataReceived
+            #self.c.send('successful')
+            #self.c.close()
+            #time.sleep(0.5)
+        
+    #################################################################################################
+    def performRemoteInstructions(self,rawData):
+        data = rawData.split(',')
+        #
+        if data[0] == 'getPos':
+            with self.c843Lock:
+                self.updateStageLocations()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'relativeMoveTo':
+            moveStep = float(data[2])
+            with self.c843Lock:
+                self.choseRightSpeed(abs(moveStep))
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'absoluteMoveTo':
+            moveStep = float(data[2])
+            with self.c843Lock:
+                self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'checkMovement':
+            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
+            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
+            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
+            if any((isXMoving,isYMoving,isZMoving)):
+                return 1
+            else:
+                return 0
+        elif data[0] == 'stop':
+            self.switchOnOffC843Motors('z')
+            self.switchOnOffC843Motors('xy')
+            return 1
+        else:
+            return 0
+    #################################################################################################
+    def choseRightSpeed(self,stepSize):
+        self.moveSpeedBefore = self.moveSpeed
+        for key, value in self.stepWidths.iteritems():
+            if stepSize >= value:
+                self.moveSpeed = self.speeds[key]
+            else :
+                break
+        print stepSize, self.moveSpeed
+        self.propagateSpeeds()
+            
+    
+    #################################################################################################
+    def controlerInput(self):
+        # Initialize the joysticks
+        pygame.init()
+        pygame.joystick.init()
+        
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        
+        self.done = False
+        while self.done==False:
+            #self.manip1MoveStep = float(self.device1StepLE.text())
+            #self.manip2MoveStep = float(self.device2StepLE.text())
+            print '1'
+            for event in pygame.event.get(): # User did something
+                #	# Possible joystick actions: JOYAXISMOTION JOYBALLMOTION JOYBUTTONDOWN JOYBUTTONUP JOYHATMOTION
+                if event.type == pygame.JOYBUTTONDOWN:
+                    pass
+                    #print ("Joystick button pressed.")
+                if event.type == pygame.JOYBUTTONUP:
+                    pass
+                    #print ("Joystick button released.")
+            #
+            print '2'
+            #print 'test'
+            xAxis = joystick.get_axis( 0 )
+            yAxis = joystick.get_axis( 1 )
+            #print xAxis, yAxis
+            # x-Axis
+            if abs(xAxis) > 0.5 :
+                with self.c843Lock:
+                    self.moveStageToNewLocation(0,-self.moveStep*np.sign(xAxis))
+            # y-Axis
+            if abs(yAxis) > 0.5 :
+                with self.c843Lock:
+                    self.moveStageToNewLocation(1,-self.moveStep*np.sign(yAxis))
+            print '3'
+            # z-Axis up and down is button 4 and 6
+            setZ = self.setStage[2]
+            if joystick.get_button( 4 ):
+                with self.c843Lock:
+                    setZ -= self.moveStep
+                    print '3.1'
+                    self.moveStageToNewLocation(2,-self.moveStep)
+            print '3.2'
+            if joystick.get_button( 6 ) :
+                with self.c843Lock:
+                    setZ += self.moveStep
+                    print '3.3'
+                    self.moveStageToNewLocation(2,self.moveStep)
+            print '4'
+            # change speed settings
+            if joystick.get_button( 0 ):
+                self.setMovementValues('fine')
+            if joystick.get_button( 1 ):
+                self.setMovementValues('small')
+            if joystick.get_button( 2 ):
+                self.setMovementValues('medium')
+            if joystick.get_button( 3 ):
+                self.setMovementValues('coarse')
+            print '5'
+            # chose which manipulator to move
+            if joystick.get_button( 8 ):
+                self.activateDev1.setChecked(True)
+            if joystick.get_button( 9 ):
+                self.activateDev2.setChecked(True)
+            print '6'
+            # manipulator steps
+            if joystick.get_button( 7 ):
+                if self.activateDev1.isChecked():
+                    self.setXDev1+= self.manip1MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
+                    time.sleep(0.2)
+                if self.activateDev2.isChecked():
+                    self.setXDev2+= self.manip2MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
+                    time.sleep(0.2)
+                #self.updateManipulatorLocations('x')
+            if joystick.get_button( 5 ):
+                if self.activateDev1.isChecked():
+                    self.setXDev1-= self.manip1MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
+                    time.sleep(0.2)
+                if self.activateDev2.isChecked():
+                    self.setXDev2-= self.manip2MoveStep
+                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
+                    time.sleep(0.2)
+                #self.updateManipulatorLocations('x')
+            print '7'
+            # Dev 1
+            if self.activateDev1.isChecked() and self.trackStageZMovementDev1Btn.isChecked():
+                mov = self.oldSetZ - setZ
+                if mov:
+                    self.setZDev1-= mov
+                    #self.goVariableFastToRelativePosition(1,'z',mov)
+                    #self.updateManipulatorLocations('z')
+            elif self.activateDev1.isChecked() and self.trackStageXMovementDev1Btn.isChecked():
+                mov = (self.oldSetZ - setZ)/np.cos(self.alphaDev1*np.pi/180.)
+                if mov:
+                    self.setXDev1-= mov
+                    #self.goVariableFastToRelativePosition(1,'x',mov)
+                    #self.updateManipulatorLocations('x')
+            # Dev 2
+            if self.activateDev2.isChecked() and self.trackStageZMovementDev2Btn.isChecked():
+                mov = self.oldSetZ - setZ
+                if mov:
+                    self.setZDev2-= mov
+                    #self.goVariableFastToRelativePosition(2,'z',mov)
+                    #self.updateManipulatorLocations('z')
+            elif self.activateDev2.isChecked() and self.trackStageXMovementDev2Btn.isChecked():
+                mov = (self.oldSetZ - setZ)/np.cos(self.alphaDev2*np.pi/180.)
+                if mov:
+                    self.setXDev2-= mov
+                    #self.goVariableFastToRelativePosition(2,'x',mov)
+                    #self.updateManipulatorLocations('x')
+            self.oldSetZ = self.setStage[2]
+            print '8'
+            # Limit to 10 frames per second
+            self.clock.tick(10)
+            print '9'
+            self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
+            self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
+            self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
+            
+            self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.precision)))
+            self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
+            self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
+            
+            #
+            if abs(self.setXDev1)>self.locationDiscrepancy:
+                print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
+                self.moveManipulatorToNewLocation(1,'x',self.setXDev1)
+                self.setXDev1 = 0.
+            if abs(self.setXDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'x',self.setXDev2)
+                self.setXDev2 = 0.
+            if abs(self.setZDev1)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(1,'z',self.setZDev1)
+                self.setZDev1 = 0.
+            if abs(self.setZDev2)>self.locationDiscrepancy:
+                self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
+                self.setZDev2 = 0.
+            print '10'
+    #################################################################################################
+    def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
+        
+        print 'mSTNL 1'
+        # define movement length
+        if moveType == 'relative':
+            self.setStage[axis] += moveDistance
+        if moveType == 'absolute':
+            self.setStage[axis] = moveDistance
+        # check if limits are reached
+        print 'mSTNL 2'
+        if self.setStage[axis] < self.minStage[axis]:
+            self.setStage[axis] = self.minStage[axis]
+        elif self.setStage[axis] > self.maxStage[axis]:
+            self.setStage[axis] = self.maxStage[axis]
+        print 'mSTNL 3'
+        # update set locations
+        #if axis==0:
+        #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==1:
+        #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==2:
+        #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        print 'mSTNL 4'
+        if any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
+            wait = True
+            while wait:
+                isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
+                if not isMoving: 
+                    wait = False
+            print 'mSTNL 5', isMoving
+            self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            print 'mSTNL 6'
+            self.updateStageLocations()
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    
+    #################################################################################################
+    def moveManipulatorToNewLocation(self,dev,axis,move):
+        #exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
+        #print self.loc
+        if 'z' in axis:
+            mult = 1.
+        else:
+            mult = -1.
+        # stop update thread here
+        with self.sm5Lock : #.acquire()
+            self.luigsNeumann.goVariableFastToRelativePosition(dev,axis,float(move*mult))
+            self.updateManipulatorLocations(axis)
+            # release update thread here
+        #self.sm5Lock.release()
+        self.initializeSetLocations()
+        
+    #################################################################################################
+    def updateStageLocations(self):
+        # C843
+        for i in range(3):
+            self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
+        #
+        #self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
+        #self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
+        #self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
+        
+        self.updateHomeTable()
+        #
+    #################################################################################################
+    def updateManipulatorLocations(self,axis=None):
+        
+        if axis is None:
+            # SM5 : Dev1
+            self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+            self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+            self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+            # SM5 : Dev2
+            self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+            self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+            self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+        else:
+            if 'x' in axis:
+                self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+                self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+            if 'y' in axis:
+                self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+                self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+            if 'z' in axis:
+                self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+                self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+        #
+        self.xIsPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
+        self.yIsPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
+        self.zIsPosDev1LE.setText(str(round(self.isZDev1,self.precision)))
+        
+        self.xIsPosDev2LE.setText(str(round(self.isXDev2,self.precision)))
+        self.yIsPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
+        self.zIsPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
+        
+    #################################################################################################
+    def initializeSetLocations(self):
+        for i in range(3):
+            self.setStage[i] = self.isStage[i]
+            if i == 0:
+                self.setXLocationLineEdit.setText(str(round(self.setStage[0],self.precision)))
+            elif i == 1:
+                self.setYLocationLineEdit.setText(str(round(self.setStage[1],self.precision)))
+            elif i == 2:
+                self.setZLocationLineEdit.setText(str(round(self.setStage[2],self.precision)))
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.dockWidget.setWindowTitle(_translate("MainWindow", "Connection Panel", None))
-        self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
-        self.refChoseLocationBtn.setText(_translate("MainWindow", "Chose Stage Location", None))
-        self.refSavedLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
-        self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
-        self.label_2.setText(_translate("MainWindow", "Power On/Off", None))
-        self.C843XYPowerBtn.setText(_translate("MainWindow", " XY", None))
-        self.C843ZPowerBtn.setText(_translate("MainWindow", " Z", None))
-        self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "XYZ of Manip1", None))
-        self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "XYZ of Manip2", None))
-        self.label_8.setText(_translate("MainWindow", "Connect/Disconnect", None))
-        self.connectBtn.setText(_translate("MainWindow", "Physik Instrumente C-843  &  Luigs&Neumann SM-5", None))
-        self.dockWidget_5.setWindowTitle(_translate("MainWindow", "Move Panel", None))
-        self.groupBox_3.setTitle(_translate("MainWindow", "Stage", None))
-        self.label_9.setText(_translate("MainWindow", "max pos. (μm)", None))
-        self.fineBtn.setText(_translate("MainWindow", "Fine", None))
-        self.smallBtn.setText(_translate("MainWindow", "Small", None))
-        self.mediumBtn.setText(_translate("MainWindow", "Medium", None))
-        self.coarseBtn.setText(_translate("MainWindow", "Coarse", None))
-        self.label_13.setText(_translate("MainWindow", "set pos. (μm)", None))
-        self.label_17.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.minMaxXLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.minMaxYLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.minMaxZLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isXLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isYLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isZLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.label_18.setText(_translate("MainWindow", "Step (μm) : Speed", None))
-        self.label_19.setText(_translate("MainWindow", ":", None))
-        self.groupBox_4.setTitle(_translate("MainWindow", "Eletrode Manipulators", None))
-        self.label_12.setText(_translate("MainWindow", ":", None))
-        self.xIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.yIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.zIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.label_6.setText(_translate("MainWindow", ":", None))
-        self.xIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.yIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.zIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.activateDev1.setText(_translate("MainWindow", " # 1", None))
-        self.activateDev2.setText(_translate("MainWindow", "# 2", None))
-        self.label.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.label_23.setText(_translate("MainWindow", "change pos. (μm)", None))
-        self.label_24.setText(_translate("MainWindow", "Step (μm) : Speed", None))
-        self.label_5.setText(_translate("MainWindow", "Track Stage", None))
-        self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
-        self.trackStageXMovementDev1Btn.setText(_translate("MainWindow", "x-Movement", None))
-        self.trackStageZMovementDev2Btn.setText(_translate("MainWindow", "z-Movement", None))
-        self.trackStageXMovementDev2Btn.setText(_translate("MainWindow", "x-Movement", None))
-        self.controllerActivateBtn.setText(_translate("MainWindow", "Activate Controller", None))
-        self.listenToSocketBtn.setText(_translate("MainWindow", "Listen to Socket", None))
-        self.dockWidget_6.setWindowTitle(_translate("MainWindow", "Location Panel", None))
-        self.groupBox.setTitle(_translate("MainWindow", "Home Locations", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "#", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "x", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "y", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "z", None))
-        self.recordHomeLocationBtn.setText(_translate("MainWindow", "Record ", None))
-        self.removeHomeLocationBtn.setText(_translate("MainWindow", " Remove", None))
-        self.updateHomeLocationBtn.setText(_translate("MainWindow", "Update ", None))
-        self.moveToHomeLocationBtn.setText(_translate("MainWindow", "Move To", None))
-        self.groupBox_2.setTitle(_translate("MainWindow", "Cell Locations", None))
-        self.electrode1MLIBtn.setText(_translate("MainWindow", "E1 MLI", None))
-        self.electrode1PCBtn.setText(_translate("MainWindow", "E1 PC", None))
-        item = self.cellListTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "#", None))
-        item = self.cellListTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "type", None))
-        item = self.cellListTable.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column", None))
-        item = self.cellListTable.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "depth", None))
-        item = self.cellListTable.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "location", None))
-        self.electrode2MLIBtn.setText(_translate("MainWindow", "E2 MLI", None))
-        self.electrode2PCBtn.setText(_translate("MainWindow", "E2 PC", None))
-        self.moveToItemBtn.setText(_translate("MainWindow", "Move to ", None))
-        self.updateItemLocationBtn.setText(_translate("MainWindow", "Update", None))
-        self.recordDepthBtn.setText(_translate("MainWindow", "Record Depth", None))
-        self.removeItemBtn.setText(_translate("MainWindow", "Remove", None))
-        self.loadLocationsBtn.setText(_translate("MainWindow", "Load Locations", None))
-        self.saveLocationsBtn.setText(_translate("MainWindow", "Save Locations", None))
+        self.oldSetZ = self.setStage[2]
+        
+        self.setXDev1 = 0. #self.isXDev1
+        self.setYDev1 = 0. #self.isYDev1
+        self.setZDev1 = 0. #self.isZDev1
+        
+        self.setXDev2 = 0. #self.isXDev2
+        self.setYDev2 = 0. #self.isYDev2
+        self.setZDev2 = 0. #self.isZDev2
+        
+        self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
+        self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
+        self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
+        
+        self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.precision)))
+        self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
+        self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
+        
+        self.device1StepLE.setText(str(self.manip1MoveStep))
+        self.device2StepLE.setText(str(self.manip2MoveStep))
+        
+        #if self.isHomeSet :
+        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
+        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
+        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
+        
+    #################################################################################################
+    def getMinMaxOfStage(self):
+        # read maximal and minimal values
+        self.minStage = np.zeros(3)
+        self.maxStage = np.zeros(3)
+        
+        for i in range(3):
+            (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
+            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
+            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
+        
+        self.minMaxXLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+        self.minMaxYLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+        self.minMaxZLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+        
+    #################################################################################################
+    def initializeManipulatorSpeed(self):
+        # Manipulator Speed
+        self.velDev1 = self.luigsNeumann.getPositioningVelocityFast(1,'x')
+        self.device1SpeedLE.setText(str(self.velDev1))
+        self.velDev2 = self.luigsNeumann.getPositioningVelocityFast(2,'x')
+        self.device2SpeedLE.setText(str(self.velDev2))
+        
+        #self.enableButtons()
+    #################################################################################################
+    def setManiplatorSpeed(self,dev):
+        if dev == 1:
+            self.velDev1 = float(self.device1SpeedLE.text())
+            with self.sm5Lock:
+                self.luigsNeumann.setPositioningVelocityFast(1,'x',self.velDev1)
+        elif dev == 2:
+            self.velDev2 = float(self.device2SpeedLE.text())
+            with self.sm5Lock:
+                self.luigsNeumann.setPositioningVelocityFast(2,'x',self.velDev2)
+    #################################################################################################
+    def setManiplatorStep(self):
+        self.manip1MoveStep = float(self.device1StepLE.text())
+        self.manip2MoveStep = float(self.device2StepLE.text())
+    #################################################################################################
+    def setMovementValues(self,moveSize):
+        if moveSize == 'fine':
+            self.fineBtn.setChecked(True)
+        elif moveSize == 'small':
+            self.smallBtn.setChecked(True)
+        elif moveSize == 'medium':
+            self.mediumBtn.setChecked(True)
+        elif moveSize == 'coarse':
+            self.coarseBtn.setChecked(True)
+        #
+        self.moveStep = self.stepWidths[moveSize]
+        self.moveSpeed = self.speeds[moveSize]
+        self.stepLineEdit.setText(str(self.moveStep))
+        self.speedLineEdit.setText(str(self.moveSpeed))
+        self.propagateSpeeds()
+        #self.propagateSpeeds()
+    #################################################################################################
+    def getStepValue(self):
+        self.moveStep = float(self.stepLineEdit.text())
 
+    #################################################################################################
+    def getSpeedValue(self):
+        self.moveSpeed = float(self.speedLineEdit.text())
+        print "new speed :", self.moveSpeed
+        self.propagateSpeeds()
+
+    #################################################################################################
+    def propagateSpeeds(self):
+        for i in range(3):
+            self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
+
+    #################################################################################################
+    def recordCell(self,nElectrode,identity):
+        #self.cellListTable.insertRow(3)
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        nC = len(self.cells)
+        
+        self.cells[nC] = {}
+        self.cells[nC]['number'] = self.nItem
+        self.cells[nC]['type'] = identity # 'MLI'
+        self.cells[nC]['electrode'] = nElectrode
+        self.cells[nC]['location'] = np.array([round(xyzU[0],self.precision),round(xyzU[1],self.precision),round(xyzU[2],self.precision)])
+        self.cells[nC]['depth'] = 0.
+        
+        self.updateTable()
+        print 'added ',str(nC),'item'	
+        self.nItem+=1
+        self.repaint()
+    
+    #################################################################################################
+    def updateTable(self):
+        print len(self.cells), self.rowC
+        # add row if table gets filled up
+        #if (len(self.cells)+1) == (self.rowC):
+        #    self.cellListTable.insertRow(self.rowC)
+        #    self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
+        #    self.rowC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.cells)+1) > (self.rowC):
+            self.cellListTable.insertRow(self.rowC)
+            self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
+            self.rowC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #	for r in range(len(self.cells)):
+        #		if self.cells[r]['type']=='surface':
+        #			zSurface = self.cells[r]['location'][2]
+        
+        for r in range(len(self.cells)):
+            for c in range(5):
+                if c==0:
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['number'])))
+                elif c==1:
+                    if self.cells[r]['type']=='PC':
+                        self.cellListTable.setItem(r, c, QTableWidgetItem('PC'))
+                    elif  self.cells[r]['type']=='MLI':
+                        self.cellListTable.setItem(r, c, QTableWidgetItem('MLI'))
+                    #elif  self.cells[r]['type']=='surface':
+                    #	self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('S'))
+                elif c==2:
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['electrode'])))
+                elif c==3:
+                    if not self.cells[r]['depth'] == 0.:
+                        depth = self.cells[r]['depth']
+                        self.cellListTable.setItem(r, c, QTableWidgetItem(str(depth)))
+                    #pass
+                elif c==4:
+                    loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
+                    self.cellListTable.setItem(r, c, QTableWidgetItem(loc))
+    #################################################################################################
+    def moveToLocation(self):
+        
+        self.setStatusMessage('moving stage to cell')
+
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        print 'row: ',row
+        xyz = ([self.cells[row]['location'][0],self.cells[row]['location'][1],self.cells[row]['location'][2]])
+        print xyz
+        
+        for i in range(3):
+            self.setStage[i] = self.cells[row]['location'][i]
+            self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
+
+        self.unSetStatusMessage('moving stage to cell')
+    #################################################################################################
+    def updateLocation(self):
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        self.cells[row]['location'] = np.array([round(xyz[0],self.precision),round(xyz[1],self.precision),round(xyz[2],self.precision)])
+        self.updateTable()
+        self.repaint()
+    
+    #################################################################################################
+    def removeLocation(self):
+        #print self.cells
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        
+        nCells = len(self.cells)
+        print nCells, row
+
+        del self.cells[row]
+        if (nCells-1) != row:
+            for i in range(row,(nCells-1)):
+                self.cells[i] = self.cells[i+1]
+            del self.cells[(nCells-1)]
+        #print self.cells
+        self.updateTable()
+        self.cellListTable.removeRow((nCells-1))
+        self.cellListTable.insertRow((nCells-1))
+        self.cellListTable.setRowHeight((nCells-1),self.rowHeight)
+        self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def recordDepth(self):
+        
+        r = self.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        
+        self.cells[row]['depth'] = (self.cells[row]['location'][2] - round(xyzU[2],self.precision))
+
+        self.updateTable()
+        print 'recorded depth of cell # ',str(self.cells[row]['number'])        
+      
+    #################################################################################################
+    def saveLocations(self):
+        print self.today_date
+        saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\locations_'+self.today_date+'.p'
+        #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
+        filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
+        print str(filename),filename
+        if filename:
+            programData = {}
+            programData['cells'] = self.cells
+            programData['homeLocations'] = self.homeLocs
+            pickle.dump(programData,open(filename,"wb"))
+            self.fileSaved = True
+    #################################################################################################
+    def loadLocations(self):
+        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
+            
+        if len(filename)>0:
+            programData = pickle.load(open(filename))
+            self.cells = programData['cells']
+            self.homeLocs = programData['homeLocations']
+            
+            nItems = len(self.cells)
+            self.nItem = self.cells[(nItems-1)]['number'] + 1
+            self.updateTable()
+            print 'loaded ',str(nItems),'items'
+            
+            nHome = len(self.homeLocs)
+            self.nHomeItem = self.homeLocs[(nHome-1)]['number'] + 1
+            self.updateHomeTable()
+            print 'loaded', str(nHome), 'home locations'
+            
+            self.repaint()
+                
+    #################################################################################################
+    def updateHomeTable(self):
+        #print len(self.homeLocs), self.rowHomeC
+        # add row if table gets filled up
+        #if (len(self.homeLocs)+1) == (self.rowHomeC):
+        #    self.homeLocationsTable.insertRow(self.rowHomeC)
+        #    self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+        #    self.rowHomeC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.homeLocs)+1) > (self.rowHomeC):
+            self.homeLocationsTable.insertRow(self.rowHomeC)
+            self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+            self.rowHomeC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #       for r in range(len(self.homeLocs)):
+        #               if self.homeLocs[r]['type']=='surface':
+        #                       zSurface = self.homeLocs[r]['location'][2]
+        
+        for r in range(len(self.homeLocs)):
+            for c in range(4):
+                if c==0:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(self.homeLocs[r]['number'])))
+                elif c==1:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[0]-self.homeLocs[r]['x'],self.precision))))
+                elif c==2:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[1]-self.homeLocs[r]['y'],self.precision))))
+                elif c==3:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[2]-self.homeLocs[r]['z'],self.precision))))
+    #################################################################################################
+    def recordHomeLocation(self):
+        #self.cellListTable.insertRow(3)
+        xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        nC = len(self.homeLocs)
+        
+        self.homeLocs[nC] = {}
+        self.homeLocs[nC]['number'] = self.nHomeItem
+        
+        self.homeLocs[nC]['x'] = round(xyzU[0],self.precision)
+        self.homeLocs[nC]['y'] = round(xyzU[1],self.precision)
+        self.homeLocs[nC]['z'] = round(xyzU[2],self.precision) 
+        
+        self.updateHomeTable()
+        print 'added ',str(nC),'home item'   
+        self.nHomeItem+=1
+        self.repaint()
+    #################################################################################################
+    def updateHomeLocation(self):
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        self.homeLocs[row]['x'] = round(xyz[0],self.precision) 
+        self.homeLocs[row]['y'] = round(xyz[1],self.precision) 
+        self.homeLocs[row]['z'] = round(xyz[2],self.precision)
+        self.updateHomeTable()
+        self.repaint()
+    #################################################################################################
+    def removeHomeLocation(self):
+        #print self.cells
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        nLocations = len(self.homeLocs)
+        #print nCells, row
+
+        del self.homeLocs[row]
+        if (nLocations-1) != row:
+            for i in range(row,(nLocations-1)):
+                self.homeLocs[i] = self.homeLocs[i+1]
+            del self.homeLocs[(nLocations-1)]
+        #print self.cells
+        self.updateHomeTable()
+        self.homeLocationsTable.removeRow((nLocations-1))
+        self.homeLocationsTable.insertRow((nLocations-1))
+        self.homeLocationsTable.setRowHeight((nLocations-1),self.rowHeight)
+        self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def moveToHomeLocation(self):
+        
+        self.setStatusMessage('moving stage to home location')
+
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        print 'row: ',row
+        xyz = ([self.homeLocs[row]['x'],self.homeLocs[row]['y'],self.homeLocs[row]['z']])
+        print xyz
+        
+        for i in range(3):
+            self.setStage[i] = self.homeLocs[row][self.axes[i]]
+            self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
+        
+        self.unSetStatusMessage('moving stage to home location')
+    #################################################################################################
+    def setStatusMessage(self,statusText):
+        self.statusbar.showMessage(statusText+' ...')
+        self.statusbar.setStyleSheet('color: red')
+        #self.statusbar.repaint()
+    #################################################################################################
+    def unSetStatusMessage(self,statusText):
+        self.statusbar.showMessage(statusText+' ... done')
+        self.statusbar.setStyleSheet('color: black')
+        #self.statusValue.repaint()
+    #################################################################################################
+    def enableReferencePowerBtns(self):
+        self.C843XYPowerBtn.setEnabled(True)
+        self.C843ZPowerBtn.setEnabled(True)
+        self.SM5Dev1PowerBtn.setEnabled(True)
+        self.SM5Dev2PowerBtn.setEnabled(True)
+        self.refChoseLocationBtn.setEnabled(True)
+        self.refSavedLocationBtn.setEnabled(True)
+        self.refNegativeBtn.setEnabled(True)
+    #################################################################################################
+    def disableAndEnableBtns(self,newSetting):
+        # connection panel
+        self.C843XYPowerBtn.setEnabled(newSetting)
+        self.C843ZPowerBtn.setEnabled(newSetting)
+        self.SM5Dev1PowerBtn.setEnabled(newSetting)
+        self.SM5Dev2PowerBtn.setEnabled(newSetting)
+        self.refChoseLocationBtn.setEnabled(newSetting)
+        self.refSavedLocationBtn.setEnabled(newSetting)
+        self.refNegativeBtn.setEnabled(newSetting)
+        # Move panel
+        self.controllerActivateBtn.setEnabled(newSetting)
+        self.listenToSocketBtn.setEnabled(newSetting)
+        # recorded locations
+        self.electrode1MLIBtn.setEnabled(newSetting)
+        self.electrode1PCBtn.setEnabled(newSetting)
+        self.electrode2MLIBtn.setEnabled(newSetting)
+        self.electrode2PCBtn.setEnabled(newSetting)
+        
+        self.recordHomeLocationBtn.setEnabled(newSetting)
+        self.updateHomeLocationBtn.setEnabled(newSetting)
+        self.moveToHomeLocationBtn.setEnabled(newSetting)
+        self.removeHomeLocationBtn.setEnabled(newSetting)
+        
+        self.moveToItemBtn.setEnabled(newSetting)
+        self.recordDepthBtn.setEnabled(newSetting)
+        self.saveLocationsBtn.setEnabled(newSetting)
+        self.updateItemLocationBtn.setEnabled(newSetting)
+        self.removeItemBtn.setEnabled(newSetting)
+        self.loadLocationsBtn.setEnabled(newSetting)
+    ###################################################################################################
+    def enableDisableControllerBtns(self, newSetting):
+        self.fineBtn.setEnabled(newSetting)
+        self.smallBtn.setEnabled(newSetting)
+        self.mediumBtn.setEnabled(newSetting)
+        self.coarseBtn.setEnabled(newSetting)
+        
+        self.activateDev1.setEnabled(newSetting)
+        self.activateDev2.setEnabled(newSetting)
+        
+        self.trackStageZMovementDev1Btn.setEnabled(newSetting)
+        self.trackStageXMovementDev1Btn.setEnabled(newSetting)
+        self.trackStageZMovementDev2Btn.setEnabled(newSetting)
+        self.trackStageXMovementDev2Btn.setEnabled(newSetting)
+    #########################################################################################
+    def closeEvent(self, event):
+        self.done = True
+        self.updateDone = True
+        self.listen = False
+        self.s.close()
+        # delete class istances
+        try :
+            self.c843
+        except AttributeError:
+            pass
+        else:
+            del self.c843
+
+        #####################################################
+        try :
+            self.luigsNeumann
+        except AttributeError:
+            pass
+        else:
+            del self.luigsNeumann
+        
+        # save locations and dispaly quitting dialog
+        #if not self.fileSaved and self.nItem>0:
+                #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+                #if reply == QtGui.QMessageBox.Yes:
+                        #self.saveLocations()
+                        #event.accept()
+                #elif reply == QtGui.QMessageBox.No:
+                        #event.accept()
+                #else:
+                        #event.ignore()    
+        #else:
+                   #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to quit?",  QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+                   #if reply == QtGui.QMessageBox.Yes:
+                           #event.accept()
+                   #else:
+                            #event.ignore()    
+        
+##########################################################
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    form = manipulatorControl()
+    form.show()
+    app.exec_()
+    
+    
