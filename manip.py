@@ -112,6 +112,8 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
         self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
         
+        self.defaultPosition = np.array([12000.,12000.,6000.])
+        
         # movement parameters
         self.stepWidths = collections.OrderedDict([('fine',1.),('small',10.),('medium',100.),('coarse',1000.)])
         #self.fineStep = 1.
@@ -366,6 +368,11 @@ class manipulatorControl(QMainWindow, Ui_MainWindow, Thread):
         ref1 = self.c843.reference_stage(self.stageAxes['x'],moveStage)
         ref2 = self.c843.reference_stage(self.stageAxes['y'],moveStage)
         ref3 = self.c843.reference_stage(self.stageAxes['z'],moveStage)
+        # move stage to default location
+        if moveStage:
+            for i in range(3):
+                self.c843.move_to_absolute_position(self.stageNumbers[i],self.defaultPosition[i])
+            
         if not all((ref1,ref2,ref3)):
             reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
             #break
