@@ -48,7 +48,7 @@ class manipulatorControl():
         
         self.gui = manipulatorGUI.manipulatorControlGui(self)
         self.gui.setWindowTitle('Manipulator Control')
-        self.gui.setGeometry(10, 30,537,971)
+        self.gui.setGeometry(params.xLocation, params.yLocation,params.widthSize,params.heightSize)
         
         self.gui.show()
         
@@ -78,27 +78,11 @@ class manipulatorControl():
         
         # movement parameters
         self.stepWidths = collections.OrderedDict([('fine',params.fineStepWidth),('small',params.smallStepWidth),('medium',params.mediumStepWidth),('coarse',params.coarseStepWidth)])
-        #self.fineStep = 1.
-        #self.smallStep = 10.
-        #self.mediumStep = 100.
-        #self.coarseStep = 1000.
         
         self.speeds = collections.OrderedDict([('fine',params.fineSpeed),('small',params.smallSpeed),('medium',params.mediumSpeed),('coarse',params.coarseSpeed)])
         
         self.defaultMoveSpeed = 'fine'
-        #self.fineSpeed =  np.array([0.01,0.01,0.01])
-        #self.smallSpeed =  np.array([0.05,0.05,0.05])
-        #self.mediumSpeed = np.array([0.5,0.5,0.5])
-        #self.coarseSpeed = np.array([1.5,1.5,2.])
-        
-        
-        #if setExits:
-        #    DDir = h5Settings['dataDirectory']
-        #    if os.path.isdir(DDir):
-        #        self.dataDirectory = DDir
-        #        self.fillOutFileList()
-        
-        
+
         self.sm5Lock = Lock()
         self.c843Lock = Lock()
 
@@ -121,66 +105,6 @@ class manipulatorControl():
         else:
             del self.luigsNeumann
     
-    ####################################################
-    # connect signals to actions
-    def connectSignals(self):
-        
-        ################################################
-        # Connection panel 
-        self.connectBtn.clicked.connect(self.connectSM5_c843)
-        self.C843XYPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'xy'))
-        self.C843ZPowerBtn.clicked.connect(partial(self.switchOnOffC843Motors,'z'))
-        self.SM5Dev1PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,1))
-        self.SM5Dev2PowerBtn.clicked.connect(partial(self.switchOnOffSM5Motors,2))
-        
-        #self.yzPowerBtn.clicked.connect(self.yzPower)
-        #self.xPowerBtn.clicked.connect(self.xPower)
-        #self.x1PosStepBtn.clicked.connect(self.x1PosStep)
-        #self.x1NegStepBtn.clicked.connect(self.x1NegStep)
-        #self.x2PosStepBtn.clicked.connect(self.x2PosStep)
-        #self.x2NegStepBtn.clicked.connect(self.x2NegStep)
-        
-        self.refChoseLocationBtn.clicked.connect(self.referenceChoseLocations)
-        self.refSavedLocationBtn.clicked.connect(partial(self.referenceStage,False))
-        self.refNegativeBtn.clicked.connect(partial(self.referenceStage,True))
-        
-        ################################################
-        # Move panel
-        self.controllerActivateBtn.clicked.connect(self.activateController)
-        self.listenToSocketBtn.clicked.connect(self.listenToSocket)
-        
-        self.fineBtn.clicked.connect(partial(self.setMovementValues,'fine'))
-        self.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
-        self.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
-        self.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
-        self.stepLineEdit.editingFinished.connect(self.getStepValue)
-        self.speedLineEdit.editingFinished.connect(self.getSpeedValue)
-        
-        self.device1StepLE.editingFinished.connect(self.setManiplatorStep)
-        self.device2StepLE.editingFinished.connect(self.setManiplatorStep)
-        
-        self.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
-        self.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
-        
-        ################################################
-        # Location panel 
-        self.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
-        self.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
-        self.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
-        self.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
-        
-        self.moveToItemBtn.clicked.connect(self.moveToLocation)
-        self.updateItemLocationBtn.clicked.connect(self.updateLocation)
-        self.recordDepthBtn.clicked.connect(self.recordDepth)
-        self.removeItemBtn.clicked.connect(self.removeLocation)
-        self.saveLocationsBtn.clicked.connect(self.saveLocations)
-        self.loadLocationsBtn.clicked.connect(self.loadLocations)
-        
-        self.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
-        self.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
-        self.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
-        self.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)
-        
     #################################################################################################
     def init_C843(self):
         
@@ -214,41 +138,169 @@ class manipulatorControl():
     #################################################################################################
     def SM5_switch_off_axis(device,axis):
         self.luigsNeumann.switchOffAxis(device,axis)
-     
     
     #################################################################################################
-    def referenceChoseLocations(self):
-        #
-        fileName = QFileDialog.getOpenFileName(self, 'Choose C843 stage location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
-            
-        if len(fileName)>0:
-                self.c843.openReferenceFile(fileName)
-                self.referenceStage(False)
+    def C843_openReferenceFile(fileName):
+        self.c843.openReferenceFile(fileName)
+        
+    #################################################################################################
+    def C843_reference_state(moveStage):
+        ref = [False]*3
+        for i in range(3):
+            ref[i] = self.c843.reference_stage(self.stageAxes[self.axes[i]],moveStage)
+        return all(ref)
     
     #################################################################################################
-    def referenceStage(self,moveStage=False):
-        #
-        self.setStatusMessage('referencing axes')
-        #
-        ref1 = self.c843.reference_stage(self.stageAxes['x'],moveStage)
-        ref2 = self.c843.reference_stage(self.stageAxes['y'],moveStage)
-        ref3 = self.c843.reference_stage(self.stageAxes['z'],moveStage)
-        if not all((ref1,ref2,ref3)):
-            reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
-            #break
+    def getSM5PositingVelocityFast(axis):
+        with self.sm5Lock:
+            self.velManip1 = self.luigsNeumann.getPositioningVelocityFast(1,axis)
+            self.velManip2 = self.luigsNeumann.getPositioningVelocityFast(2,axis)
+        return [vel1,vel2]
+    
+    #################################################################################################
+    def C843_get_position(isStage):
+        for i in range(3):
+            isStage[i] = self.c843.get_position(self.stageNumbers[i])
+        
+    
+    #################################################################################################
+    def SM5_getPosition(dev,axis=None):
+        if axis is None:
+            if dev == 1:
+                with self.sm5Lock:
+                    [self.isXDev1,self.isYDev1,self.isZDev1] = [self.luigsNeumann.getPosition(1,'x'),self.luigsNeumann.getPosition(1,'y'),self.luigsNeumann.getPosition(1,'z')]
+            elif dev == 2:
+                with self.sm5Lock:
+                    [self.isXDev2,self.isYDev2,self.isZDev2] = [self.luigsNeumann.getPosition(2,'x'),self.luigsNeumann.getPosition(2,'y'),self.luigsNeumann.getPosition(2,'z')]
         else:
-            self.refChoseLocationBtn.setEnabled(False)
-            self.refSavedLocationBtn.setEnabled(False)
-            self.refNegativeBtn.setEnabled(False)
-            self.updateStageLocations()
-            self.initializeSetLocations()
-            self.getMinMaxOfStage()
-            self.setMovementValues(self.defaultMoveSpeed)
-            with self.sm5Lock:
-                self.initializeManipulatorSpeed()
+            if 'x' in axis:
+                with self.sm5Lock:
+                    self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
+                    self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
+            if 'y' in axis:
+                with self.sm5Lock:
+                    self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
+                    self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
+            if 'z' in axis:
+                with self.sm5Lock:
+                    self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
+                    self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+    #################################################################################################
+    def socket_connect():
+        self.s.listen(1)
+        self.connection,addr = self.s.accept()
+        print 'established connection with ',addr
+        #return self.c
+    #################################################################################################
+    def socket_monitor_activity():
+        r, _, _ = select.select([self.connection], [], [])
+        #data = self.c.recv(1024)
+        #print r
+        return bool(r)
+    #################################################################################################
+    def socket_read_data():
+        return self.connection.recv(params.dataSize)
+    #################################################################################################
+    def socket_send_data(data):
+        self.connection.send(data)
+    #################################################################################################
+    def socket_close_connection():
+        self.connection.close()
+    #################################################################################################
+    def performRemoteInstructions(self,rawData):
+        data = rawData.split(',')
         #
-        self.disableAndEnableBtns(True)
-        self.unSetStatusMessage('referencing axes')
+        if data[0] == 'getPos':
+            with self.c843Lock:
+                self.C843_get_position()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'relativeMoveTo':
+            moveStep = float(data[2])
+            with self.c843Lock:
+                self.C843_get_position()
+                oldIsStage = copy(self.isStage)
+                # to do : implemente loop to converge against precise target location
+                self.choseRightSpeed(abs(moveStep))
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
+                self.isStagePositionChanged.emit()
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'absoluteMoveTo':
+            moveStep = float(data[2])
+            with self.c843Lock:
+                self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
+                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
+                self.isStagePositionChanged.emit()
+                self.moveSpeed = self.moveSpeedBefore
+                self.propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'checkMovement':
+            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
+            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
+            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
+            if any((isXMoving,isYMoving,isZMoving)):
+                return 1
+            else:
+                return 0
+        elif data[0] == 'stop':
+            self.switchOnOffC843Motors('z')
+            self.switchOnOffC843Motors('xy')
+            return 1
+        else:
+            return 0
+    
+    #################################################################################################
+    def choseRightSpeed(self,stepSize):
+        self.moveSpeedBefore = self.moveSpeed
+        for key, value in self.stepWidths.iteritems():
+            if stepSize >= value:
+                self.moveSpeed = self.speeds[key]
+            else :
+                break
+        print stepSize, self.moveSpeed
+        self.propagateSpeeds()
+    #################################################################################################
+    def propagateSpeeds(self):
+        for i in range(3):
+            self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
+    
+    #################################################################################################
+    def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
+        
+        # define movement length
+        if moveType == 'relative':
+            self.setStage[axis] += moveDistance
+        if moveType == 'absolute':
+            self.setStage[axis] = moveDistance
+        # check if limits are reached
+        if self.setStage[axis] < self.minStage[axis]:
+            self.setStage[axis] = self.minStage[axis]
+        elif self.setStage[axis] > self.maxStage[axis]:
+            self.setStage[axis] = self.maxStage[axis]
+        
+        self.setStagePositionsChanged.emit()
+        # update set locations
+        #if axis==0:
+        #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==1:
+        #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==2:
+        #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        while any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
+            wait = True
+            while wait:
+                isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
+                if not isMoving: 
+                    wait = False
+            self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+        self.isStagePositionChanged.emit()
+    
+    
+##################################################################################
+##################################################################################
+##################################################################################    
+    
 
     #################################################################################################
     def activateController(self):
@@ -348,44 +400,7 @@ class manipulatorControl():
             #self.c.close()
             #time.sleep(0.5)
         
-    #################################################################################################
-    def performRemoteInstructions(self,rawData):
-        data = rawData.split(',')
-        #
-        if data[0] == 'getPos':
-            with self.c843Lock:
-                self.updateStageLocations()
-            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
-        elif data[0] == 'relativeMoveTo':
-            moveStep = float(data[2])
-            with self.c843Lock:
-                self.choseRightSpeed(abs(moveStep))
-                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
-                self.moveSpeed = self.moveSpeedBefore
-                self.propagateSpeeds()
-            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
-        elif data[0] == 'absoluteMoveTo':
-            moveStep = float(data[2])
-            with self.c843Lock:
-                self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
-                self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
-                self.moveSpeed = self.moveSpeedBefore
-                self.propagateSpeeds()
-            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
-        elif data[0] == 'checkMovement':
-            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
-            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
-            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
-            if any((isXMoving,isYMoving,isZMoving)):
-                return 1
-            else:
-                return 0
-        elif data[0] == 'stop':
-            self.switchOnOffC843Motors('z')
-            self.switchOnOffC843Motors('xy')
-            return 1
-        else:
-            return 0
+    
     #################################################################################################
     def choseRightSpeed(self,stepSize):
         self.moveSpeedBefore = self.moveSpeed
@@ -599,9 +614,9 @@ class manipulatorControl():
         for i in range(3):
             self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
         #
-        #self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
-        #self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
-        #self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
+        self.isXLocationValueLabel.setText(str(round(self.isStage[0],self.precision)))
+        self.isYLocationValueLabel.setText(str(round(self.isStage[1],self.precision)))
+        self.isZLocationValueLabel.setText(str(round(self.isStage[2],self.precision)))
         
         self.updateHomeTable()
         #

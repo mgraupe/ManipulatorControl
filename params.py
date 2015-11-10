@@ -1,3 +1,9 @@
+###################################################
+# Gui 
+xLocation = 10
+yLocation = 30
+widthSize = 537
+heightSize = 971
 
 ###################################################
 # precision of values to show and store
@@ -29,3 +35,4 @@ manip2MoveStep = 2. # in um
 # parameters for socket connection
 host = '172.20.61.89' #socket.gethostname() #Get the local machine name
 port = 5555 # Reserve a port for your service
+dateSize = 1024 # size of data-packages sent back and forth
