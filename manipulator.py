@@ -169,7 +169,7 @@ class manipulatorControl():
     def C843_get_position(self):
         for i in range(3):
             self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
-        
+        self.isStagePositionChanged.emit()
     
     #################################################################################################
     def SM5_getPosition(self,dev,axis=None):
@@ -193,6 +193,7 @@ class manipulatorControl():
                 with self.sm5Lock:
                     self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
                     self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+        self.isManipulatorPositionChanged.emit()
     #################################################################################################
     def socket_connect(self):
         self.s.listen(1)

@@ -15,10 +15,10 @@ import manipulatorTemplate
 #################################################################
 class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
-    setStagePositionChanged = Signal()
-    isStagePositionChanged = Signal()
-    setManipulatorPositionChanged = Signal()
-    isManipulatorPositionChanged = Signal()
+    #setStagePositionChanged = Signal()
+    #isStagePositionChanged = Signal()
+    #setManipulatorPositionChanged = Signal()
+    #isManipulatorPositionChanged = Signal()
     
     def __init__(self,dev):
         
@@ -138,10 +138,10 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         
         ##################################################
         # signals
-        self.isStagePositionChanged.connect(self.updateIsStagePositions)
-        self.setStagePositionChanged.connect(self.updateSetStagePositions)
-        self.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
-        self.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
+        self.dev.isStagePositionChanged.connect(self.updateIsStagePositions)
+        self.dev.setStagePositionChanged.connect(self.updateSetStagePositions)
+        self.dev.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
+        self.dev.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -293,7 +293,6 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         while self.updateManiuplators:
             pos1 = self.dev.SM5_getPosition(1)
             pos2 = self.dev.SM5_getPosition(2)
-            self.isManipulatorPositionChanged.emit()
             time.sleep(.5)
     
     #################################################################################################  
@@ -535,7 +534,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
     def updateStageLocations(self):
         # C843
         self.dev.C843_get_position()
-        self.isStagePositionChanged.emit()
+        
     #################################################################################################
     def updateSetStagePositions(self):
         for i in range(3):
