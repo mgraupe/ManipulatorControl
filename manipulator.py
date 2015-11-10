@@ -226,7 +226,7 @@ class manipulatorControl():
                 self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
                 self.isStagePositionChanged.emit()
                 self.moveSpeed = self.moveSpeedBefore
-                self.propagateSpeeds()
+                self.C843_propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'absoluteMoveTo':
             moveStep = float(data[2])
@@ -235,7 +235,7 @@ class manipulatorControl():
                 self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
                 self.isStagePositionChanged.emit()
                 self.moveSpeed = self.moveSpeedBefore
-                self.propagateSpeeds()
+                self.C843_propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'checkMovement':
             isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
@@ -261,26 +261,26 @@ class manipulatorControl():
             else :
                 break
         print stepSize, self.moveSpeed
-        self.propagateSpeeds()
+        self.C843_propagateSpeeds()
     
     #################################################################################################
     def determine_stage_speed(self,moveSize):
         self.moveStep = self.stepWidths[moveSize]
         self.moveSpeed = self.speeds[moveSize]
-        self.propagateSpeeds()
+        self.C843_propagateSpeeds()
     #################################################################################################
-    def propagateSpeeds(self):
+    def C843_propagateSpeeds(self):
         for i in range(3):
             self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
     
     #################################################################################################
-    def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
+    def moveStageToNewLocation(self,axis,moveSign,moveType='relative'):
         
         # define movement length
         if moveType == 'relative':
-            self.setStage[axis] += moveDistance
+            self.setStage[axis] += self.moveStep*moveSign
         if moveType == 'absolute':
-            self.setStage[axis] = moveDistance
+            self.setStage[axis] = self.moveStep*moveSign
         # check if limits are reached
         if self.setStage[axis] < self.minStage[axis]:
             self.setStage[axis] = self.minStage[axis]
@@ -298,13 +298,65 @@ class manipulatorControl():
         while any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
             wait = True
             while wait:
-                isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
+                with self.c843Lock:
+                    isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
                 if not isMoving: 
                     wait = False
-            self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            with self.c843Lock:
+                self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
         self.isStagePositionChanged.emit()
     
+    #################################################################################################
+    def setManiplatorSpeed(self,dev,speed):
+        with self.sm5Lock:
+            self.luigsNeumann.setPositioningVelocityFast(dev,'x',speed)
     
+    #################################################################################################
+    def setManiplatorStep(self,steps):
+        self.manip1MoveStep = steps[0]
+        self.manip2MoveStep = steps[1]
+        
+    #################################################################################################
+    def moveManipulatorToNewLocation(self,dev,axis,moveStep):
+        if dev == 1:
+            if axis == 'x':
+                self.setXDev1+= self.moveStep
+            elif axis == 'y':
+                self.setYDev1+= self.moveStep
+            elif axis == 'z':
+                self.setZDev1+= self.moveStep
+        elif dev == 2:
+            if axis == 'x':
+                self.setXDev2+= self.moveStep
+            elif axis == 'y':
+                self.setYDev2+= self.moveStep
+            elif axis == 'z':
+                self.setZDev2+= self.moveStep
+                
+        self.setManipulatorPositionsChanged.emit()
+        #print self.loc
+        if 'z' in axis:
+            movementSize = self.moveStep
+        else:
+            movementSize= -1.*self.moveStep
+        
+        if abs(movementSize) > self.locationDiscrepancy:
+            if dev == 1:
+                with self.sm5Lock : #.acquire()
+                    self.luigsNeumann.goVariableFastToRelativePosition(1,axis,float(movement))
+            elif dev == 2:
+                with self.sm5Lock : #.acquire()
+                    self.luigsNeumann.goVariableFastToRelativePosition(2,axis,float(movement))
+            # update locations
+            self.SM5_getPosition(dev,axis)
+            # show new loctions in gui
+            self.isManipulatorPositionChanged.emit()
+        
+        #self.updateManipulatorLocations(axis)
+        # release update thread here
+        #self.sm5Lock.release()
+        #self.initializeSetLocations()
+        
 ##################################################################################
 ##################################################################################
 ##################################################################################    
@@ -567,7 +619,6 @@ class manipulatorControl():
     #################################################################################################
     def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
         
-        print 'mSTNL 1'
         # define movement length
         if moveType == 'relative':
             self.setStage[axis] += moveDistance
@@ -720,20 +771,7 @@ class manipulatorControl():
         self.device2SpeedLE.setText(str(self.velDev2))
         
         #self.enableButtons()
-    #################################################################################################
-    def setManiplatorSpeed(self,dev):
-        if dev == 1:
-            self.velDev1 = float(self.device1SpeedLE.text())
-            with self.sm5Lock:
-                self.luigsNeumann.setPositioningVelocityFast(1,'x',self.velDev1)
-        elif dev == 2:
-            self.velDev2 = float(self.device2SpeedLE.text())
-            with self.sm5Lock:
-                self.luigsNeumann.setPositioningVelocityFast(2,'x',self.velDev2)
-    #################################################################################################
-    def setManiplatorStep(self):
-        self.manip1MoveStep = float(self.device1StepLE.text())
-        self.manip2MoveStep = float(self.device2StepLE.text())
+   
     #################################################################################################
     def setMovementValues(self,moveSize):
         if moveSize == 'fine':
