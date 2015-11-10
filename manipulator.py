@@ -41,9 +41,12 @@ from PyQt4.QtGui import *
 #################################################################
 class manipulatorControl():
     
-    isStagePositionChanged = QtCore.Signal(object)
-    setStagePositionsChanged = QtCore.Signal(object)
-    
+    #isStagePositionChanged = QtCore.Signal()
+    #setStagePositionsChanged = QtCore.Signal()
+    setStagePositionChanged = QtCore.Signal()
+    isStagePositionChanged = QtCore.Signal()
+    setManipulatorPositionChanged = QtCore.Signal()
+    isManipulatorPositionChanged = QtCore.Signal()
     """Instance of the hdf5 Data Manager Qt interface."""
     def __init__(self):
         
@@ -114,15 +117,16 @@ class manipulatorControl():
         self.c843.init_stage(self.stageAxes['x'])
         self.c843.init_stage(self.stageAxes['y'])
         self.c843.init_stage(self.stageAxes['z'])
+        self.isStage = np.zeros(3)
     #################################################################################################
     def delete_C843(self):
-        del self.C843
+        del self.c843
     #################################################################################################
     def init_SM5(self):
         self.luigsNeumann = LandNSM5.LandNSM5()
     
     #################################################################################################
-    def is_SM5_connected():
+    def is_SM5_connected(self):
         return self.luigsNeumann.connected
         
     #################################################################################################
@@ -130,43 +134,45 @@ class manipulatorControl():
         del self.luigsNeumann
     
     #################################################################################################
-    def C843_switch_servo_on_off(axis):
+    def C843_switch_servo_on_off(self,axis):
         self.c843.switch_servo_on_off(self.stageAxes[axis])
     
     #################################################################################################
-    def SM5_switch_on_axis(device,axis):
+    def SM5_switch_on_axis(self,device,axis):
         self.luigsNeumann.switchOnAxis(device,axis)
         
     #################################################################################################
-    def SM5_switch_off_axis(device,axis):
+    def SM5_switch_off_axis(self,device,axis):
         self.luigsNeumann.switchOffAxis(device,axis)
     
     #################################################################################################
-    def C843_openReferenceFile(fileName):
+    def C843_openReferenceFile(self,fileName):
         self.c843.openReferenceFile(fileName)
         
     #################################################################################################
-    def C843_reference_state(moveStage):
+    def C843_reference_state(self,moveStage):
         ref = [False]*3
         for i in range(3):
             ref[i] = self.c843.reference_stage(self.stageAxes[self.axes[i]],moveStage)
+        self.isStage = np.zeros(3)
+        self.setStage = np.zeros(3)
         return all(ref)
     
     #################################################################################################
-    def getSM5PositingVelocityFast(axis):
+    def getSM5PositingVelocityFast(self,axis):
         with self.sm5Lock:
-            self.velManip1 = self.luigsNeumann.getPositioningVelocityFast(1,axis)
-            self.velManip2 = self.luigsNeumann.getPositioningVelocityFast(2,axis)
+            vel1 = self.luigsNeumann.getPositioningVelocityFast(1,axis)
+            vel2 = self.luigsNeumann.getPositioningVelocityFast(2,axis)
         return [vel1,vel2]
     
     #################################################################################################
-    def C843_get_position(isStage):
+    def C843_get_position(self):
         for i in range(3):
-            isStage[i] = self.c843.get_position(self.stageNumbers[i])
+            self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
         
     
     #################################################################################################
-    def SM5_getPosition(dev,axis=None):
+    def SM5_getPosition(self,dev,axis=None):
         if axis is None:
             if dev == 1:
                 with self.sm5Lock:
@@ -188,25 +194,25 @@ class manipulatorControl():
                     self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
                     self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
     #################################################################################################
-    def socket_connect():
+    def socket_connect(self):
         self.s.listen(1)
         self.connection,addr = self.s.accept()
         print 'established connection with ',addr
         #return self.c
     #################################################################################################
-    def socket_monitor_activity():
+    def socket_monitor_activity(self):
         r, _, _ = select.select([self.connection], [], [])
         #data = self.c.recv(1024)
         #print r
         return bool(r)
     #################################################################################################
-    def socket_read_data():
+    def socket_read_data(self):
         return self.connection.recv(params.dataSize)
     #################################################################################################
-    def socket_send_data(data):
+    def socket_send_data(self,data):
         self.connection.send(data)
     #################################################################################################
-    def socket_close_connection():
+    def socket_close_connection(self):
         self.connection.close()
     #################################################################################################
     def performRemoteInstructions(self,rawData):
@@ -287,7 +293,7 @@ class manipulatorControl():
         elif self.setStage[axis] > self.maxStage[axis]:
             self.setStage[axis] = self.maxStage[axis]
         
-        self.setStagePositionsChanged.emit()
+        self.setStagePositionChanged.emit()
         # update set locations
         #if axis==0:
         #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
@@ -356,6 +362,18 @@ class manipulatorControl():
         # release update thread here
         #self.sm5Lock.release()
         #self.initializeSetLocations()
+    #################################################################################################
+    def getMinMaxOfStage(self):
+        # read maximal and minimal values
+        self.minStage = np.zeros(3)
+        self.maxStage = np.zeros(3)
+        
+        for i in range(3):
+            with self.c843Lock:
+                (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
+            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
+            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
+        
         
 ##################################################################################
 ##################################################################################
@@ -617,7 +635,7 @@ class manipulatorControl():
                 self.setZDev2 = 0.
             print '10'
     #################################################################################################
-    def moveStageToNewLocation(self,axis,moveDistance,moveType='relative'):
+    def moveStageToNewLocationOld(self,axis,moveDistance,moveType='relative'):
         
         # define movement length
         if moveType == 'relative':
@@ -747,20 +765,7 @@ class manipulatorControl():
         #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
         #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))
         
-    #################################################################################################
-    def getMinMaxOfStage(self):
-        # read maximal and minimal values
-        self.minStage = np.zeros(3)
-        self.maxStage = np.zeros(3)
-        
-        for i in range(3):
-            (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
-            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
-            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
-        
-        self.minMaxXLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
-        self.minMaxYLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
-        self.minMaxZLocationValueLabel.setText(str(round(self.maxStage[0],self.precision)))
+    
         
     #################################################################################################
     def initializeManipulatorSpeed(self):

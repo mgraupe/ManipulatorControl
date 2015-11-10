@@ -1,6 +1,7 @@
 import sys
 import pygame
 import select
+import time
 from threading import *
 from functools import partial
 
@@ -14,8 +15,10 @@ import manipulatorTemplate
 #################################################################
 class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
-    isStagePositionChanged = Signal(object)
-    isManipulatorPositionChanged = Signal(object)
+    setStagePositionChanged = Signal()
+    isStagePositionChanged = Signal()
+    setManipulatorPositionChanged = Signal()
+    isManipulatorPositionChanged = Signal()
     
     def __init__(self,dev):
         
@@ -105,11 +108,11 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.ui.stepLineEdit.editingFinished.connect(self.getStepValue)
         self.ui.speedLineEdit.editingFinished.connect(self.getSpeedValue)
         
-        self.ui.device1StepLE.editingFinished.connect(self.setManiplatorStep)
-        self.ui.device2StepLE.editingFinished.connect(self.setManiplatorStep)
+        self.ui.device1StepLE.editingFinished.connect(self.getManiplatorStep)
+        self.ui.device2StepLE.editingFinished.connect(self.getManiplatorStep)
         
-        self.ui.device1SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,1))
-        self.ui.device2SpeedLE.editingFinished.connect(partial(self.setManiplatorSpeed,2))
+        self.ui.device1SpeedLE.editingFinished.connect(partial(self.getManiplatorSpeed,1))
+        self.ui.device2SpeedLE.editingFinished.connect(partial(self.getManiplatorSpeed,2))
         
         #################################################
         ## Location panel 
@@ -136,9 +139,9 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         ##################################################
         # signals
         self.isStagePositionChanged.connect(self.updateIsStagePositions)
-        self.setStagePositionsChanged.connect(self.updateSetStagePositions)
+        self.setStagePositionChanged.connect(self.updateSetStagePositions)
         self.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
-        self.setManipulatorPositionsChanged.connect(self.updateSetManipulatorPositions)
+        self.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -156,8 +159,8 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             if self.socketListenThread.is_alive():
                 self.activateSocket()
             self.dev.delete_C843()
-            self.C843XYPowerBtn.setChecked(False)
-            self.C843ZPowerBtn.setChecked(False)
+            self.ui.C843XYPowerBtn.setChecked(False)
+            self.ui.C843ZPowerBtn.setChecked(False)
             self.disableAndEnableBtns(False)
         
         # SM5
@@ -167,9 +170,11 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         except AttributeError:
             self.dev.init_SM5()
             if self.dev.is_SM5_connected():
-                self.SM5Dev1PowerBtn.setChecked(True)
-                self.SM5Dev2PowerBtn.setChecked(True)
+                self.ui.SM5Dev1PowerBtn.setChecked(True)
+                self.ui.SM5Dev2PowerBtn.setChecked(True)
+                self.readManipulatorSpeed()
                 self.autoUpdateManipulatorLocations.start()
+                
             else:
                 reply = QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QMessageBox.Ok )
         else:
@@ -178,9 +183,8 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
                 self.autoUpdateManipulatorLocations.join()
                 self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
             self.dev.delete_SM5()
-            self.SM5Dev1PowerBtn.setChecked(False)
-            self.SM5Dev2PowerBtn.setChecked(False)
-            self.readManipulatorSpeed()
+            self.ui.SM5Dev1PowerBtn.setChecked(False)
+            self.ui.SM5Dev2PowerBtn.setChecked(False)
         #
         self.unSetStatusMessage('initializing stages')
     
@@ -229,7 +233,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
     #################################################################################################
     def referenceStage(self,moveStage=False,fileName=None):
         #
-        self.ui.setStatusMessage('referencing axes')
+        self.setStatusMessage('referencing axes')
         #
         if fileName:
             self.dev.C843_openReferenceFile(fileName)
@@ -240,14 +244,14 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             self.ui.refNegativeBtn.setEnabled(False)
             
             self.updateStageLocations()
-            self.initializeSetLocations()
+            #self.initializeSetLocations()
             self.getMinMaxOfStage()
-            self.setMovementValues(self.defaultMoveSpeed)
+            self.setMovementValues(self.dev.defaultMoveSpeed)
         else:
             reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
         #
-        self.ui.disableAndEnableBtns(True)
-        self.ui.unSetStatusMessage('referencing axes')
+        self.disableAndEnableBtns(True)
+        self.unSetStatusMessage('referencing axes')
         
     #################################################################################################
     def activateController(self):
@@ -257,12 +261,12 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             self.ui.controllerActivateBtn.setStyleSheet('background-color:None')
             self.listenToControler=False
             self.receiveControlerInput = Thread(target=self.controlerInput)
-            self.ui.enableDisableControllerBtns(False)
+            self.enableDisableControllerBtns(False)
             print 'controler inactive'
         else:
             self.ui.controllerActivateBtn.setText('Deactivate Controller')
             self.ui.controllerActivateBtn.setStyleSheet('background-color:red')
-            self.ui.enableDisableControllerBtns(True)
+            self.enableDisableControllerBtns(True)
             self.receiveControlerInput.start()
             print 'controler active'
 
@@ -290,7 +294,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             pos1 = self.dev.SM5_getPosition(1)
             pos2 = self.dev.SM5_getPosition(2)
             self.isManipulatorPositionChanged.emit()
-            time.sleep(1)
+            time.sleep(.5)
     
     #################################################################################################  
     def socketListening(self):
@@ -468,6 +472,13 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
                 #self.setZDev2 = 0.
             #print '10'
     #################################################################################################
+    def getMinMaxOfStage(self):
+        self.dev.getMinMaxOfStage()
+        self.ui.minMaxXLocationValueLabel.setText(str(round(self.dev.maxStage[0],self.dev.precision)))
+        self.ui.minMaxYLocationValueLabel.setText(str(round(self.dev.maxStage[1],self.dev.precision)))
+        self.ui.minMaxZLocationValueLabel.setText(str(round(self.dev.maxStage[2],self.dev.precision)))
+    
+    #################################################################################################
     def setMovementValues(self,moveSize):
         if moveSize == 'fine':
             self.ui.fineBtn.setChecked(True)
@@ -485,20 +496,20 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         
         #self.propagateSpeeds()
     #################################################################################################
-    def updateIsManipulatorPositions():
-        self.xIsPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
-        self.yIsPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
-        self.zIsPosDev1LE.setText(str(round(self.isZDev1,self.precision)))
+    def updateIsManipulatorPositions(self):
+        self.ui.xIsPosDev1LE.setText(str(round(self.isXDev1,self.dev.precision)))
+        self.ui.yIsPosDev1LE.setText(str(round(self.isYDev1,self.dev.precision)))
+        self.ui.zIsPosDev1LE.setText(str(round(self.isZDev1,self.dev.precision)))
         
-        self.xIsPosDev2LE.setText(str(round(self.isXDev2,self.precision)))
-        self.yIsPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
-        self.zIsPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
+        self.ui.xIsPosDev2LE.setText(str(round(self.isXDev2,self.dev.precision)))
+        self.ui.yIsPosDev2LE.setText(str(round(self.isYDev2,self.dev.precision)))
+        self.ui.zIsPosDev2LE.setText(str(round(self.isZDev2,self.dev.precision)))
     
     #################################################################################################
-    def readManipulatorSpeed():
+    def readManipulatorSpeed(self):
         vel = self.dev.getSM5PositingVelocityFast('x')
-        self.device1SpeedLE.setText(str(vel[0]))
-        self.device2SpeedLE.setText(str(vel[1]))
+        self.ui.device1SpeedLE.setText(str(vel[0]))
+        self.ui.device2SpeedLE.setText(str(vel[1]))
     #################################################################################################
     def getStepValue(self):
         moveStep = float(self.stepLineEdit.text())
@@ -526,52 +537,52 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.dev.C843_get_position()
         self.isStagePositionChanged.emit()
     #################################################################################################
-    def updateSetStagePositions():
+    def updateSetStagePositions(self):
         for i in range(3):
             if i == 0:
-                self.setXLocationLineEdit.setText(str(round(self.dev.setStage[0],self.precision)))
+                self.setXLocationLineEdit.setText(str(round(self.dev.setStage[0],self.dev.precision)))
             elif i == 1:
-                self.setYLocationLineEdit.setText(str(round(self.dev.setStage[1],self.precision)))
+                self.setYLocationLineEdit.setText(str(round(self.dev.setStage[1],self.dev.precision)))
             elif i == 2:
-                self.setZLocationLineEdit.setText(str(round(self.dev.setStage[2],self.precision)))
+                self.setZLocationLineEdit.setText(str(round(self.dev.setStage[2],self.dev.precision)))
     #################################################################################################
-    def updateIsStagePositions():
-        self.isXLocationValueLabel.setText(str(round(self.dev.isStage[0],self.precision)))
-        self.isYLocationValueLabel.setText(str(round(self.dev.isStage[1],self.precision)))
-        self.isZLocationValueLabel.setText(str(round(self.dev.isStage[2],self.precision)))
+    def updateIsStagePositions(self):
+        self.ui.isXLocationValueLabel.setText(str(round(self.dev.isStage[0],self.dev.precision)))
+        self.ui.isYLocationValueLabel.setText(str(round(self.dev.isStage[1],self.dev.precision)))
+        self.ui.isZLocationValueLabel.setText(str(round(self.dev.isStage[2],self.dev.precision)))
         
-        self.updateHomeTable()    
+        #self.updateHomeTable()    
     
     #################################################################################################
-    def updateSetManipulatorPositions():
-        self.xSetPosDev1LE.setText(str(round(self.dev.setXDev1,self.precision)))
-        self.ySetPosDev1LE.setText(str(round(self.dev.setYDev1,self.precision)))
-        self.zSetPosDev1LE.setText(str(round(self.dev.setZDev1,self.precision)))
+    def updateSetManipulatorPositions(self):
+        self.ui.xSetPosDev1LE.setText(str(round(self.dev.setXDev1,self.dev.precision)))
+        self.ui.ySetPosDev1LE.setText(str(round(self.dev.setYDev1,self.dev.precision)))
+        self.ui.zSetPosDev1LE.setText(str(round(self.dev.setZDev1,self.dev.precision)))
         
-        self.xSetPosDev2LE.setText(str(round(self.dev.setXDev2,self.precision)))
-        self.ySetPosDev2LE.setText(str(round(self.dev.setYDev2,self.precision)))
-        self.zSetPosDev2LE.setText(str(round(self.dev.setZDev2,self.precision)))
+        self.ui.xSetPosDev2LE.setText(str(round(self.dev.setXDev2,self.dev.precision)))
+        self.ui.ySetPosDev2LE.setText(str(round(self.dev.setYDev2,self.dev.precision)))
+        self.ui.zSetPosDev2LE.setText(str(round(self.dev.setZDev2,self.dev.precision)))
             
     #################################################################################################
-    def updateIsManipulatorPositions():
-        self.xIsPosDev1LE.setText(str(round(self.dev.isXDev1,self.precision)))
-        self.yIsPosDev1LE.setText(str(round(self.dev.isYDev1,self.precision)))
-        self.zIsPosDev1LE.setText(str(round(self.dev.isZDev1,self.precision)))
+    def updateIsManipulatorPositions(self):
+        self.ui.xIsPosDev1LE.setText(str(round(self.dev.isXDev1,self.dev.precision)))
+        self.ui.yIsPosDev1LE.setText(str(round(self.dev.isYDev1,self.dev.precision)))
+        self.ui.zIsPosDev1LE.setText(str(round(self.dev.isZDev1,self.dev.precision)))
         
-        self.xIsPosDev2LE.setText(str(round(self.dev.isXDev2,self.precision)))
-        self.yIsPosDev2LE.setText(str(round(self.dev.isYDev2,self.precision)))
-        self.zIsPosDev2LE.setText(str(round(self.dev.isZDev2,self.precision)))
+        self.ui.xIsPosDev2LE.setText(str(round(self.dev.isXDev2,self.dev.precision)))
+        self.ui.yIsPosDev2LE.setText(str(round(self.dev.isYDev2,self.dev.precision)))
+        self.ui.zIsPosDev2LE.setText(str(round(self.dev.isZDev2,self.dev.precision)))
         
     #################################################################################################
     def initializeSetLocations(self):
         for i in range(3):
             self.setStage[i] = self.dev.isStage[i]
             if i == 0:
-                self.setXLocationLineEdit.setText(str(round(self.setStage[0],self.precision)))
+                self.setXLocationLineEdit.setText(str(round(self.setStage[0],self.dev.precision)))
             elif i == 1:
-                self.setYLocationLineEdit.setText(str(round(self.setStage[1],self.precision)))
+                self.setYLocationLineEdit.setText(str(round(self.setStage[1],self.dev.precision)))
             elif i == 2:
-                self.setZLocationLineEdit.setText(str(round(self.setStage[2],self.precision)))
+                self.setZLocationLineEdit.setText(str(round(self.setStage[2],self.dev.precision)))
 
         self.oldSetZ = self.setStage[2]
         
@@ -583,21 +594,21 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.setYDev2 = 0. #self.isYDev2
         self.setZDev2 = 0. #self.isZDev2
         
-        self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.precision)))
-        self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.precision)))
-        self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.precision)))
+        self.xSetPosDev1LE.setText(str(round(self.setXDev1,self.dev.precision)))
+        self.ySetPosDev1LE.setText(str(round(self.setYDev1,self.dev.precision)))
+        self.zSetPosDev1LE.setText(str(round(self.setZDev1,self.dev.precision)))
         
-        self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.precision)))
-        self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.precision)))
-        self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.precision)))
+        self.xSetPosDev2LE.setText(str(round(self.setXDev2,self.dev.precision)))
+        self.ySetPosDev2LE.setText(str(round(self.setYDev2,self.dev.precision)))
+        self.zSetPosDev2LE.setText(str(round(self.setZDev2,self.dev.precision)))
         
         self.device1StepLE.setText(str(self.manip1MoveStep))
         self.device2StepLE.setText(str(self.manip2MoveStep))
         
         #if self.isHomeSet :
-        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.precision)))
-        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.precision)))
-        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.precision)))    
+        #    self.homeXLocationValue.setText(str(round(self.isX-self.homeP[0],self.dev.precision)))
+        #    self.homeYLocationValue.setText(str(round(self.isY-self.homeP[1],self.dev.precision)))
+        #    self.homeZLocationValue.setText(str(round(self.isZ-self.homeP[2],self.dev.precision)))    
     #################################################################################################
     def setStatusMessage(self,statusText):
         self.ui.statusbar.showMessage(statusText+' ...')
