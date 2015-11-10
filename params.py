@@ -1,5 +1,5 @@
 ###################################################
-# Gui 
+# Gui placement and size on computer screen
 xLocation = 10
 yLocation = 30
 widthSize = 537
@@ -21,6 +21,10 @@ fineSpeed = 0.01
 smallSpeed = 0.05
 mediumSpeed = 0.2
 coarseSpeed = 1.5
+
+defaultXLocation = 12000.
+defaultYLocation = 12000.
+defaultZLocation = 6000.
 
 ###################################################
 # Luigs and Neumann

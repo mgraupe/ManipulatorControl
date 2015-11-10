@@ -47,6 +47,7 @@ class manipulatorControl():
     isStagePositionChanged = QtCore.Signal()
     setManipulatorPositionChanged = QtCore.Signal()
     isManipulatorPositionChanged = QtCore.Signal()
+    programIsClosing = QtCore.Signal(object)
     """Instance of the hdf5 Data Manager Qt interface."""
     def __init__(self):
         
@@ -65,7 +66,7 @@ class manipulatorControl():
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
         host = params.host #socket.gethostname() #Get the local machine name
         port = params.port # Reserve a port for your service
-        self.s.bind((host,port)) #Bind to the port
+        self.sock.bind((host,port)) #Bind to the port
         
         # precision of values to show and store
         self.precision = params.precision
@@ -87,6 +88,8 @@ class manipulatorControl():
         self.speeds = collections.OrderedDict([('fine',params.fineSpeed),('small',params.smallSpeed),('medium',params.mediumSpeed),('coarse',params.coarseSpeed)])
         
         self.defaultMoveSpeed = 'fine'
+        
+        self.defaultLocations = ([params.defaultXLocation,params.defaultYLocation,params.defaultZLocation])
 
         self.sm5Lock = Lock()
         self.c843Lock = Lock()
@@ -196,8 +199,8 @@ class manipulatorControl():
         self.isManipulatorPositionChanged.emit()
     #################################################################################################
     def socket_connect(self):
-        self.s.listen(1)
-        self.connection,addr = self.s.accept()
+        self.sock.listen(1)
+        self.connection,addr = self.sock.accept()
         print 'established connection with ',addr
         #return self.c
     #################################################################################################
@@ -276,18 +279,26 @@ class manipulatorControl():
         self.moveSpeed = self.speeds[moveSize]
         self.C843_propagateSpeeds()
     #################################################################################################
+    def moveStageToDefaultLocation(self):
+        for i in range(3):
+            self.choseRightSpeed(self.defaultLocations[i]-self.isStage[i])
+            self.moveStageToNewLocation(self.axes[i],self.defaultLocations[i],moveType='absolute')
+        self.moveSpeed = self.moveSpeedBefore
+        self.C843_propagateSpeeds()
+    
+    #################################################################################################
     def C843_propagateSpeeds(self):
         for i in range(3):
             self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
     
     #################################################################################################
-    def moveStageToNewLocation(self,axis,moveSign,moveType='relative'):
+    def moveStageToNewLocation(self,axis,moveStep,moveType='relative'):
         
         # define movement length
         if moveType == 'relative':
-            self.setStage[axis] += self.moveStep*moveSign
+            self.setStage[axis] += self.moveStep
         if moveType == 'absolute':
-            self.setStage[axis] = self.moveStep*moveSign
+            self.setStage[axis] = self.moveStep
         # check if limits are reached
         if self.setStage[axis] < self.minStage[axis]:
             self.setStage[axis] = self.minStage[axis]
@@ -381,7 +392,7 @@ class manipulatorControl():
 ##################################################################################    
     
 
-    #################################################################################################
+    # OK ################################################################################################
     def activateController(self):
         #
         if self.activate.is_alive():
@@ -398,7 +409,7 @@ class manipulatorControl():
             self.activate.start()
             print 'controler active'
 
-    #################################################################################################
+    # OK ################################################################################################
     def listenToSocket(self):
         #
         if self.listenThread.is_alive():
@@ -416,7 +427,7 @@ class manipulatorControl():
             #self.enableDisableControllerBtns(True)
             self.listenThread.start()
             print 'socket active'
-    #################################################################################################        
+    # OK ################################################################################################        
     def autoUpdateManip(self):
         #self.sm5Lock = Lock()
         self.updateDone=False
@@ -424,17 +435,17 @@ class manipulatorControl():
             with self.sm5Lock:
                 self.updateManipulatorLocations()
             time.sleep(1)
-    #################################################################################################  
+    # OK ###############################################################################################  
     def socketListening(self):
         self.listen = True
-        self.s.listen(1)
-        self.c,addr = self.s.accept()
+        self.sock.listen(1)
+        self.c,addr = self.sock.accept()
         #self.c.settimeout(1)
         while self.listen:
             do_read = False
             try:
                 #print 'waiting for for connection to be established'
-                #self.c,addr = self.s.accept() #Establish a connection with the client
+                #self.c,addr = self.sock.accept() #Establish a connection with the client
                 #print 'select select'
                 r, _, _ = select.select([self.c], [], [])
                 #data = self.c.recv(1024)
@@ -470,7 +481,7 @@ class manipulatorControl():
             #print do_read
             #time.sleep(0.1)
             
-            #self.c,addr = self.s.accept() #Establish a connection with the client
+            #self.c,addr = self.sock.accept() #Establish a connection with the client
             #print "Got connection from", addr
             #rawDataReceived =  self.c.recv(1024)
             
@@ -480,8 +491,8 @@ class manipulatorControl():
             #time.sleep(0.5)
         
     
-    #################################################################################################
-    def choseRightSpeed(self,stepSize):
+    # OK ################################################################################################
+    def choseRightSpeed(self,stepSize): OK
         self.moveSpeedBefore = self.moveSpeed
         for key, value in self.stepWidths.iteritems():
             if stepSize >= value:
@@ -492,7 +503,7 @@ class manipulatorControl():
         self.propagateSpeeds()
             
     
-    #################################################################################################
+    # OK ################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
         pygame.init()
@@ -635,7 +646,7 @@ class manipulatorControl():
                 self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
                 self.setZDev2 = 0.
             print '10'
-    #################################################################################################
+    # OK ################################################################################################
     def moveStageToNewLocationOld(self,axis,moveDistance,moveType='relative'):
         
         # define movement length
@@ -670,7 +681,7 @@ class manipulatorControl():
             self.updateStageLocations()
 
     
-    #################################################################################################
+    # OK ################################################################################################
     def moveManipulatorToNewLocation(self,dev,axis,move):
         #exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
         #print self.loc
@@ -686,7 +697,7 @@ class manipulatorControl():
         #self.sm5Lock.release()
         self.initializeSetLocations()
         
-    #################################################################################################
+    # OK ################################################################################################
     def updateStageLocations(self):
         # C843
         for i in range(3):
@@ -698,7 +709,7 @@ class manipulatorControl():
         
         self.updateHomeTable()
         #
-    #################################################################################################
+    # OK ################################################################################################
     def updateManipulatorLocations(self,axis=None):
         
         if axis is None:
@@ -729,7 +740,7 @@ class manipulatorControl():
         self.yIsPosDev2LE.setText(str(round(self.isYDev2,self.precision)))
         self.zIsPosDev2LE.setText(str(round(self.isZDev2,self.precision)))
         
-    #################################################################################################
+    # OK ################################################################################################
     def initializeSetLocations(self):
         for i in range(3):
             self.setStage[i] = self.isStage[i]
@@ -768,7 +779,7 @@ class manipulatorControl():
         
     
         
-    #################################################################################################
+    # OK ################################################################################################
     def initializeManipulatorSpeed(self):
         # Manipulator Speed
         self.velDev1 = self.luigsNeumann.getPositioningVelocityFast(1,'x')
@@ -778,7 +789,7 @@ class manipulatorControl():
         
         #self.enableButtons()
    
-    #################################################################################################
+    # OK ################################################################################################
     def setMovementValues(self,moveSize):
         if moveSize == 'fine':
             self.fineBtn.setChecked(True)
@@ -795,21 +806,21 @@ class manipulatorControl():
         self.speedLineEdit.setText(str(self.moveSpeed))
         self.propagateSpeeds()
         #self.propagateSpeeds()
-    #################################################################################################
+    # OK ################################################################################################
     def setStepValue(self,moveSt):
         self.moveStep = moveSt
 
-    #################################################################################################
+    # OK ################################################################################################
     def setSpeedValue(self,moveSp):
         self.moveSpeed = moveSp
         self.propagateSpeeds()
 
-    #################################################################################################
+    # OK ################################################################################################
     def propagateSpeeds(self):
         for i in range(3):
             self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
 
-    #################################################################################################
+    # OK ################################################################################################
     def recordCell(self,nElectrode,identity):
         #self.cellListTable.insertRow(3)
         xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
@@ -827,7 +838,7 @@ class manipulatorControl():
         self.nItem+=1
         self.repaint()
     
-    #################################################################################################
+    # OK ################################################################################################
     def updateTable(self):
         print len(self.cells), self.rowC
         # add row if table gets filled up
@@ -869,7 +880,7 @@ class manipulatorControl():
                 elif c==4:
                     loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
                     self.cellListTable.setItem(r, c, QTableWidgetItem(loc))
-    #################################################################################################
+    # OK ################################################################################################
     def moveToLocation(self):
         
         self.setStatusMessage('moving stage to cell')
@@ -888,7 +899,7 @@ class manipulatorControl():
             self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
 
         self.unSetStatusMessage('moving stage to cell')
-    #################################################################################################
+    # OK ################################################################################################
     def updateLocation(self):
         r = self.cellListTable.selectionModel().selectedRows()
         nR = 0
@@ -900,7 +911,7 @@ class manipulatorControl():
         self.updateTable()
         self.repaint()
     
-    #################################################################################################
+    # OK ################################################################################################
     def removeLocation(self):
         #print self.cells
         r = self.cellListTable.selectionModel().selectedRows()
@@ -925,7 +936,7 @@ class manipulatorControl():
         self.repaint()
         #self.rowC-=1
         #self.nItem-=1
-    #################################################################################################
+    # OK ################################################################################################
     def recordDepth(self):
         
         r = self.cellListTable.selectionModel().selectedRows()
@@ -941,7 +952,7 @@ class manipulatorControl():
         self.updateTable()
         print 'recorded depth of cell # ',str(self.cells[row]['number'])        
       
-    #################################################################################################
+    # OK ###############################################################################################
     def saveLocations(self):
         print self.today_date
         saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\locations_'+self.today_date+'.p'
@@ -954,7 +965,7 @@ class manipulatorControl():
             programData['homeLocations'] = self.homeLocs
             pickle.dump(programData,open(filename,"wb"))
             self.fileSaved = True
-    #################################################################################################
+    # OK ################################################################################################
     def loadLocations(self):
         filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
             
@@ -975,7 +986,7 @@ class manipulatorControl():
             
             self.repaint()
                 
-    #################################################################################################
+    # OK ################################################################################################
     def updateHomeTable(self):
         #print len(self.homeLocs), self.rowHomeC
         # add row if table gets filled up
@@ -1006,7 +1017,7 @@ class manipulatorControl():
                     self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[1]-self.homeLocs[r]['y'],self.precision))))
                 elif c==3:
                     self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.isStage[2]-self.homeLocs[r]['z'],self.precision))))
-    #################################################################################################
+    # OK ################################################################################################
     def recordHomeLocation(self):
         #self.cellListTable.insertRow(3)
         xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
@@ -1023,7 +1034,7 @@ class manipulatorControl():
         print 'added ',str(nC),'home item'   
         self.nHomeItem+=1
         self.repaint()
-    #################################################################################################
+    # OK ################################################################################################
     def updateHomeLocation(self):
         r = self.homeLocationsTable.selectionModel().selectedRows()
         for index in sorted(r):
@@ -1035,7 +1046,7 @@ class manipulatorControl():
         self.homeLocs[row]['z'] = round(xyz[2],self.precision)
         self.updateHomeTable()
         self.repaint()
-    #################################################################################################
+    # OK ################################################################################################
     def removeHomeLocation(self):
         #print self.cells
         r = self.homeLocationsTable.selectionModel().selectedRows()
@@ -1058,7 +1069,7 @@ class manipulatorControl():
         self.repaint()
         #self.rowC-=1
         #self.nItem-=1
-    #################################################################################################
+    # OK ################################################################################################
     def moveToHomeLocation(self):
         
         self.setStatusMessage('moving stage to home location')
@@ -1076,17 +1087,17 @@ class manipulatorControl():
             self.moveStageToNewLocation(i,self.setStage[i],moveType='absolute')
         
         self.unSetStatusMessage('moving stage to home location')
-    #################################################################################################
+    # OK ################################################################################################
     def setStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ...')
         self.statusbar.setStyleSheet('color: red')
         #self.statusbar.repaint()
-    #################################################################################################
+    # OK ################################################################################################
     def unSetStatusMessage(self,statusText):
         self.statusbar.showMessage(statusText+' ... done')
         self.statusbar.setStyleSheet('color: black')
         #self.statusValue.repaint()
-    #################################################################################################
+    # OK ################################################################################################
     def enableReferencePowerBtns(self):
         self.C843XYPowerBtn.setEnabled(True)
         self.C843ZPowerBtn.setEnabled(True)
@@ -1095,7 +1106,7 @@ class manipulatorControl():
         self.refChoseLocationBtn.setEnabled(True)
         self.refSavedLocationBtn.setEnabled(True)
         self.refNegativeBtn.setEnabled(True)
-    #################################################################################################
+    # OK ###############################################################################################
     def disableAndEnableBtns(self,newSetting):
         # connection panel
         self.C843XYPowerBtn.setEnabled(newSetting)
@@ -1125,7 +1136,7 @@ class manipulatorControl():
         self.updateItemLocationBtn.setEnabled(newSetting)
         self.removeItemBtn.setEnabled(newSetting)
         self.loadLocationsBtn.setEnabled(newSetting)
-    ###################################################################################################
+    # OK ##################################################################################################
     def enableDisableControllerBtns(self, newSetting):
         self.fineBtn.setEnabled(newSetting)
         self.smallBtn.setEnabled(newSetting)
@@ -1139,12 +1150,13 @@ class manipulatorControl():
         self.trackStageXMovementDev1Btn.setEnabled(newSetting)
         self.trackStageZMovementDev2Btn.setEnabled(newSetting)
         self.trackStageXMovementDev2Btn.setEnabled(newSetting)
-    #########################################################################################
+    # OK ########################################################################################
     def closeEvent(self, event):
-        self.done = True
-        self.updateDone = True
-        self.listen = False
-        self.s.close()
+        
+        self.programIsClosing.emit(event)
+        
+        self.sock.close()
+        
         # delete class istances
         try :
             self.c843
@@ -1161,22 +1173,24 @@ class manipulatorControl():
         else:
             del self.luigsNeumann
         
+        
+        
         # save locations and dispaly quitting dialog
-        #if not self.fileSaved and self.nItem>0:
-                #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-                #if reply == QtGui.QMessageBox.Yes:
-                        #self.saveLocations()
-                        #event.accept()
-                #elif reply == QtGui.QMessageBox.No:
-                        #event.accept()
-                #else:
-                        #event.ignore()    
-        #else:
-                   #reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to quit?",  QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
-                   #if reply == QtGui.QMessageBox.Yes:
-                           #event.accept()
-                   #else:
-                            #event.ignore()    
+        if not self.fileSaved and self.nItem>0:
+            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                self.saveLocations()
+                event.accept()
+            elif reply == QtGui.QMessageBox.No:
+                event.accept()
+            else:
+                event.ignore()    
+        else:
+            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to quit?",  QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()    
 
 ##########################################################
 if __name__ == "__main__":

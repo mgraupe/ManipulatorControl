@@ -2,6 +2,7 @@ import sys
 import pygame
 import select
 import time
+import pickle
 from threading import *
 from functools import partial
 
@@ -21,6 +22,8 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
     #isManipulatorPositionChanged = Signal()
     
     def __init__(self,dev):
+        
+        self.today_date = time.strftime("%Y%m%d")[2:]
         
         self.dev = dev
 
@@ -116,32 +119,30 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         
         #################################################
         ## Location panel 
-        #self.ui.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
-        #self.ui.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
-        #self.ui.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
-        #self.ui.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
+        self.ui.electrode1MLIBtn.clicked.connect(partial(self.recordCell,1,'MLI'))
+        self.ui.electrode1PCBtn.clicked.connect(partial(self.recordCell,1,'PC'))
+        self.ui.electrode2MLIBtn.clicked.connect(partial(self.recordCell,2,'MLI'))
+        self.ui.electrode2PCBtn.clicked.connect(partial(self.recordCell,2,'PC'))
         
-        #self.ui.moveToItemBtn.clicked.connect(self.moveToLocation)
-        #self.ui.updateItemLocationBtn.clicked.connect(self.updateLocation)
-        #self.ui.recordDepthBtn.clicked.connect(self.recordDepth)
-        #self.ui.removeItemBtn.clicked.connect(self.removeLocation)
-        #self.ui.saveLocationsBtn.clicked.connect(self.saveLocations)
-        #self.ui.loadLocationsBtn.clicked.connect(self.loadLocations)
+        self.ui.moveToItemBtn.clicked.connect(self.moveToLocation)
+        self.ui.updateItemLocationBtn.clicked.connect(self.updateLocation)
+        self.ui.recordDepthBtn.clicked.connect(self.recordDepth)
+        self.ui.removeItemBtn.clicked.connect(self.removeLocation)
+        self.ui.saveLocationsBtn.clicked.connect(self.saveLocations)
+        self.ui.loadLocationsBtn.clicked.connect(self.loadLocations)
         
-        #self.ui.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
-        #self.ui.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
-        #self.ui.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
-        #self.ui.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)        
+        self.ui.recordHomeLocationBtn.clicked.connect(self.recordHomeLocation)
+        self.ui.updateHomeLocationBtn.clicked.connect(self.updateHomeLocation)
+        self.ui.moveToHomeLocationBtn.clicked.connect(self.moveToHomeLocation)
+        self.ui.removeHomeLocationBtn.clicked.connect(self.removeHomeLocation)        
     
-        #self.dev.setPositionChanged.connect(self.update)
-        #self.dev.isPositionChanged.connect(self.updateLimits)
-        
         ##################################################
         # signals
         self.dev.isStagePositionChanged.connect(self.updateIsStagePositions)
         self.dev.setStagePositionChanged.connect(self.updateSetStagePositions)
         self.dev.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
         self.dev.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
+        self.dev.programIsClosing.connect(self.endThreadsSaveLocations)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -247,6 +248,9 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             #self.initializeSetLocations()
             self.getMinMaxOfStage()
             self.setMovementValues(self.dev.defaultMoveSpeed)
+            # moves the stage back to the default location
+            if moveStage:
+                self.dev.moveStageToDefaultLocation()
         else:
             reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
         #
@@ -369,7 +373,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
             #print xAxis, yAxis
             # x-Axis
             if abs(xAxis) > 0.5 :
-                self.dev.moveStageToNewLocation(0,-self.moveStep*np.sign(xAxis))
+                self.dev.moveStageToNewLocation(0,-np.sign(xAxis))
             # y-Axis
             if abs(yAxis) > 0.5 :
                 self.dev.moveStageToNewLocation(1,-np.sign(yAxis))
@@ -521,10 +525,10 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
     #################################################################################################
     def getManiplatorSpeed(self,dev):
         if dev == 1:
-            self.velDev1 = float(self.device1SpeedLE.text())
+            velocity = float(self.device1SpeedLE.text())
         elif dev == 2:
-            self.velDev2 = float(self.device2SpeedLE.text())
-        self.dev.setManiplatorSpeed(dev,velDev1)
+            velocity = float(self.device2SpeedLE.text())
+        self.dev.setManiplatorSpeed(dev,velocity)
     #################################################################################################
     def getManiplatorStep(self):
         manip1MoveStep = float(self.device1StepLE.text())
@@ -550,7 +554,283 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.ui.isYLocationValueLabel.setText(str(round(self.dev.isStage[1],self.dev.precision)))
         self.ui.isZLocationValueLabel.setText(str(round(self.dev.isStage[2],self.dev.precision)))
         
-        #self.updateHomeTable()    
+        self.updateHomeTable()    
+    
+    #################################################################################################
+    def recordCell(self,nElectrode,identity):
+        #self.cellListTable.insertRow(3)
+        
+        #xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        xyzU = self.dev.isStage
+        
+        nC = len(self.cells)
+        
+        self.cells[nC] = {}
+        self.cells[nC]['number'] = self.nItem
+        self.cells[nC]['type'] = identity # 'MLI'
+        self.cells[nC]['electrode'] = nElectrode
+        self.cells[nC]['location'] = np.array([round(xyzU[0],self.dev.precision),round(xyzU[1],self.dev.precision),round(xyzU[2],self.dev.precision)])
+        self.cells[nC]['depth'] = 0.
+
+        print 'added ',str(nC),'item'	
+        self.nItem+=1
+        
+        self.updateTable()
+        
+        #self.repaint()
+    #################################################################################################
+    def updateTable(self):
+        print len(self.cells), self.rowC
+        # add row if table gets filled up
+        #if (len(self.cells)+1) == (self.rowC):
+        #    self.cellListTable.insertRow(self.rowC)
+        #    self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
+        #    self.rowC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.cells)+1) > (self.rowC):
+            self.ui.cellListTable.insertRow(self.rowC)
+            self.ui.cellListTable.setRowHeight(self.rowC,self.rowHeight)
+            self.rowC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #	for r in range(len(self.cells)):
+        #		if self.cells[r]['type']=='surface':
+        #			zSurface = self.cells[r]['location'][2]
+        
+        for r in range(len(self.cells)):
+            for c in range(5):
+                if c==0:
+                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['number'])))
+                elif c==1:
+                    if self.cells[r]['type']=='PC':
+                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem('PC'))
+                    elif  self.cells[r]['type']=='MLI':
+                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem('MLI'))
+                    #elif  self.cells[r]['type']=='surface':
+                    #	self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('S'))
+                elif c==2:
+                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['electrode'])))
+                elif c==3:
+                    if not self.cells[r]['depth'] == 0.:
+                        depth = self.cells[r]['depth']
+                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(depth)))
+                    #pass
+                elif c==4:
+                    loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
+                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(loc))    
+    #################################################################################################
+    def moveToLocation(self):
+        
+        self.setStatusMessage('moving stage to cell')
+
+        r = self.ui.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        print 'row: ',row
+        xyz = ([self.cells[row]['location'][0],self.cells[row]['location'][1],self.cells[row]['location'][2]])
+        print 'move to :', xyz
+        
+        for i in range(3):
+            #self.setStage[i] = self.cells[row]['location'][i]
+            self.dev.moveStageToNewLocation(i,self.cells[row]['location'][i],moveType='absolute')
+
+        self.unSetStatusMessage('moving stage to cell')
+    #################################################################################################
+    def updateLocation(self):
+        r = self.ui.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        #xyz = self.dev.isStage
+        #xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        self.cells[row]['location'] = np.array([round(self.dev.isStage[0],self.dev.precision),round(self.dev.isStage[1],self.dev.precision),round(self.dev.isStage[2],self.dev.precision)])
+        self.updateTable()
+        #self.repaint()
+    
+    #################################################################################################
+    def removeLocation(self):
+        #print self.cells
+        r = self.ui.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR +=1
+        
+        nCells = len(self.cells)
+        print nCells, row
+
+        del self.cells[row]
+        if (nCells-1) != row:
+            for i in range(row,(nCells-1)):
+                self.cells[i] = self.cells[i+1]
+            del self.cells[(nCells-1)]
+        #print self.cells
+        self.updateTable()
+        self.ui.cellListTable.removeRow((nCells-1))
+        self.ui.cellListTable.insertRow((nCells-1))
+        self.ui.cellListTable.setRowHeight((nCells-1),self.rowHeight)
+        #self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def recordDepth(self):
+        
+        r = self.ui.cellListTable.selectionModel().selectedRows()
+        nR = 0
+        for index in sorted(r):
+            row = index.row()
+            nR+=1
+        
+        #xyzU = self.dev.isStage
+        #self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        
+        self.cells[row]['depth'] = (self.cells[row]['location'][2] - round(self.dev.isStage[2],self.dev.precision))
+
+        self.updateTable()
+        print 'recorded depth of cell # ',str(self.cells[row]['number'])        
+      
+    #################################################################################################
+    def saveLocations(self):
+        print self.today_date
+        saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\locations_'+self.today_date+'.p'
+        #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
+        filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
+        print str(filename),filename
+        if filename:
+            programData = {}
+            programData['cells'] = self.cells
+            programData['homeLocations'] = self.homeLocs
+            pickle.dump(programData,open(filename,"wb"))
+            self.fileSaved = True
+    #################################################################################################
+    def loadLocations(self):
+        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
+            
+        if len(filename)>0:
+            programData = pickle.load(open(filename))
+            self.cells = programData['cells']
+            self.homeLocs = programData['homeLocations']
+            
+            nItems = len(self.cells)
+            self.nItem = self.cells[(nItems-1)]['number'] + 1
+            self.updateTable()
+            print 'loaded ',str(nItems),'items'
+            
+            nHome = len(self.homeLocs)
+            self.nHomeItem = self.homeLocs[(nHome-1)]['number'] + 1
+            self.updateHomeTable()
+            print 'loaded', str(nHome), 'home locations'
+            
+            self.repaint()
+                
+    #################################################################################################
+    def updateHomeTable(self):
+        #print len(self.homeLocs), self.rowHomeC
+        # add row if table gets filled up
+        #if (len(self.homeLocs)+1) == (self.rowHomeC):
+        #    self.homeLocationsTable.insertRow(self.rowHomeC)
+        #    self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+        #    self.rowHomeC+=1
+        
+        # expand table when list is loaded directly from file
+        while (len(self.homeLocs)+1) > (self.rowHomeC):
+            self.ui.homeLocationsTable.insertRow(self.rowHomeC)
+            self.ui.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
+            self.rowHomeC+=1
+            
+        
+        #if self.surfaceRecorded:
+        #       for r in range(len(self.homeLocs)):
+        #               if self.homeLocs[r]['type']=='surface':
+        #                       zSurface = self.homeLocs[r]['location'][2]
+        
+        for r in range(len(self.homeLocs)):
+            for c in range(4):
+                if c==0:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(self.homeLocs[r]['number'])))
+                elif c==1:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[0]-self.homeLocs[r]['x'],self.dev.precision))))
+                elif c==2:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[1]-self.homeLocs[r]['y'],self.dev.precision))))
+                elif c==3:
+                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[2]-self.homeLocs[r]['z'],self.dev.precision))))
+    #################################################################################################
+    def recordHomeLocation(self):
+        #self.cellListTable.insertRow(3)
+        #xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        nC = len(self.homeLocs)
+        
+        self.homeLocs[nC] = {}
+        self.homeLocs[nC]['number'] = self.nHomeItem
+        
+        self.homeLocs[nC]['x'] = round(self.dev.isStage[0],self.dev.precision)
+        self.homeLocs[nC]['y'] = round(self.dev.isStage[1],self.dev.precision)
+        self.homeLocs[nC]['z'] = round(self.dev.isStage[2],self.dev.precision) 
+        
+        self.updateHomeTable()
+        print 'added ',str(nC),'home item'   
+        self.nHomeItem+=1
+        self.repaint()
+    #################################################################################################
+    def updateHomeLocation(self):
+        r = self.ui.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        #xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
+        #xyz = self.dev.isStage
+        
+        self.homeLocs[row]['x'] = round(self.dev.isStage[0],self.dev.precision) 
+        self.homeLocs[row]['y'] = round(self.dev.isStage[1],self.dev.precision) 
+        self.homeLocs[row]['z'] = round(self.dev.isStage[2],self.dev.precision)
+        self.updateHomeTable()
+        self.repaint()
+    #################################################################################################
+    def removeHomeLocation(self):
+        #print self.cells
+        r = self.ui.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        nLocations = len(self.homeLocs)
+        #print nCells, row
+
+        del self.homeLocs[row]
+        if (nLocations-1) != row:
+            for i in range(row,(nLocations-1)):
+                self.homeLocs[i] = self.homeLocs[i+1]
+            del self.homeLocs[(nLocations-1)]
+        #print self.cells
+        self.updateHomeTable()
+        self.ui.homeLocationsTable.removeRow((nLocations-1))
+        self.ui.homeLocationsTable.insertRow((nLocations-1))
+        self.ui.homeLocationsTable.setRowHeight((nLocations-1),self.rowHeight)
+        self.repaint()
+        #self.rowC-=1
+        #self.nItem-=1
+    #################################################################################################
+    def moveToHomeLocation(self):
+        
+        self.setStatusMessage('moving stage to home location')
+
+        r = self.homeLocationsTable.selectionModel().selectedRows()
+        for index in sorted(r):
+            row = index.row()
+
+        print 'row: ',row
+        #xyz = ([self.homeLocs[row]['x'],self.homeLocs[row]['y'],self.homeLocs[row]['z']])
+        #print xyz
+        
+        for i in range(3):
+            #self.setStage[i] = self.homeLocs[row][self.axes[i]]
+            self.moveStageToNewLocation(i,self.homeLocs[row][self.axes[i]],moveType='absolute')
+        
+        self.unSetStatusMessage('moving stage to home location')
     
     #################################################################################################
     def updateSetManipulatorPositions(self):
@@ -671,8 +951,30 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.ui.trackStageXMovementDev1Btn.setEnabled(newSetting)
         self.ui.trackStageZMovementDev2Btn.setEnabled(newSetting)
         self.ui.trackStageXMovementDev2Btn.setEnabled(newSetting)
-
     
+    #########################################################################################
+    def endThreadsSaveLocations(self, event):
+        
+        self.updateManiuplators = False
+        self.listenToSocket = False
+        self.listenToControler = False
+        
+        # save locations and dispaly quitting dialog
+        if not self.fileSaved and self.nItem>0:
+            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                self.saveLocations()
+                event.accept()
+            elif reply == QtGui.QMessageBox.No:
+                event.accept()
+            else:
+                event.ignore()    
+        else:
+            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to quit?",  QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            if reply == QtGui.QMessageBox.Yes:
+                event.accept()
+            else:
+                event.ignore()    
         
         
         
