@@ -14,8 +14,8 @@ import manipulatorTemplate
 #################################################################
 class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
-    isStagePositionChanged = QtCore.Signal(object)
-    isManipulatorPositionChanged = QtCore.Signal(object)
+    isStagePositionChanged = Signal(object)
+    isManipulatorPositionChanged = Signal(object)
     
     def __init__(self,dev):
         
@@ -72,7 +72,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.enableDisableControllerBtns(False)
         
         #self.activate = Thread(target=self.controlerInput)
-        self.receiveControlerInput = Thread(target=self.controlerInput)
+        #self.receiveControlerInput = Thread(target=self.controlerInput)
         self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
         self.socketListenThread = Thread(target=self.socketListening) # listenThread
         
@@ -232,7 +232,7 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         if fileName:
             self.dev.C843_openReferenceFile(fileName)
         
-        if  self.dev.C843_reference_state(moveStage)
+        if  self.dev.C843_reference_state(moveStage):
             self.ui.refChoseLocationBtn.setEnabled(False)
             self.ui.refSavedLocationBtn.setEnabled(False)
             self.ui.refNegativeBtn.setEnabled(False)
@@ -341,6 +341,23 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         #time.sleep(0.5)
     
     #################################################################################################
+    def setMovementValues(self,moveSize):
+        if moveSize == 'fine':
+            self.ui.fineBtn.setChecked(True)
+        elif moveSize == 'small':
+            self.ui.smallBtn.setChecked(True)
+        elif moveSize == 'medium':
+            self.ui.mediumBtn.setChecked(True)
+        elif moveSize == 'coarse':
+            self.ui.coarseBtn.setChecked(True)
+        #
+        self.dev.determine_stage_speed()
+        
+        self.ui.stepLineEdit.setText(str(self.dev.moveStep))
+        self.ui.speedLineEdit.setText(str(self.dev.moveSpeed))
+        
+        #self.propagateSpeeds()
+    #################################################################################################
     def updateIsManipulatorPositions():
         self.xIsPosDev1LE.setText(str(round(self.isXDev1,self.precision)))
         self.yIsPosDev1LE.setText(str(round(self.isYDev1,self.precision)))
@@ -355,6 +372,15 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         vel = self.dev.getSM5PositingVelocityFast('x')
         self.device1SpeedLE.setText(str(vel[0]))
         self.device2SpeedLE.setText(str(vel[1]))
+    #################################################################################################
+    def getStepValue(self):
+        moveStep = float(self.stepLineEdit.text())
+        self.dev.setStepValue(moveStep)
+        
+    #################################################################################################
+    def getSpeedValue(self):
+        moveSpeed = float(self.speedLineEdit.text())
+        self.dev.setSpeedValue(moveSpeed)
     #################################################################################################
     def updateStageLocations(self):
         # C843
@@ -414,6 +440,15 @@ class manipulatorControlGui(QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread
         self.ui.statusbar.showMessage(statusText+' ... done')
         self.ui.statusbar.setStyleSheet('color: black')
         #self.statusValue.repaint()   
+    #################################################################################################
+    def enableReferencePowerBtns(self):
+        self.ui.C843XYPowerBtn.setEnabled(True)
+        self.ui.C843ZPowerBtn.setEnabled(True)
+        self.ui.SM5Dev1PowerBtn.setEnabled(True)
+        self.ui.SM5Dev2PowerBtn.setEnabled(True)
+        self.ui.refChoseLocationBtn.setEnabled(True)
+        self.ui.refSavedLocationBtn.setEnabled(True)
+        self.ui.refNegativeBtn.setEnabled(True)
     #################################################################################################
     def disableAndEnableBtns(self,newSetting):
         # connection panel

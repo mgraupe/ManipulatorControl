@@ -35,6 +35,8 @@ import c843_class
 import LandNSM5
 import manipulatorGUI
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 #################################################################
 class manipulatorControl():
@@ -259,6 +261,12 @@ class manipulatorControl():
             else :
                 break
         print stepSize, self.moveSpeed
+        self.propagateSpeeds()
+    
+    #################################################################################################
+    def determine_stage_speed(self,moveSize):
+        self.moveStep = self.stepWidths[moveSize]
+        self.moveSpeed = self.speeds[moveSize]
         self.propagateSpeeds()
     #################################################################################################
     def propagateSpeeds(self):
@@ -744,13 +752,12 @@ class manipulatorControl():
         self.propagateSpeeds()
         #self.propagateSpeeds()
     #################################################################################################
-    def getStepValue(self):
-        self.moveStep = float(self.stepLineEdit.text())
+    def setStepValue(self,moveSt):
+        self.moveStep = moveSt
 
     #################################################################################################
-    def getSpeedValue(self):
-        self.moveSpeed = float(self.speedLineEdit.text())
-        print "new speed :", self.moveSpeed
+    def setSpeedValue(self,moveSp):
+        self.moveSpeed = moveSp
         self.propagateSpeeds()
 
     #################################################################################################
