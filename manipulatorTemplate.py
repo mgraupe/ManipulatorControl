@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'manipulatorTemplate.ui'
+# Form implementation generated from reading ui file '.\manipulatorTemplate.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created: Thu Nov 12 16:41:45 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -37,7 +38,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(456, 143))
+        self.dockWidget.setMinimumSize(QtCore.QSize(535, 143))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -156,8 +157,8 @@ class Ui_MainWindow(object):
         self.groupBox_3.setFont(font)
         self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
         self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_3)
-        self.gridLayout_2.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_2.setSpacing(4)
+        self.gridLayout_2.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
         self.horizontalWidget3 = QtGui.QWidget(self.groupBox_3)
         self.horizontalWidget3.setObjectName(_fromUtf8("horizontalWidget3"))
@@ -301,8 +302,8 @@ class Ui_MainWindow(object):
         self.groupBox_4.setFont(font)
         self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
         self.gridLayout_8 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_8.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_8.setSpacing(4)
+        self.gridLayout_8.setContentsMargins(2, 1, 2, 2)
         self.gridLayout_8.setObjectName(_fromUtf8("gridLayout_8"))
         self.horizontalWidget8 = QtGui.QWidget(self.groupBox_4)
         self.horizontalWidget8.setMinimumSize(QtCore.QSize(0, 0))
@@ -492,8 +493,8 @@ class Ui_MainWindow(object):
         self.horizontalWidget16 = QtGui.QWidget(self.groupBox_4)
         self.horizontalWidget16.setObjectName(_fromUtf8("horizontalWidget16"))
         self.horizontalLayout_14 = QtGui.QHBoxLayout(self.horizontalWidget16)
-        self.horizontalLayout_14.setMargin(1)
         self.horizontalLayout_14.setSpacing(1)
+        self.horizontalLayout_14.setMargin(1)
         self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
         self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget16)
         self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
@@ -511,6 +512,7 @@ class Ui_MainWindow(object):
         self.horizontalWidget17.setMaximumSize(QtCore.QSize(16777215, 30))
         self.horizontalWidget17.setObjectName(_fromUtf8("horizontalWidget17"))
         self.horizontalLayout_18 = QtGui.QHBoxLayout(self.horizontalWidget17)
+        self.horizontalLayout_18.setMargin(1)
         self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
         self.controllerActivateBtn = QtGui.QPushButton(self.horizontalWidget17)
         self.controllerActivateBtn.setMaximumSize(QtCore.QSize(16777215, 24))
