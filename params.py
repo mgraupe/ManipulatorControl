@@ -32,11 +32,11 @@ defaultZLocation = 18100. #6000.
 alphaDev1 = 30. # in degrees
 alphaDev2 = 30. # in degrees
 
-manip1MoveStep = 2. # in um
-manip2MoveStep = 2. # in um
+manipulator1MoveStep = 2. # in um
+manipulator2MoveStep = 2. # in um
         
 ###################################################
 # parameters for socket connection
 host = '172.20.61.89' #socket.gethostname() #Get the local machine name
 port = 5555 # Reserve a port for your service
-dateSize = 1024 # size of data-packages sent back and forth
+dataSize = 1024 # size of data-packages sent back and forth

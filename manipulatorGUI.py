@@ -4,6 +4,7 @@ import select
 import time
 import pickle
 import numpy as np
+import socket
 from threading import *
 from functools import partial
 
@@ -52,6 +53,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.homeLocationsTable.setColumnWidth(2,100)
         self.ui.homeLocationsTable.setColumnWidth(3,100)
         
+        self.axes = np.array(['x','y','z'])
+        
         self.cells = {}
         self.nItem = 0
         self.rowC = 6
@@ -73,6 +76,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.clock = pygame.time.Clock()
         
         self.SM5_ModLock = Lock()
+        
+        self.fileSaved = False
         
         self.disableAndEnableBtns(False)
         self.enableDisableControllerBtns(False)
@@ -107,14 +112,14 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
         self.ui.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
         self.ui.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
-        self.ui.stepLineEdit.editingFinished.connect(self.getStepValue)
-        self.ui.speedLineEdit.editingFinished.connect(self.getSpeedValue)
+        self.ui.stepLineEdit.editingFinished.connect(self.setC843StepValue)
+        self.ui.speedLineEdit.editingFinished.connect(self.setC843SpeedValue)
         
-        self.ui.device1StepLE.editingFinished.connect(self.getManiplatorStep)
-        self.ui.device2StepLE.editingFinished.connect(self.getManiplatorStep)
+        self.ui.device1StepLE.editingFinished.connect(self.setSM5Step)
+        self.ui.device2StepLE.editingFinished.connect(self.setSM5Step)
         
-        self.ui.device1SpeedLE.editingFinished.connect(partial(self.getManiplatorSpeed,1))
-        self.ui.device2SpeedLE.editingFinished.connect(partial(self.getManiplatorSpeed,2))
+        self.ui.device1SpeedLE.editingFinished.connect(partial(self.setSM5Speed,1))
+        self.ui.device2SpeedLE.editingFinished.connect(partial(self.setSM5Speed,2))
         
         #################################################
         ## Location panel 
@@ -141,7 +146,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.dev.setStagePositionChanged.connect(self.updateSetStagePositions)
         self.dev.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
         self.dev.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
-        self.dev.programIsClosing.connect(self.endThreadsSaveLocations)
+        #self.dev.programIsClosing.connect(self.endThreadsSaveLocations)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -172,7 +177,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             if self.dev.is_SM5_connected():
                 self.ui.SM5Dev1PowerBtn.setChecked(True)
                 self.ui.SM5Dev2PowerBtn.setChecked(True)
-                self.readManipulatorSpeed()
+                self.readSM5SpeedFromDevice()
+                self.loadSM5StepValues()
                 self.autoUpdateManipulatorLocations.start()
                 
             else:
@@ -302,6 +308,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     #################################################################################################  
     def socketListening(self):
         self.listenToSocket = True
+        print 'before connect'
         self.dev.socket_connect()
         while self.listenToSocket:
             do_read = False
@@ -319,20 +326,21 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     if data == 'disconnect':
                         self.dev.socket_send_data('OK..'+data)
                         print 'socket connection was closed by remote host'
+                        self.activateSocket()
                         #self.listenToSocket = False
                         #self.listenThread = Thread(target=self.socketListening)
                         break
-                    #print "Got data: ", data, 'from', addr[0],':',addr[1]
+                    if not 'getPos' in data:
+                        print "Got data: ", data
                     res = self.dev.performRemoteInstructions(data)
                     self.dev.socket_send_data(str(res)+'...'+data)
                 except socket.error:
                     print 'socket connection closed due to error'
-                    #self.activateSocket()
+                    self.activateSocket()
                     break
                 #self.c.close()
+        print 'after thread'
         self.dev.socket_close_connection()
-        self.activateSocket()
-        
         #self.ui.listenToSocketBtn.setChecked(False)
         #self.ui.listenToSocketBtn.setText('Listen to Socket')
         #self.ui.listenToSocketBtn.setStyleSheet('background-color:None')
@@ -408,32 +416,32 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             # manipulator steps
             if joystick.get_button( 7 ):
                 if self.ui.activateDev1.isChecked():
-                    print 1,'x',self.dev.manip1MoveStep
+                    #print 1,'x',self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',self.dev.manip1MoveStep)
                     #self.setXDev1+= self.manip1MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
                     #time.sleep(0.2)
                 if self.ui.activateDev2.isChecked():
-                    print 2,'x',self.dev.manip1MoveStep
+                    #print 2,'x',self.dev.manip1MoveStep
                     with self.SM5_ModLock:
-                        self.dev.moveManipulatorToNewLocation(2,'x',self.dev.manip1MoveStep)
+                        self.dev.moveManipulatorToNewLocation(2,'x',self.dev.manip2MoveStep)
                     #self.setXDev2+= self.manip2MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
                     #time.sleep(0.2)
                 #self.updateManipulatorLocations('x')
             if joystick.get_button( 5 ):
                 if self.ui.activateDev1.isChecked():
-                    print 1,'x',-1*self.dev.manip1MoveStep
+                    #print 1,'x',-1*self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',-1*self.dev.manip1MoveStep)
                     #self.setXDev1-= self.manip1MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
                     #time.sleep(0.2)
                 if self.ui.activateDev2.isChecked():
-                    print 2,'x',-1*self.dev.manip1MoveStep
+                    #print 2,'x',-1*self.dev.manip1MoveStep
                     with self.SM5_ModLock:
-                        self.dev.moveManipulatorToNewLocation(2,'x',-1*self.dev.manip1MoveStep)
+                        self.dev.moveManipulatorToNewLocation(2,'x',-1*self.dev.manip2MoveStep)
                     #self.setXDev2-= self.manip2MoveStep
                     #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
                     #time.sleep(0.2)
@@ -470,7 +478,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     #self.updateManipulatorLocations('x')
             oldSetZ = self.dev.setStage[2]
             # Limit to 10 frames per second
-            self.clock.tick(10)
+            self.clock.tick(20)
             ##
             #if abs(self.setXDev1)>self.locationDiscrepancy:
                 #print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
@@ -510,33 +518,40 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.speedLineEdit.setText(str(self.dev.moveSpeed))
         
         #self.propagateSpeeds()
+    #################################################################################################
+    def setC843StepValue(self):
+        moveStep = float(self.ui.stepLineEdit.text())
+        self.dev.setC843StepValue(moveStep)
+        
+    #################################################################################################
+    def setC843SpeedValue(self):
+        moveSpeed = float(self.ui.speedLineEdit.text())
+        self.dev.setC843SpeedValue(moveSpeed)
     
     #################################################################################################
-    def readManipulatorSpeed(self):
+    def readSM5SpeedFromDevice(self):
         vel = self.dev.getSM5PositingVelocityFast('x')
         self.ui.device1SpeedLE.setText(str(vel[0]))
         self.ui.device2SpeedLE.setText(str(vel[1]))
     #################################################################################################
-    def getStepValue(self):
-        moveStep = float(self.stepLineEdit.text())
-        self.dev.setStepValue(moveStep)
-        
-    #################################################################################################
-    def getSpeedValue(self):
-        moveSpeed = float(self.speedLineEdit.text())
-        self.dev.setSpeedValue(moveSpeed)
-    #################################################################################################
-    def getManiplatorSpeed(self,dev):
+    def setSM5Speed(self,dev):
         if dev == 1:
-            velocity = float(self.device1SpeedLE.text())
+            velocity = float(self.ui.device1SpeedLE.text())
         elif dev == 2:
-            velocity = float(self.device2SpeedLE.text())
-        self.dev.setManiplatorSpeed(dev,velocity)
+            velocity = float(self.ui.device2SpeedLE.text())
+        self.dev.setSM5Speed(dev,velocity)
+    
     #################################################################################################
-    def getManiplatorStep(self):
-        manip1MoveStep = float(self.device1StepLE.text())
-        manip2MoveStep = float(self.device2StepLE.text())
-        self.dev.setManiplatorStep([manip1MoveStep,manip2MoveStep])
+    def loadSM5StepValues(self):   
+        self.dev.loadSM5StepValues()
+        self.ui.device1StepLE.setText(str(self.dev.manip1MoveStep))
+        self.ui.device2StepLE.setText(str(self.dev.manip2MoveStep))
+    
+    #################################################################################################
+    def setSM5Step(self):
+        manip1 = float(self.ui.device1StepLE.text())
+        manip2 = float(self.ui.device2StepLE.text())
+        self.dev.setSM5Step([manip1,manip2])
     #################################################################################################
     def updateStageLocations(self):
         # C843
@@ -605,24 +620,24 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         for r in range(len(self.cells)):
             for c in range(5):
                 if c==0:
-                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['number'])))
+                    self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['number'])))
                 elif c==1:
                     if self.cells[r]['type']=='PC':
-                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem('PC'))
+                        self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('PC'))
                     elif  self.cells[r]['type']=='MLI':
-                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem('MLI'))
+                        self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('MLI'))
                     #elif  self.cells[r]['type']=='surface':
                     #	self.cellListTable.setItem(r, c, QtGui.QTableWidgetItem('S'))
                 elif c==2:
-                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(self.cells[r]['electrode'])))
+                    self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.cells[r]['electrode'])))
                 elif c==3:
                     if not self.cells[r]['depth'] == 0.:
                         depth = self.cells[r]['depth']
-                        self.ui.cellListTable.setItem(r, c, QTableWidgetItem(str(depth)))
+                        self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(str(depth)))
                     #pass
                 elif c==4:
                     loc = str(self.cells[r]['location'][0])+','+str(self.cells[r]['location'][1])+','+str(self.cells[r]['location'][2])
-                    self.ui.cellListTable.setItem(r, c, QTableWidgetItem(loc))    
+                    self.ui.cellListTable.setItem(r, c, QtGui.QTableWidgetItem(loc))    
     #################################################################################################
     def moveToLocation(self):
         
@@ -700,9 +715,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     #################################################################################################
     def saveLocations(self):
         print self.today_date
-        saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\locations_'+self.today_date+'.p'
+        saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\cell_locations_'+self.today_date+'.p'
         #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
-        filename = QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
+        filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
         print str(filename),filename
         if filename:
             programData = {}
@@ -712,7 +727,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             self.fileSaved = True
     #################################################################################################
     def loadLocations(self):
-        filename = QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Choose cell location file', 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\','Python object file (*.p)')
             
         if len(filename)>0:
             programData = pickle.load(open(filename))
@@ -755,13 +770,13 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         for r in range(len(self.homeLocs)):
             for c in range(4):
                 if c==0:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(self.homeLocs[r]['number'])))
+                    self.ui.homeLocationsTable.setItem(r, c, QtGui.QTableWidgetItem(str(self.homeLocs[r]['number'])))
                 elif c==1:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[0]-self.homeLocs[r]['x'],self.dev.precision))))
+                    self.ui.homeLocationsTable.setItem(r, c, QtGui.QTableWidgetItem(str(round(self.dev.isStage[0]-self.homeLocs[r]['x'],self.dev.precision))))
                 elif c==2:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[1]-self.homeLocs[r]['y'],self.dev.precision))))
+                    self.ui.homeLocationsTable.setItem(r, c, QtGui.QTableWidgetItem(str(round(self.dev.isStage[1]-self.homeLocs[r]['y'],self.dev.precision))))
                 elif c==3:
-                    self.homeLocationsTable.setItem(r, c, QTableWidgetItem(str(round(self.dev.isStage[2]-self.homeLocs[r]['z'],self.dev.precision))))
+                    self.ui.homeLocationsTable.setItem(r, c, QtGui.QTableWidgetItem(str(round(self.dev.isStage[2]-self.homeLocs[r]['z'],self.dev.precision))))
     #################################################################################################
     def recordHomeLocation(self):
         #self.cellListTable.insertRow(3)
@@ -821,7 +836,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         
         self.setStatusMessage('moving stage to home location')
 
-        r = self.homeLocationsTable.selectionModel().selectedRows()
+        r = self.ui.homeLocationsTable.selectionModel().selectedRows()
         for index in sorted(r):
             row = index.row()
 
@@ -831,7 +846,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         
         for i in range(3):
             #self.setStage[i] = self.homeLocs[row][self.axes[i]]
-            self.moveStageToNewLocation(i,self.homeLocs[row][self.axes[i]],moveType='absolute')
+            #self.dev.moveStageToNewLocation(i,self.cells[row]['location'][i],moveType='absolute')
+            self.dev.moveStageToNewLocation(i,self.homeLocs[row][self.axes[i]],moveType='absolute')
         
         self.unSetStatusMessage('moving stage to home location')
     
@@ -858,12 +874,12 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     #################################################################################################
     def setStatusMessage(self,statusText):
         self.ui.statusbar.showMessage(statusText+' ...')
-        self.ui.statusbar.setStyleSheet('color: red')
-        #self.statusbar.repaint()
+        self.ui.statusbar.setStyleSheet('QStatusBar{color: red;font-weight:bold;}')
+        self.ui.statusbar.repaint()
     #################################################################################################
     def unSetStatusMessage(self,statusText):
         self.ui.statusbar.showMessage(statusText+' ... done')
-        self.ui.statusbar.setStyleSheet('color: black')
+        self.ui.statusbar.setStyleSheet('QStatusBar{color: black;font-weight:normal}')
         #self.statusValue.repaint()   
     #################################################################################################
     def enableReferencePowerBtns(self):
@@ -906,7 +922,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.loadLocationsBtn.setEnabled(newSetting)
     ###################################################################################################
     def enableDisableControllerBtns(self, newSetting):
-        self.ui.controllerActivateBtn.setEnabled(newSetting)
         
         self.ui.fineBtn.setEnabled(newSetting)
         self.ui.smallBtn.setEnabled(newSetting)
@@ -922,15 +937,17 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.trackStageXMovementDev2Btn.setEnabled(newSetting)
     
     #########################################################################################
-    def endThreadsSaveLocations(self, event):
-        
+    def closeEvent(self, event):
+        print 'stopping threads'
         self.updateManiuplators = False
         self.listenToSocket = False
         self.listenToControler = False
+        time.sleep(.2)
+        self.dev.closeConnections()
         
         # save locations and dispaly quitting dialog
         if not self.fileSaved and self.nItem>0:
-            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
+            reply = QtGui.QMessageBox.question(self, 'Message',"Do you want to save the cell locations before quitting?",  QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.Yes)
             if reply == QtGui.QMessageBox.Yes:
                 self.saveLocations()
                 event.accept()
@@ -944,6 +961,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 event.accept()
             else:
                 event.ignore()    
+                
+        
+        
         
         
         
