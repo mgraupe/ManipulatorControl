@@ -21,8 +21,7 @@ import socket
 import select
 import collections
 import params
-from PyQt4 import QtCore 
-from PyQt4 import QtGui
+from PyQt4 import QtCore, QtGui
 
 #from shapely.geometry import MultiPolygon, Polygon
 #from shapely.topology import TopologicalError
@@ -33,13 +32,10 @@ from PyQt4 import QtGui
 
 import c843_class
 import LandNSM5
-import manipulatorGUI
-
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from manipulatorGUI import manipulatorControlGui
 
 #################################################################
-class manipulatorControl():
+class manipulatorControl(QtCore.QObject):
     
     #isStagePositionChanged = QtCore.Signal()
     #setStagePositionsChanged = QtCore.Signal()
@@ -51,8 +47,8 @@ class manipulatorControl():
     """Instance of the hdf5 Data Manager Qt interface."""
     def __init__(self):
         
-        
-        self.gui = manipulatorGUI.manipulatorControlGui(self)
+        super(manipulatorControl,self).__init__()
+        self.gui = manipulatorControlGui(self)
         self.gui.setWindowTitle('Manipulator Control')
         self.gui.setGeometry(params.xLocation, params.yLocation,params.widthSize,params.heightSize)
         
@@ -63,7 +59,7 @@ class manipulatorControl():
         #self.connectSignals()
         
         # parameters for socket connection
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
         host = params.host #socket.gethostname() #Get the local machine name
         port = params.port # Reserve a port for your service
         self.sock.bind((host,port)) #Bind to the port
@@ -89,8 +85,7 @@ class manipulatorControl():
         
         self.defaultMoveSpeed = 'fine'
         
-        self.defaultLocations = ([params.defaultXLocation,params.defaultYLocation,params.defaultZLocation])
-
+        self.defaultLocations = np.array([params.defaultXLocation,params.defaultYLocation,params.defaultZLocation])
         self.sm5Lock = Lock()
         self.c843Lock = Lock()
 
@@ -127,6 +122,12 @@ class manipulatorControl():
     #################################################################################################
     def init_SM5(self):
         self.luigsNeumann = LandNSM5.LandNSM5()
+        self.isDev1 = np.zeros(3)
+        self.isDev2 = np.zeros(3)
+        self.SM5_getPosition()
+        self.setDev1 = np.copy(self.isDev1)
+        self.setDev2 = np.copy(self.isDev2)
+        self.setManipulatorPositionChanged.emit()
     
     #################################################################################################
     def is_SM5_connected(self):
@@ -158,7 +159,8 @@ class manipulatorControl():
         for i in range(3):
             ref[i] = self.c843.reference_stage(self.stageAxes[self.axes[i]],moveStage)
         self.isStage = np.zeros(3)
-        self.setStage = np.zeros(3)
+        self.C843_get_position()
+        self.setStage = np.copy(self.isStage)
         return all(ref)
     
     #################################################################################################
@@ -175,28 +177,35 @@ class manipulatorControl():
         self.isStagePositionChanged.emit()
     
     #################################################################################################
-    def SM5_getPosition(self,dev,axis=None):
+    def SM5_getPosition(self,dev=None,axis=None):
         if axis is None:
-            if dev == 1:
-                with self.sm5Lock:
-                    [self.isXDev1,self.isYDev1,self.isZDev1] = [self.luigsNeumann.getPosition(1,'x'),self.luigsNeumann.getPosition(1,'y'),self.luigsNeumann.getPosition(1,'z')]
-            elif dev == 2:
-                with self.sm5Lock:
-                    [self.isXDev2,self.isYDev2,self.isZDev2] = [self.luigsNeumann.getPosition(2,'x'),self.luigsNeumann.getPosition(2,'y'),self.luigsNeumann.getPosition(2,'z')]
+            with self.sm5Lock:
+                for i in range(3):
+                    self.isDev1[i] = self.luigsNeumann.getPosition(1,self.axes[i])
+                    self.isDev2[i] = self.luigsNeumann.getPosition(2,self.axes[i])
         else:
-            if 'x' in axis:
-                with self.sm5Lock:
-                    self.isXDev1 = self.luigsNeumann.getPosition(1,'x')
-                    self.isXDev2 = self.luigsNeumann.getPosition(2,'x')
-            if 'y' in axis:
-                with self.sm5Lock:
-                    self.isYDev1 = self.luigsNeumann.getPosition(1,'y')
-                    self.isYDev2 = self.luigsNeumann.getPosition(2,'y')
-            if 'z' in axis:
-                with self.sm5Lock:
-                    self.isZDev1 = self.luigsNeumann.getPosition(1,'z')
-                    self.isZDev2 = self.luigsNeumann.getPosition(2,'z')
+            with self.sm5Lock:
+                self.isDev1[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(1,axis)
+                self.isDev2[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(2,axis)
+                    
+            #if 'x' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[0] = self.luigsNeumann.getPosition(1,'x')
+            #        self.isDev2[0] = self.luigsNeumann.getPosition(2,'x')
+            #if 'y' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[1] = self.luigsNeumann.getPosition(1,'y')
+            #        self.isDev2[1] = self.luigsNeumann.getPosition(2,'y')
+            #if 'z' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[2] = self.luigsNeumann.getPosition(1,'z')
+            #        self.isDev2[2] = self.luigsNeumann.getPosition(2,'z')
         self.isManipulatorPositionChanged.emit()
+    #################################################################################################
+    def SM5_copyIsToSetLoctions(self):
+        self.setDev1 = np.copy(self.isDev1)
+        self.setDev2 = np.copy(self.isDev2)
+        self.setManipulatorPositionChanged.emit()
     #################################################################################################
     def socket_connect(self):
         self.sock.listen(1)
@@ -266,7 +275,7 @@ class manipulatorControl():
     def choseRightSpeed(self,stepSize):
         self.moveSpeedBefore = self.moveSpeed
         for key, value in self.stepWidths.iteritems():
-            if stepSize >= value:
+            if abs(stepSize) >= value:
                 self.moveSpeed = self.speeds[key]
             else :
                 break
@@ -282,7 +291,7 @@ class manipulatorControl():
     def moveStageToDefaultLocation(self):
         for i in range(3):
             self.choseRightSpeed(self.defaultLocations[i]-self.isStage[i])
-            self.moveStageToNewLocation(self.axes[i],self.defaultLocations[i],moveType='absolute')
+            self.moveStageToNewLocation(i,self.defaultLocations[i],moveType='absolute')
         self.moveSpeed = self.moveSpeedBefore
         self.C843_propagateSpeeds()
     
@@ -296,9 +305,9 @@ class manipulatorControl():
         
         # define movement length
         if moveType == 'relative':
-            self.setStage[axis] += self.moveStep
+            self.setStage[axis] += moveStep
         if moveType == 'absolute':
-            self.setStage[axis] = self.moveStep
+            self.setStage[axis] = moveStep
         # check if limits are reached
         if self.setStage[axis] < self.minStage[axis]:
             self.setStage[axis] = self.minStage[axis]
@@ -313,7 +322,7 @@ class manipulatorControl():
         #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
         #elif axis==2:
         #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        while any(abs(self.isStage - self.setStage)> self.locationDiscrepancy):
+        while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy):
             wait = True
             while wait:
                 with self.c843Lock:
@@ -322,6 +331,7 @@ class manipulatorControl():
                     wait = False
             with self.c843Lock:
                 self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            self.C843_get_position()
         self.isStagePositionChanged.emit()
     
     #################################################################################################
@@ -337,34 +347,49 @@ class manipulatorControl():
     #################################################################################################
     def moveManipulatorToNewLocation(self,dev,axis,moveStep):
         if dev == 1:
-            if axis == 'x':
-                self.setXDev1+= self.moveStep
-            elif axis == 'y':
-                self.setYDev1+= self.moveStep
-            elif axis == 'z':
-                self.setZDev1+= self.moveStep
+            self.setDev1[np.where(self.axes==axis)[0][0]] += moveStep
+            #self.luigsNeumann.getPosition(1,axis)
+            #if axis == 'x':
+            #    self.setXDev1-= moveStep
+            #elif axis == 'y':
+            #    self.setYDev1-= moveStep
+            #elif axis == 'z':
+            #    self.setZDev1+= moveStep
         elif dev == 2:
-            if axis == 'x':
-                self.setXDev2+= self.moveStep
-            elif axis == 'y':
-                self.setYDev2+= self.moveStep
-            elif axis == 'z':
-                self.setZDev2+= self.moveStep
+            self.setDev2[np.where(self.axes==axis)[0][0]] += moveStep
+            #if axis == 'x':
+            #    self.setXDev2-= moveStep
+            #elif axis == 'y':
+            #    self.setYDev2-= moveStep
+            #elif axis == 'z':
+            #    self.setZDev2+= moveStep
                 
-        self.setManipulatorPositionsChanged.emit()
-        #print self.loc
-        if 'z' in axis:
-            movementSize = self.moveStep
-        else:
-            movementSize= -1.*self.moveStep
-        
-        if abs(movementSize) > self.locationDiscrepancy:
+        self.setManipulatorPositionChanged.emit()
+
+        #if 'z' in axis:
+        #    movementSize = moveStep
+        #else:
+        #    movementSize= -1.*moveStep
+        self.luigsNeumann.setPositioningVelocityFast(1,axis,10000.)
+        self.luigsNeumann.setPositioningVelocityFast(2,axis,10000.)
+        #if abs(movementSize) > self.locationDiscrepancy:
+        while any(abs(self.setDev1 - self.isDev1) > self.locationDiscrepancy) or any(abs(self.setDev2 - self.isDev2) > self.locationDiscrepancy):
             if dev == 1:
+                movement = (self.setDev1 - self.isDev1)[np.where(self.axes==axis)[0][0]]
+                if not 'z' in axis:
+                   movement = -movement
                 with self.sm5Lock : #.acquire()
+                    print 1,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(1,axis)
                     self.luigsNeumann.goVariableFastToRelativePosition(1,axis,float(movement))
+                    time.sleep(0.3)
             elif dev == 2:
+                movement = (self.setDev2 - self.isDev2)[np.where(self.axes==axis)[0][0]]
+                if not 'z' in axis:
+                   movement = -movement
                 with self.sm5Lock : #.acquire()
+                    print 2,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(2,axis)
                     self.luigsNeumann.goVariableFastToRelativePosition(2,axis,float(movement))
+                    time.sleep(0.3)
             # update locations
             self.SM5_getPosition(dev,axis)
             # show new loctions in gui
@@ -489,10 +514,8 @@ class manipulatorControl():
             #self.c.send('successful')
             #self.c.close()
             #time.sleep(0.5)
-        
-    
     # OK ################################################################################################
-    def choseRightSpeed(self,stepSize): OK
+    def choseRightSpeed(self,stepSize):
         self.moveSpeedBefore = self.moveSpeed
         for key, value in self.stepWidths.iteritems():
             if stepSize >= value:
@@ -682,7 +705,7 @@ class manipulatorControl():
 
     
     # OK ################################################################################################
-    def moveManipulatorToNewLocation(self,dev,axis,move):
+    def moveManipulatorToNewLocationOld(self,dev,axis,move):
         #exec("loc = self.set%sDev%s" % (axis.upper(),dev)) 
         #print self.loc
         if 'z' in axis:
