@@ -182,7 +182,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 self.autoUpdateManipulatorLocations.start()
                 
             else:
-                reply = QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QMessageBox.Ok )
+                reply = QtGui.QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QtGui.QMessageBox.Ok )
         else:
             if self.autoUpdateManipulatorLocations.is_alive():
                 self.updateManiuplators=False
@@ -257,7 +257,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             if moveStage:
                 self.dev.moveStageToDefaultLocation()
         else:
-            reply = QMessageBox.warning(self, 'Warning','Reference failed.',  QMessageBox.Ok )
+            reply = QtGui.QMessageBox.warning(self, 'Warning','Reference failed.',  QtGui.QMessageBox.Ok )
         #
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes')
