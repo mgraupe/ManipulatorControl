@@ -335,7 +335,6 @@ class manipulatorControl(QtCore.QObject):
             with self.c843Lock:
                 self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
             self.C843_get_position()
-        self.isStagePositionChanged.emit()
     
     #################################################################################################
     def setSM5Speed(self,dev,speed):
