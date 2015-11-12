@@ -78,7 +78,7 @@ class c843_class(object):
 		#if not errorCode:
 		#date_time = time.strftime("%Y%m%d_%H:%M")[2:]
 		if self.glvar['1']['referenced'] and self.glvar['2']['referenced'] and self.glvar['3']['referenced']:
-			print 'locations saved'
+			print 'stage locations saved'
 			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
 		#else : 
 		#	# delete old reference file

@@ -1,757 +1,467 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file '.\manipulator.ui'
-#
-# Created: Wed Sep 09 18:01:00 2015
-#      by: PyQt4 UI code generator 4.10.4
-#
-# WARNING! All changes made in this file will be lost!
-
+#! python
+import os
+import sys
+from os.path import join, dirname, isdir
+import glob
+import h5py
+import pdb
+import time
+import numpy as np
+import platform
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+from matplotlib.ticker import MultipleLocator
+from matplotlib.widgets import Slider, RadioButtons
+from threading import *
+import re
+import pickle
+from functools import partial
+import pygame
+import socket
+import select
+import collections
+import params
 from PyQt4 import QtCore, QtGui
 
-try:
-    _fromUtf8 = QtCore.QString.fromUtf8
-except AttributeError:
-    def _fromUtf8(s):
-        return s
+#from shapely.geometry import MultiPolygon, Polygon
+#from shapely.topology import TopologicalError
+#from skimage import transform as tf
+#import itertools as it
+#from random import shuffle
+#import warnings as wa
 
-try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
-except AttributeError:
-    def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+import c843_class
+import LandNSM5
+from manipulatorGUI import manipulatorControlGui
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.setEnabled(True)
-        MainWindow.resize(534, 971)
-        MainWindow.setMinimumSize(QtCore.QSize(500, 700))
-        MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
-        self.centralwidget = QtGui.QWidget(MainWindow)
-        self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.gridLayout_3 = QtGui.QGridLayout(self.centralwidget)
-        self.gridLayout_3.setSpacing(9)
-        self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(456, 143))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget.setFont(font)
-        self.dockWidget.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}"))
-        self.dockWidget.setFloating(False)
-        self.dockWidget.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget.setObjectName(_fromUtf8("dockWidget"))
-        self.dockWidgetContents = QtGui.QWidget()
-        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
-        self.gridLayout_6 = QtGui.QGridLayout(self.dockWidgetContents)
-        self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
-        self.horizontalWidget = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget.setObjectName(_fromUtf8("horizontalWidget"))
-        self.horizontalLayout_16 = QtGui.QHBoxLayout(self.horizontalWidget)
-        self.horizontalLayout_16.setMargin(1)
-        self.horizontalLayout_16.setObjectName(_fromUtf8("horizontalLayout_16"))
-        self.label_7 = QtGui.QLabel(self.horizontalWidget)
-        self.label_7.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_7.setObjectName(_fromUtf8("label_7"))
-        self.horizontalLayout_16.addWidget(self.label_7)
-        self.refChoseLocationBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refChoseLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refChoseLocationBtn.setObjectName(_fromUtf8("refChoseLocationBtn"))
-        self.horizontalLayout_16.addWidget(self.refChoseLocationBtn)
-        self.refSavedLocationBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refSavedLocationBtn.setObjectName(_fromUtf8("refSavedLocationBtn"))
-        self.horizontalLayout_16.addWidget(self.refSavedLocationBtn)
-        self.refNegativeBtn = QtGui.QPushButton(self.horizontalWidget)
-        self.refNegativeBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.refNegativeBtn.setObjectName(_fromUtf8("refNegativeBtn"))
-        self.horizontalLayout_16.addWidget(self.refNegativeBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget, 5, 0, 1, 2)
-        self.horizontalWidget1 = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget1.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget1.setObjectName(_fromUtf8("horizontalWidget1"))
-        self.horizontalLayout_2 = QtGui.QHBoxLayout(self.horizontalWidget1)
-        self.horizontalLayout_2.setMargin(1)
-        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
-        self.label_2 = QtGui.QLabel(self.horizontalWidget1)
-        self.label_2.setMinimumSize(QtCore.QSize(110, 0))
-        self.label_2.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.horizontalLayout_2.addWidget(self.label_2)
-        self.C843XYPowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.C843XYPowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.C843XYPowerBtn.setCheckable(True)
-        self.C843XYPowerBtn.setChecked(False)
-        self.C843XYPowerBtn.setObjectName(_fromUtf8("C843XYPowerBtn"))
-        self.horizontalLayout_2.addWidget(self.C843XYPowerBtn)
-        self.C843ZPowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.C843ZPowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.C843ZPowerBtn.setCheckable(True)
-        self.C843ZPowerBtn.setObjectName(_fromUtf8("C843ZPowerBtn"))
-        self.horizontalLayout_2.addWidget(self.C843ZPowerBtn)
-        self.SM5Dev1PowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.SM5Dev1PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5Dev1PowerBtn.setCheckable(True)
-        self.SM5Dev1PowerBtn.setObjectName(_fromUtf8("SM5Dev1PowerBtn"))
-        self.horizontalLayout_2.addWidget(self.SM5Dev1PowerBtn)
-        self.SM5Dev2PowerBtn = QtGui.QPushButton(self.horizontalWidget1)
-        self.SM5Dev2PowerBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.SM5Dev2PowerBtn.setCheckable(True)
-        self.SM5Dev2PowerBtn.setObjectName(_fromUtf8("SM5Dev2PowerBtn"))
-        self.horizontalLayout_2.addWidget(self.SM5Dev2PowerBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget1, 3, 0, 1, 2)
-        self.horizontalWidget2 = QtGui.QWidget(self.dockWidgetContents)
-        self.horizontalWidget2.setObjectName(_fromUtf8("horizontalWidget2"))
-        self.horizontalLayout_17 = QtGui.QHBoxLayout(self.horizontalWidget2)
-        self.horizontalLayout_17.setMargin(1)
-        self.horizontalLayout_17.setObjectName(_fromUtf8("horizontalLayout_17"))
-        self.label_8 = QtGui.QLabel(self.horizontalWidget2)
-        self.label_8.setMaximumSize(QtCore.QSize(110, 16777215))
-        self.label_8.setObjectName(_fromUtf8("label_8"))
-        self.horizontalLayout_17.addWidget(self.label_8)
-        self.connectBtn = QtGui.QPushButton(self.horizontalWidget2)
-        self.connectBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.connectBtn.setFont(font)
-        self.connectBtn.setCheckable(True)
-        self.connectBtn.setDefault(False)
-        self.connectBtn.setFlat(False)
-        self.connectBtn.setObjectName(_fromUtf8("connectBtn"))
-        self.horizontalLayout_17.addWidget(self.connectBtn)
-        self.gridLayout_6.addWidget(self.horizontalWidget2, 1, 0, 1, 2)
-        self.dockWidget.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(4), self.dockWidget)
-        self.dockWidget_5 = QtGui.QDockWidget(MainWindow)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.dockWidget_5.sizePolicy().hasHeightForWidth())
-        self.dockWidget_5.setSizePolicy(sizePolicy)
-        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 427))
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget_5.setFont(font)
-        self.dockWidget_5.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}\n"
-""))
-        self.dockWidget_5.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget_5.setObjectName(_fromUtf8("dockWidget_5"))
-        self.dockWidgetContents_5 = QtGui.QWidget()
-        self.dockWidgetContents_5.setObjectName(_fromUtf8("dockWidgetContents_5"))
-        self.gridLayout_5 = QtGui.QGridLayout(self.dockWidgetContents_5)
-        self.gridLayout_5.setHorizontalSpacing(2)
-        self.gridLayout_5.setVerticalSpacing(4)
-        self.gridLayout_5.setObjectName(_fromUtf8("gridLayout_5"))
-        self.groupBox_3 = QtGui.QGroupBox(self.dockWidgetContents_5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_3.setFont(font)
-        self.groupBox_3.setObjectName(_fromUtf8("groupBox_3"))
-        self.gridLayout_2 = QtGui.QGridLayout(self.groupBox_3)
-        self.gridLayout_2.setSpacing(4)
-        self.gridLayout_2.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-        self.horizontalWidget3 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget3.setObjectName(_fromUtf8("horizontalWidget3"))
-        self.horizontalLayout_8 = QtGui.QHBoxLayout(self.horizontalWidget3)
-        self.horizontalLayout_8.setMargin(1)
-        self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-        self.setXLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setXLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setXLocationLineEdit.setText(_fromUtf8(""))
-        self.setXLocationLineEdit.setObjectName(_fromUtf8("setXLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setXLocationLineEdit)
-        self.setYLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setYLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setYLocationLineEdit.setText(_fromUtf8(""))
-        self.setYLocationLineEdit.setObjectName(_fromUtf8("setYLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setYLocationLineEdit)
-        self.setZLocationLineEdit = QtGui.QLineEdit(self.horizontalWidget3)
-        self.setZLocationLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.setZLocationLineEdit.setText(_fromUtf8(""))
-        self.setZLocationLineEdit.setObjectName(_fromUtf8("setZLocationLineEdit"))
-        self.horizontalLayout_8.addWidget(self.setZLocationLineEdit)
-        self.gridLayout_2.addWidget(self.horizontalWidget3, 3, 1, 1, 1)
-        self.label_9 = QtGui.QLabel(self.groupBox_3)
-        self.label_9.setObjectName(_fromUtf8("label_9"))
-        self.gridLayout_2.addWidget(self.label_9, 1, 0, 1, 1)
-        self.horizontalWidget4 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget4.setObjectName(_fromUtf8("horizontalWidget4"))
-        self.horizontalLayout = QtGui.QHBoxLayout(self.horizontalWidget4)
-        self.horizontalLayout.setMargin(1)
-        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
-        self.fineBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.fineBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.fineBtn.setIconSize(QtCore.QSize(16, 16))
-        self.fineBtn.setCheckable(True)
-        self.fineBtn.setObjectName(_fromUtf8("fineBtn"))
-        self.buttonGroup = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup.setObjectName(_fromUtf8("buttonGroup"))
-        self.buttonGroup.addButton(self.fineBtn)
-        self.horizontalLayout.addWidget(self.fineBtn)
-        self.smallBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.smallBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.smallBtn.setCheckable(True)
-        self.smallBtn.setObjectName(_fromUtf8("smallBtn"))
-        self.buttonGroup.addButton(self.smallBtn)
-        self.horizontalLayout.addWidget(self.smallBtn)
-        self.mediumBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.mediumBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.mediumBtn.setCheckable(True)
-        self.mediumBtn.setObjectName(_fromUtf8("mediumBtn"))
-        self.buttonGroup.addButton(self.mediumBtn)
-        self.horizontalLayout.addWidget(self.mediumBtn)
-        self.coarseBtn = QtGui.QPushButton(self.horizontalWidget4)
-        self.coarseBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.coarseBtn.setCheckable(True)
-        self.coarseBtn.setObjectName(_fromUtf8("coarseBtn"))
-        self.buttonGroup.addButton(self.coarseBtn)
-        self.horizontalLayout.addWidget(self.coarseBtn)
-        self.gridLayout_2.addWidget(self.horizontalWidget4, 4, 0, 1, 2)
-        self.label_13 = QtGui.QLabel(self.groupBox_3)
-        self.label_13.setObjectName(_fromUtf8("label_13"))
-        self.gridLayout_2.addWidget(self.label_13, 3, 0, 1, 1)
-        self.label_17 = QtGui.QLabel(self.groupBox_3)
-        self.label_17.setObjectName(_fromUtf8("label_17"))
-        self.gridLayout_2.addWidget(self.label_17, 2, 0, 1, 1)
-        self.horizontalWidget5 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget5.setObjectName(_fromUtf8("horizontalWidget5"))
-        self.horizontalLayout_7 = QtGui.QHBoxLayout(self.horizontalWidget5)
-        self.horizontalLayout_7.setMargin(1)
-        self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-        self.minMaxXLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        self.minMaxXLocationValueLabel.setObjectName(_fromUtf8("minMaxXLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxXLocationValueLabel)
-        self.minMaxYLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.minMaxYLocationValueLabel.setFont(font)
-        self.minMaxYLocationValueLabel.setObjectName(_fromUtf8("minMaxYLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxYLocationValueLabel)
-        self.minMaxZLocationValueLabel = QtGui.QLabel(self.horizontalWidget5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.minMaxZLocationValueLabel.setFont(font)
-        self.minMaxZLocationValueLabel.setObjectName(_fromUtf8("minMaxZLocationValueLabel"))
-        self.horizontalLayout_7.addWidget(self.minMaxZLocationValueLabel)
-        self.gridLayout_2.addWidget(self.horizontalWidget5, 1, 1, 1, 1)
-        self.horizontalWidget6 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget6.setObjectName(_fromUtf8("horizontalWidget6"))
-        self.horizontalLayout_9 = QtGui.QHBoxLayout(self.horizontalWidget6)
-        self.horizontalLayout_9.setMargin(1)
-        self.horizontalLayout_9.setObjectName(_fromUtf8("horizontalLayout_9"))
-        self.isXLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isXLocationValueLabel.setFont(font)
-        self.isXLocationValueLabel.setObjectName(_fromUtf8("isXLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isXLocationValueLabel)
-        self.isYLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isYLocationValueLabel.setFont(font)
-        self.isYLocationValueLabel.setObjectName(_fromUtf8("isYLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isYLocationValueLabel)
-        self.isZLocationValueLabel = QtGui.QLabel(self.horizontalWidget6)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.isZLocationValueLabel.setFont(font)
-        self.isZLocationValueLabel.setObjectName(_fromUtf8("isZLocationValueLabel"))
-        self.horizontalLayout_9.addWidget(self.isZLocationValueLabel)
-        self.gridLayout_2.addWidget(self.horizontalWidget6, 2, 1, 1, 1)
-        self.label_18 = QtGui.QLabel(self.groupBox_3)
-        self.label_18.setObjectName(_fromUtf8("label_18"))
-        self.gridLayout_2.addWidget(self.label_18, 5, 0, 1, 1)
-        self.horizontalWidget7 = QtGui.QWidget(self.groupBox_3)
-        self.horizontalWidget7.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget7.setObjectName(_fromUtf8("horizontalWidget7"))
-        self.horizontalLayout_11 = QtGui.QHBoxLayout(self.horizontalWidget7)
-        self.horizontalLayout_11.setMargin(2)
-        self.horizontalLayout_11.setObjectName(_fromUtf8("horizontalLayout_11"))
-        self.stepLineEdit = QtGui.QLineEdit(self.horizontalWidget7)
-        self.stepLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.stepLineEdit.setObjectName(_fromUtf8("stepLineEdit"))
-        self.horizontalLayout_11.addWidget(self.stepLineEdit)
-        self.label_19 = QtGui.QLabel(self.horizontalWidget7)
-        self.label_19.setObjectName(_fromUtf8("label_19"))
-        self.horizontalLayout_11.addWidget(self.label_19)
-        self.speedLineEdit = QtGui.QLineEdit(self.horizontalWidget7)
-        self.speedLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.speedLineEdit.setObjectName(_fromUtf8("speedLineEdit"))
-        self.horizontalLayout_11.addWidget(self.speedLineEdit)
-        self.gridLayout_2.addWidget(self.horizontalWidget7, 5, 1, 1, 1)
-        self.gridLayout_5.addWidget(self.groupBox_3, 1, 0, 1, 3)
-        self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents_5)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_4.setFont(font)
-        self.groupBox_4.setObjectName(_fromUtf8("groupBox_4"))
-        self.gridLayout_8 = QtGui.QGridLayout(self.groupBox_4)
-        self.gridLayout_8.setSpacing(4)
-        self.gridLayout_8.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_8.setObjectName(_fromUtf8("gridLayout_8"))
-        self.horizontalWidget8 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget8.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget8.setObjectName(_fromUtf8("horizontalWidget8"))
-        self.horizontalLayout_12 = QtGui.QHBoxLayout(self.horizontalWidget8)
-        self.horizontalLayout_12.setMargin(1)
-        self.horizontalLayout_12.setObjectName(_fromUtf8("horizontalLayout_12"))
-        self.xSetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.xSetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.xSetPosDev1LE.setObjectName(_fromUtf8("xSetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.xSetPosDev1LE)
-        self.ySetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.ySetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.ySetPosDev1LE.setObjectName(_fromUtf8("ySetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.ySetPosDev1LE)
-        self.zSetPosDev1LE = QtGui.QLineEdit(self.horizontalWidget8)
-        self.zSetPosDev1LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.zSetPosDev1LE.setObjectName(_fromUtf8("zSetPosDev1LE"))
-        self.horizontalLayout_12.addWidget(self.zSetPosDev1LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget8, 3, 1, 1, 1)
-        self.horizontalWidget9 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget9.setObjectName(_fromUtf8("horizontalWidget9"))
-        self.horizontalLayout_10 = QtGui.QHBoxLayout(self.horizontalWidget9)
-        self.horizontalLayout_10.setMargin(1)
-        self.horizontalLayout_10.setObjectName(_fromUtf8("horizontalLayout_10"))
-        self.device2StepLE = QtGui.QLineEdit(self.horizontalWidget9)
-        self.device2StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device2StepLE.setObjectName(_fromUtf8("device2StepLE"))
-        self.horizontalLayout_10.addWidget(self.device2StepLE)
-        self.label_12 = QtGui.QLabel(self.horizontalWidget9)
-        self.label_12.setObjectName(_fromUtf8("label_12"))
-        self.horizontalLayout_10.addWidget(self.label_12)
-        self.device2SpeedLE = QtGui.QLineEdit(self.horizontalWidget9)
-        self.device2SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device2SpeedLE.setObjectName(_fromUtf8("device2SpeedLE"))
-        self.horizontalLayout_10.addWidget(self.device2SpeedLE)
-        self.gridLayout_8.addWidget(self.horizontalWidget9, 4, 2, 1, 1)
-        self.horizontalWidget10 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget10.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget10.setObjectName(_fromUtf8("horizontalWidget10"))
-        self.horizontalLayout_3 = QtGui.QHBoxLayout(self.horizontalWidget10)
-        self.horizontalLayout_3.setMargin(1)
-        self.horizontalLayout_3.setObjectName(_fromUtf8("horizontalLayout_3"))
-        self.xIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.xIsPosDev2LE.setFont(font)
-        self.xIsPosDev2LE.setObjectName(_fromUtf8("xIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.xIsPosDev2LE)
-        self.yIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.yIsPosDev2LE.setFont(font)
-        self.yIsPosDev2LE.setObjectName(_fromUtf8("yIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.yIsPosDev2LE)
-        self.zIsPosDev2LE = QtGui.QLabel(self.horizontalWidget10)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.zIsPosDev2LE.setFont(font)
-        self.zIsPosDev2LE.setObjectName(_fromUtf8("zIsPosDev2LE"))
-        self.horizontalLayout_3.addWidget(self.zIsPosDev2LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget10, 2, 2, 1, 1)
-        self.horizontalWidget11 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget11.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget11.setObjectName(_fromUtf8("horizontalWidget11"))
-        self.horizontalLayout_13 = QtGui.QHBoxLayout(self.horizontalWidget11)
-        self.horizontalLayout_13.setMargin(1)
-        self.horizontalLayout_13.setObjectName(_fromUtf8("horizontalLayout_13"))
-        self.device1StepLE = QtGui.QLineEdit(self.horizontalWidget11)
-        self.device1StepLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device1StepLE.setObjectName(_fromUtf8("device1StepLE"))
-        self.horizontalLayout_13.addWidget(self.device1StepLE)
-        self.label_6 = QtGui.QLabel(self.horizontalWidget11)
-        self.label_6.setObjectName(_fromUtf8("label_6"))
-        self.horizontalLayout_13.addWidget(self.label_6)
-        self.device1SpeedLE = QtGui.QLineEdit(self.horizontalWidget11)
-        self.device1SpeedLE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.device1SpeedLE.setObjectName(_fromUtf8("device1SpeedLE"))
-        self.horizontalLayout_13.addWidget(self.device1SpeedLE)
-        self.gridLayout_8.addWidget(self.horizontalWidget11, 4, 1, 1, 1)
-        self.horizontalWidget12 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget12.setObjectName(_fromUtf8("horizontalWidget12"))
-        self.horizontalLayout_5 = QtGui.QHBoxLayout(self.horizontalWidget12)
-        self.horizontalLayout_5.setMargin(1)
-        self.horizontalLayout_5.setObjectName(_fromUtf8("horizontalLayout_5"))
-        self.xSetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.xSetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.xSetPosDev2LE.setObjectName(_fromUtf8("xSetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.xSetPosDev2LE)
-        self.ySetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.ySetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.ySetPosDev2LE.setObjectName(_fromUtf8("ySetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.ySetPosDev2LE)
-        self.zSetPosDev2LE = QtGui.QLineEdit(self.horizontalWidget12)
-        self.zSetPosDev2LE.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.zSetPosDev2LE.setObjectName(_fromUtf8("zSetPosDev2LE"))
-        self.horizontalLayout_5.addWidget(self.zSetPosDev2LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget12, 3, 2, 1, 1)
-        self.horizontalWidget13 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget13.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget13.setObjectName(_fromUtf8("horizontalWidget13"))
-        self.horizontalLayout_4 = QtGui.QHBoxLayout(self.horizontalWidget13)
-        self.horizontalLayout_4.setMargin(1)
-        self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
-        self.xIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.xIsPosDev1LE.setFont(font)
-        self.xIsPosDev1LE.setObjectName(_fromUtf8("xIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.xIsPosDev1LE)
-        self.yIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.yIsPosDev1LE.setFont(font)
-        self.yIsPosDev1LE.setObjectName(_fromUtf8("yIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.yIsPosDev1LE)
-        self.zIsPosDev1LE = QtGui.QLabel(self.horizontalWidget13)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.zIsPosDev1LE.setFont(font)
-        self.zIsPosDev1LE.setObjectName(_fromUtf8("zIsPosDev1LE"))
-        self.horizontalLayout_4.addWidget(self.zIsPosDev1LE)
-        self.gridLayout_8.addWidget(self.horizontalWidget13, 2, 1, 1, 1)
-        self.horizontalWidget14 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget14.setMinimumSize(QtCore.QSize(0, 10))
-        self.horizontalWidget14.setObjectName(_fromUtf8("horizontalWidget14"))
-        self.horizontalLayout_15 = QtGui.QHBoxLayout(self.horizontalWidget14)
-        self.horizontalLayout_15.setMargin(1)
-        self.horizontalLayout_15.setObjectName(_fromUtf8("horizontalLayout_15"))
-        self.activateDev1 = QtGui.QPushButton(self.horizontalWidget14)
-        self.activateDev1.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.activateDev1.setSizeIncrement(QtCore.QSize(0, 0))
-        self.activateDev1.setCheckable(True)
-        self.activateDev1.setAutoExclusive(False)
-        self.activateDev1.setObjectName(_fromUtf8("activateDev1"))
-        self.buttonGroup_4 = QtGui.QButtonGroup(MainWindow)
-        self.buttonGroup_4.setObjectName(_fromUtf8("buttonGroup_4"))
-        self.buttonGroup_4.addButton(self.activateDev1)
-        self.horizontalLayout_15.addWidget(self.activateDev1)
-        self.activateDev2 = QtGui.QPushButton(self.horizontalWidget14)
-        self.activateDev2.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.activateDev2.setCheckable(True)
-        self.activateDev2.setAutoExclusive(False)
-        self.activateDev2.setObjectName(_fromUtf8("activateDev2"))
-        self.buttonGroup_4.addButton(self.activateDev2)
-        self.horizontalLayout_15.addWidget(self.activateDev2)
-        self.gridLayout_8.addWidget(self.horizontalWidget14, 0, 1, 1, 2)
-        self.label = QtGui.QLabel(self.groupBox_4)
-        self.label.setObjectName(_fromUtf8("label"))
-        self.gridLayout_8.addWidget(self.label, 2, 0, 1, 1)
-        self.label_23 = QtGui.QLabel(self.groupBox_4)
-        self.label_23.setObjectName(_fromUtf8("label_23"))
-        self.gridLayout_8.addWidget(self.label_23, 3, 0, 1, 1)
-        self.label_24 = QtGui.QLabel(self.groupBox_4)
-        self.label_24.setObjectName(_fromUtf8("label_24"))
-        self.gridLayout_8.addWidget(self.label_24, 4, 0, 1, 1)
-        self.label_5 = QtGui.QLabel(self.groupBox_4)
-        self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.gridLayout_8.addWidget(self.label_5, 5, 0, 1, 1)
-        self.horizontalWidget15 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget15.setMinimumSize(QtCore.QSize(0, 0))
-        self.horizontalWidget15.setObjectName(_fromUtf8("horizontalWidget15"))
-        self.horizontalLayout_6 = QtGui.QHBoxLayout(self.horizontalWidget15)
-        self.horizontalLayout_6.setMargin(1)
-        self.horizontalLayout_6.setObjectName(_fromUtf8("horizontalLayout_6"))
-        self.trackStageZMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget15)
-        self.trackStageZMovementDev1Btn.setMinimumSize(QtCore.QSize(0, 0))
-        self.trackStageZMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageZMovementDev1Btn.setIconSize(QtCore.QSize(16, 16))
-        self.trackStageZMovementDev1Btn.setCheckable(True)
-        self.trackStageZMovementDev1Btn.setAutoExclusive(False)
-        self.trackStageZMovementDev1Btn.setObjectName(_fromUtf8("trackStageZMovementDev1Btn"))
-        self.horizontalLayout_6.addWidget(self.trackStageZMovementDev1Btn)
-        self.trackStageXMovementDev1Btn = QtGui.QPushButton(self.horizontalWidget15)
-        self.trackStageXMovementDev1Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageXMovementDev1Btn.setCheckable(True)
-        self.trackStageXMovementDev1Btn.setAutoExclusive(False)
-        self.trackStageXMovementDev1Btn.setObjectName(_fromUtf8("trackStageXMovementDev1Btn"))
-        self.horizontalLayout_6.addWidget(self.trackStageXMovementDev1Btn)
-        self.gridLayout_8.addWidget(self.horizontalWidget15, 5, 1, 1, 1)
-        self.horizontalWidget16 = QtGui.QWidget(self.groupBox_4)
-        self.horizontalWidget16.setObjectName(_fromUtf8("horizontalWidget16"))
-        self.horizontalLayout_14 = QtGui.QHBoxLayout(self.horizontalWidget16)
-        self.horizontalLayout_14.setSpacing(1)
-        self.horizontalLayout_14.setMargin(1)
-        self.horizontalLayout_14.setObjectName(_fromUtf8("horizontalLayout_14"))
-        self.trackStageZMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget16)
-        self.trackStageZMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageZMovementDev2Btn.setCheckable(True)
-        self.trackStageZMovementDev2Btn.setObjectName(_fromUtf8("trackStageZMovementDev2Btn"))
-        self.horizontalLayout_14.addWidget(self.trackStageZMovementDev2Btn)
-        self.trackStageXMovementDev2Btn = QtGui.QPushButton(self.horizontalWidget16)
-        self.trackStageXMovementDev2Btn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.trackStageXMovementDev2Btn.setCheckable(True)
-        self.trackStageXMovementDev2Btn.setObjectName(_fromUtf8("trackStageXMovementDev2Btn"))
-        self.horizontalLayout_14.addWidget(self.trackStageXMovementDev2Btn)
-        self.gridLayout_8.addWidget(self.horizontalWidget16, 5, 2, 1, 1)
-        self.gridLayout_5.addWidget(self.groupBox_4, 2, 0, 1, 3)
-        self.horizontalWidget17 = QtGui.QWidget(self.dockWidgetContents_5)
-        self.horizontalWidget17.setMaximumSize(QtCore.QSize(16777215, 30))
-        self.horizontalWidget17.setObjectName(_fromUtf8("horizontalWidget17"))
-        self.horizontalLayout_18 = QtGui.QHBoxLayout(self.horizontalWidget17)
-        self.horizontalLayout_18.setMargin(0)
-        self.horizontalLayout_18.setObjectName(_fromUtf8("horizontalLayout_18"))
-        self.controllerActivateBtn = QtGui.QPushButton(self.horizontalWidget17)
-        self.controllerActivateBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.controllerActivateBtn.setStyleSheet(_fromUtf8(""))
-        self.controllerActivateBtn.setCheckable(True)
-        self.controllerActivateBtn.setChecked(False)
-        self.controllerActivateBtn.setObjectName(_fromUtf8("controllerActivateBtn"))
-        self.horizontalLayout_18.addWidget(self.controllerActivateBtn)
-        self.listenToSocketBtn = QtGui.QPushButton(self.horizontalWidget17)
-        self.listenToSocketBtn.setCheckable(True)
-        self.listenToSocketBtn.setChecked(False)
-        self.listenToSocketBtn.setObjectName(_fromUtf8("listenToSocketBtn"))
-        self.horizontalLayout_18.addWidget(self.listenToSocketBtn)
-        self.gridLayout_5.addWidget(self.horizontalWidget17, 0, 0, 1, 3)
-        self.dockWidget_5.setWidget(self.dockWidgetContents_5)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_5)
-        self.dockWidget_6 = QtGui.QDockWidget(MainWindow)
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-        self.dockWidget_6.setFont(font)
-        self.dockWidget_6.setStyleSheet(_fromUtf8("QDockWidget::title{background:rgb(85, 85, 255);}"))
-        self.dockWidget_6.setFeatures(QtGui.QDockWidget.DockWidgetFloatable|QtGui.QDockWidget.DockWidgetMovable)
-        self.dockWidget_6.setObjectName(_fromUtf8("dockWidget_6"))
-        self.dockWidgetContents_6 = QtGui.QWidget()
-        self.dockWidgetContents_6.setObjectName(_fromUtf8("dockWidgetContents_6"))
-        self.gridLayout = QtGui.QGridLayout(self.dockWidgetContents_6)
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.groupBox = QtGui.QGroupBox(self.dockWidgetContents_6)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox.setFont(font)
-        self.groupBox.setFlat(False)
-        self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.gridLayout_4 = QtGui.QGridLayout(self.groupBox)
-        self.gridLayout_4.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_4.setObjectName(_fromUtf8("gridLayout_4"))
-        self.homeLocationsTable = QtGui.QTableWidget(self.groupBox)
-        self.homeLocationsTable.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.homeLocationsTable.setRowCount(4)
-        self.homeLocationsTable.setColumnCount(4)
-        self.homeLocationsTable.setObjectName(_fromUtf8("homeLocationsTable"))
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
-        self.homeLocationsTable.setHorizontalHeaderItem(3, item)
-        self.homeLocationsTable.horizontalHeader().setStretchLastSection(True)
-        self.homeLocationsTable.verticalHeader().setVisible(False)
-        self.gridLayout_4.addWidget(self.homeLocationsTable, 1, 0, 1, 4)
-        self.recordHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.recordHomeLocationBtn.setObjectName(_fromUtf8("recordHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.recordHomeLocationBtn, 0, 0, 1, 1)
-        self.removeHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.removeHomeLocationBtn.setObjectName(_fromUtf8("removeHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.removeHomeLocationBtn, 0, 3, 1, 1)
-        self.updateHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.updateHomeLocationBtn.setObjectName(_fromUtf8("updateHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.updateHomeLocationBtn, 0, 1, 1, 1)
-        self.moveToHomeLocationBtn = QtGui.QPushButton(self.groupBox)
-        self.moveToHomeLocationBtn.setObjectName(_fromUtf8("moveToHomeLocationBtn"))
-        self.gridLayout_4.addWidget(self.moveToHomeLocationBtn, 0, 2, 1, 1)
-        self.gridLayout.addWidget(self.groupBox, 0, 0, 2, 4)
-        self.line = QtGui.QFrame(self.dockWidgetContents_6)
-        self.line.setMinimumSize(QtCore.QSize(0, 0))
-        self.line.setFrameShape(QtGui.QFrame.HLine)
-        self.line.setFrameShadow(QtGui.QFrame.Sunken)
-        self.line.setObjectName(_fromUtf8("line"))
-        self.gridLayout.addWidget(self.line, 3, 0, 1, 4)
-        self.groupBox_2 = QtGui.QGroupBox(self.dockWidgetContents_6)
-        font = QtGui.QFont()
-        font.setBold(False)
-        font.setWeight(50)
-        self.groupBox_2.setFont(font)
-        self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.gridLayout_7 = QtGui.QGridLayout(self.groupBox_2)
-        self.gridLayout_7.setContentsMargins(2, 1, 2, 2)
-        self.gridLayout_7.setObjectName(_fromUtf8("gridLayout_7"))
-        self.electrode1MLIBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode1MLIBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode1MLIBtn.setObjectName(_fromUtf8("electrode1MLIBtn"))
-        self.gridLayout_7.addWidget(self.electrode1MLIBtn, 0, 0, 1, 1)
-        self.electrode1PCBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode1PCBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode1PCBtn.setObjectName(_fromUtf8("electrode1PCBtn"))
-        self.gridLayout_7.addWidget(self.electrode1PCBtn, 0, 1, 1, 1)
-        self.cellListTable = QtGui.QTableWidget(self.groupBox_2)
-        self.cellListTable.setMaximumSize(QtCore.QSize(16777215, 115))
-        self.cellListTable.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
-        self.cellListTable.setRowCount(4)
-        self.cellListTable.setObjectName(_fromUtf8("cellListTable"))
-        self.cellListTable.setColumnCount(5)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(3, item)
-        item = QtGui.QTableWidgetItem()
-        self.cellListTable.setHorizontalHeaderItem(4, item)
-        self.cellListTable.horizontalHeader().setStretchLastSection(True)
-        self.cellListTable.verticalHeader().setVisible(False)
-        self.cellListTable.verticalHeader().setDefaultSectionSize(22)
-        self.cellListTable.verticalHeader().setMinimumSectionSize(16)
-        self.gridLayout_7.addWidget(self.cellListTable, 1, 0, 1, 4)
-        self.electrode2MLIBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode2MLIBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode2MLIBtn.setObjectName(_fromUtf8("electrode2MLIBtn"))
-        self.gridLayout_7.addWidget(self.electrode2MLIBtn, 0, 2, 1, 1)
-        self.electrode2PCBtn = QtGui.QPushButton(self.groupBox_2)
-        self.electrode2PCBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.electrode2PCBtn.setObjectName(_fromUtf8("electrode2PCBtn"))
-        self.gridLayout_7.addWidget(self.electrode2PCBtn, 0, 3, 1, 1)
-        self.moveToItemBtn = QtGui.QPushButton(self.groupBox_2)
-        self.moveToItemBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.moveToItemBtn.setObjectName(_fromUtf8("moveToItemBtn"))
-        self.gridLayout_7.addWidget(self.moveToItemBtn, 2, 0, 1, 1)
-        self.updateItemLocationBtn = QtGui.QPushButton(self.groupBox_2)
-        self.updateItemLocationBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.updateItemLocationBtn.setObjectName(_fromUtf8("updateItemLocationBtn"))
-        self.gridLayout_7.addWidget(self.updateItemLocationBtn, 2, 1, 1, 1)
-        self.recordDepthBtn = QtGui.QPushButton(self.groupBox_2)
-        self.recordDepthBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.recordDepthBtn.setObjectName(_fromUtf8("recordDepthBtn"))
-        self.gridLayout_7.addWidget(self.recordDepthBtn, 2, 2, 1, 1)
-        self.removeItemBtn = QtGui.QPushButton(self.groupBox_2)
-        self.removeItemBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.removeItemBtn.setObjectName(_fromUtf8("removeItemBtn"))
-        self.gridLayout_7.addWidget(self.removeItemBtn, 2, 3, 1, 1)
-        self.gridLayout.addWidget(self.groupBox_2, 4, 0, 1, 4)
-        self.loadLocationsBtn = QtGui.QPushButton(self.dockWidgetContents_6)
-        self.loadLocationsBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.loadLocationsBtn.setObjectName(_fromUtf8("loadLocationsBtn"))
-        self.gridLayout.addWidget(self.loadLocationsBtn, 5, 2, 1, 2)
-        self.saveLocationsBtn = QtGui.QPushButton(self.dockWidgetContents_6)
-        self.saveLocationsBtn.setMaximumSize(QtCore.QSize(16777215, 24))
-        self.saveLocationsBtn.setObjectName(_fromUtf8("saveLocationsBtn"))
-        self.gridLayout.addWidget(self.saveLocationsBtn, 5, 0, 1, 2)
-        self.dockWidget_6.setWidget(self.dockWidgetContents_6)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidget_6)
-        self.statusbar = QtGui.QStatusBar(MainWindow)
-        self.statusbar.setMinimumSize(QtCore.QSize(0, 60))
-        self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        MainWindow.setStatusBar(self.statusbar)
+#################################################################
+class manipulatorControl(QtCore.QObject):
+    
+    #isStagePositionChanged = QtCore.Signal()
+    #setStagePositionsChanged = QtCore.Signal()
+    setStagePositionChanged = QtCore.Signal()
+    isStagePositionChanged = QtCore.Signal()
+    setManipulatorPositionChanged = QtCore.Signal()
+    isManipulatorPositionChanged = QtCore.Signal()
+    #programIsClosing = QtCore.Signal(object)
+    """Instance of the hdf5 Data Manager Qt interface."""
+    def __init__(self):
+        
+        super(manipulatorControl,self).__init__()
+        self.gui = manipulatorControlGui(self)
+        self.gui.setWindowTitle('Manipulator Control')
+        self.gui.setGeometry(params.xLocation, params.yLocation,params.widthSize,params.heightSize)
+        
+        self.gui.show()
+        
+        self.today_date = time.strftime("%Y%m%d")[2:]
+        
+        #self.connectSignals()
+        
+        # parameters for socket connection
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
+        host = params.host #socket.gethostname() #Get the local machine name
+        port = params.port # Reserve a port for your service
+        self.sock.bind((host,port)) #Bind to the port
+        #self.sock.settimeout(10)
+        
+        # precision of values to show and store
+        self.precision = params.precision
+        self.locationDiscrepancy = params.locationDiscrepancy
+        
+        # angles of the manipulators with respect to a vertical line
+        self.alphaDev1 = params.alphaDev1
+        self.alphaDev2 = params.alphaDev2
+        
+        self.axes         = np.array(['x','y','z'])
+        self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
+        self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
+        
+        # movement parameters
+        self.stepWidths = collections.OrderedDict([('fine',params.fineStepWidth),('small',params.smallStepWidth),('medium',params.mediumStepWidth),('coarse',params.coarseStepWidth)])
+        
+        self.speeds = collections.OrderedDict([('fine',params.fineSpeed),('small',params.smallSpeed),('medium',params.mediumSpeed),('coarse',params.coarseSpeed)])
+        
+        self.defaultMoveSpeed = 'fine'
+        
+        self.defaultLocations = np.array([params.defaultXLocation,params.defaultYLocation,params.defaultZLocation])
+        self.sm5Lock = Lock()
+        self.c843Lock = Lock()
 
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+    
+    #################################################################################################
+    # destroy class instances
+    def __del__(self):
+        # sutter class
+        try: 
+            self.c843
+        except AttributeError:
+            pass
+        else:
+            del self.c843
+        # tdt class
+        try: 
+            self.luigsNeumann
+        except AttributeError:
+            pass
+        else:
+            del self.luigsNeumann
+    
+    #################################################################################################
+    def init_C843(self):
+        
+        self.c843 = c843_class.c843_class()
+        self.c843.init_stage(self.stageAxes['x'])
+        self.c843.init_stage(self.stageAxes['y'])
+        self.c843.init_stage(self.stageAxes['z'])
+        self.isStage = np.zeros(3)
+    #################################################################################################
+    def delete_C843(self):
+        del self.c843
+    #################################################################################################
+    def init_SM5(self):
+        self.luigsNeumann = LandNSM5.LandNSM5()
+        self.isDev1 = np.zeros(3)
+        self.isDev2 = np.zeros(3)
+        self.SM5_getPosition()
+        self.setDev1 = np.copy(self.isDev1)
+        self.setDev2 = np.copy(self.isDev2)
+        self.setManipulatorPositionChanged.emit()
+    
+    #################################################################################################
+    def is_SM5_connected(self):
+        return self.luigsNeumann.connected
+        
+    #################################################################################################
+    def delete_SM5(self):
+        del self.luigsNeumann
+    
+    #################################################################################################
+    def C843_switch_servo_on_off(self,axis):
+        with self.c843Lock:
+            self.c843.switch_servo_on_off(self.stageAxes[axis])
+    
+    #################################################################################################
+    def SM5_switch_on_axis(self,device,axis):
+        self.luigsNeumann.switchOnAxis(device,axis)
+        
+    #################################################################################################
+    def SM5_switch_off_axis(self,device,axis):
+        self.luigsNeumann.switchOffAxis(device,axis)
+    
+    #################################################################################################
+    def C843_openReferenceFile(self,fileName):
+        with self.c843Lock:
+            self.c843.openReferenceFile(fileName)
+        
+    #################################################################################################
+    def C843_reference_state(self,moveStage):
+        ref = [False]*3
+        with self.c843Lock:
+            for i in range(3):
+                ref[i] = self.c843.reference_stage(self.stageAxes[self.axes[i]],moveStage)
+        self.isStage = np.zeros(3)
+        self.C843_get_position()
+        self.setStage = np.copy(self.isStage)
+        return all(ref)
+    
+    #################################################################################################
+    def getSM5PositingVelocityFast(self,axis):
+        with self.sm5Lock:
+            vel1 = self.luigsNeumann.getPositioningVelocityFast(1,axis)
+            vel2 = self.luigsNeumann.getPositioningVelocityFast(2,axis)
+        return [vel1,vel2]
+    
+    #################################################################################################
+    def C843_get_position(self):
+        with self.c843Lock:
+            for i in range(3):
+                self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
+        self.isStagePositionChanged.emit()
+    
+    #################################################################################################
+    def SM5_getPosition(self,dev=None,axis=None):
+        if axis is None:
+            with self.sm5Lock:
+                for i in range(3):
+                    self.isDev1[i] = self.luigsNeumann.getPosition(1,self.axes[i])
+                    self.isDev2[i] = self.luigsNeumann.getPosition(2,self.axes[i])
+        else:
+            with self.sm5Lock:
+                self.isDev1[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(1,axis)
+                self.isDev2[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(2,axis)
+                    
+            #if 'x' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[0] = self.luigsNeumann.getPosition(1,'x')
+            #        self.isDev2[0] = self.luigsNeumann.getPosition(2,'x')
+            #if 'y' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[1] = self.luigsNeumann.getPosition(1,'y')
+            #        self.isDev2[1] = self.luigsNeumann.getPosition(2,'y')
+            #if 'z' in axis:
+            #    with self.sm5Lock:
+            #        self.isDev1[2] = self.luigsNeumann.getPosition(1,'z')
+            #        self.isDev2[2] = self.luigsNeumann.getPosition(2,'z')
+        self.isManipulatorPositionChanged.emit()
+    #################################################################################################
+    def SM5_copyIsToSetLoctions(self):
+        self.setDev1 = np.copy(self.isDev1)
+        self.setDev2 = np.copy(self.isDev2)
+        self.setManipulatorPositionChanged.emit()
+    #################################################################################################
+    def socket_connect(self):
+        self.sock.listen(1)
+        print 'after listen'
+        self.connection,addr = self.sock.accept()
+        print 'established connection with ',addr
+        #return self.c
+    #################################################################################################
+    def socket_monitor_activity(self):
+        r, _, _ = select.select([self.connection], [], [])
+        #data = self.c.recv(1024)
+        #print r
+        return bool(r)
+    #################################################################################################
+    def socket_read_data(self):
+        return self.connection.recv(params.dataSize)
+    #################################################################################################
+    def socket_send_data(self,data):
+        self.connection.send(data)
+    #################################################################################################
+    def socket_close_connection(self):
+        self.connection.close()
+    #################################################################################################
+    def performRemoteInstructions(self,rawData):
+        data = rawData.split(',')
+        #
+        if data[0] == 'getPos':
+            self.C843_get_position()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'relativeMoveTo':
+            moveStep = float(data[2])
+            self.C843_get_position()
+            oldIsStage = copy(self.isStage)
+            # to do : implemente loop to converge against precise target location
+            self.choseRightSpeed(abs(moveStep))
+            self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
+            self.moveSpeed = self.moveSpeedBefore
+            self.C843_propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'absoluteMoveTo':
+            moveStep = float(data[2])
+            self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
+            print np.where(self.axes==data[1])[0][0],moveStep,'absolute'
+            self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
+            print 'move done'
+            self.moveSpeed = self.moveSpeedBefore
+            self.C843_propagateSpeeds()
+            return (1,self.isStage[0],self.isStage[1],self.isStage[2])
+        elif data[0] == 'checkMovement':
+            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
+            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
+            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
+            if any((isXMoving,isYMoving,isZMoving)):
+                return 1
+            else:
+                return 0
+        elif data[0] == 'stop':
+            self.switchOnOffC843Motors('z')
+            self.switchOnOffC843Motors('xy')
+            return 1
+        else:
+            return 0
+    
+    #################################################################################################
+    def choseRightSpeed(self,stepSize):
+        self.moveSpeedBefore = self.moveSpeed
+        for key, value in self.stepWidths.iteritems():
+            if abs(stepSize) >= value:
+                self.moveSpeed = self.speeds[key]
+            else :
+                break
+        #print stepSize, self.moveSpeed
+        self.C843_propagateSpeeds()
+    
+    #################################################################################################
+    def determine_stage_speed(self,moveSize):
+        self.moveStep = self.stepWidths[moveSize]
+        self.moveSpeed = self.speeds[moveSize]
+        self.C843_propagateSpeeds()
+    #################################################################################################
+    def moveStageToDefaultLocation(self):
+        for i in range(3):
+            self.choseRightSpeed(self.defaultLocations[i]-self.isStage[i])
+            self.moveStageToNewLocation(i,self.defaultLocations[i],moveType='absolute')
+        self.moveSpeed = self.moveSpeedBefore
+        self.C843_propagateSpeeds()
+    
+    #################################################################################################
+    def C843_propagateSpeeds(self):
+        with self.c843Lock:
+            for i in range(3):
+                self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
+    
+    #################################################################################################
+    def moveStageToNewLocation(self,axis,moveStep,moveType='relative'):
+        
+        # define movement length
+        if moveType == 'relative':
+            self.setStage[axis] += moveStep
+        if moveType == 'absolute':
+            self.setStage[axis] = moveStep
+        # check if limits are reached
+        if self.setStage[axis] < self.minStage[axis]:
+            self.setStage[axis] = self.minStage[axis]
+        elif self.setStage[axis] > self.maxStage[axis]:
+            self.setStage[axis] = self.maxStage[axis]
+        
+        self.setStagePositionChanged.emit()
+        # update set locations
+        #if axis==0:
+        #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==1:
+        #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        #elif axis==2:
+        #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
+        while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy):
+            #print axis, self.setStage[axis], self.isStage[axis]
+            wait = True
+            while wait:
+                with self.c843Lock:
+                    isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
+                if not isMoving: 
+                    wait = False
+            with self.c843Lock:
+                self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            self.C843_get_position()
+        self.isStagePositionChanged.emit()
+    
+    #################################################################################################
+    def setSM5Speed(self,dev,speed):
+        with self.sm5Lock:
+            self.luigsNeumann.setPositioningVelocityFast(dev,'x',speed)
+    #################################################################################################
+    def loadSM5StepValues(self):
+        self.manip1MoveStep = params.manipulator1MoveStep
+        self.manip2MoveStep = params.manipulator2MoveStep
+        
+    #################################################################################################
+    def setSM5Step(self,steps):
+        self.manip1MoveStep = steps[0]
+        self.manip2MoveStep = steps[1]
+        
+    #################################################################################################
+    def moveManipulatorToNewLocation(self,dev,axis,moveStep):
+        if dev == 1:
+            self.setDev1[np.where(self.axes==axis)[0][0]] += moveStep
+            #self.luigsNeumann.getPosition(1,axis)
+            #if axis == 'x':
+            #    self.setXDev1-= moveStep
+            #elif axis == 'y':
+            #    self.setYDev1-= moveStep
+            #elif axis == 'z':
+            #    self.setZDev1+= moveStep
+        elif dev == 2:
+            self.setDev2[np.where(self.axes==axis)[0][0]] += moveStep
+            #if axis == 'x':
+            #    self.setXDev2-= moveStep
+            #elif axis == 'y':
+            #    self.setYDev2-= moveStep
+            #elif axis == 'z':
+            #    self.setZDev2+= moveStep
+                
+        self.setManipulatorPositionChanged.emit()
 
-    def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.dockWidget.setWindowTitle(_translate("MainWindow", "Connection Panel", None))
-        self.label_7.setText(_translate("MainWindow", "C-843 Reference ", None))
-        self.refChoseLocationBtn.setText(_translate("MainWindow", "Chose Stage Location", None))
-        self.refSavedLocationBtn.setText(_translate("MainWindow", "Saved Stage Location", None))
-        self.refNegativeBtn.setText(_translate("MainWindow", "Negative Switch Limit", None))
-        self.label_2.setText(_translate("MainWindow", "Power On/Off", None))
-        self.C843XYPowerBtn.setText(_translate("MainWindow", " XY", None))
-        self.C843ZPowerBtn.setText(_translate("MainWindow", " Z", None))
-        self.SM5Dev1PowerBtn.setText(_translate("MainWindow", "XYZ of Manip1", None))
-        self.SM5Dev2PowerBtn.setText(_translate("MainWindow", "XYZ of Manip2", None))
-        self.label_8.setText(_translate("MainWindow", "Connect/Disconnect", None))
-        self.connectBtn.setText(_translate("MainWindow", "Physik Instrumente C-843  &  Luigs&Neumann SM-5", None))
-        self.dockWidget_5.setWindowTitle(_translate("MainWindow", "Move Panel", None))
-        self.groupBox_3.setTitle(_translate("MainWindow", "Stage", None))
-        self.label_9.setText(_translate("MainWindow", "max pos. (μm)", None))
-        self.fineBtn.setText(_translate("MainWindow", "Fine", None))
-        self.smallBtn.setText(_translate("MainWindow", "Small", None))
-        self.mediumBtn.setText(_translate("MainWindow", "Medium", None))
-        self.coarseBtn.setText(_translate("MainWindow", "Coarse", None))
-        self.label_13.setText(_translate("MainWindow", "set pos. (μm)", None))
-        self.label_17.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.minMaxXLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.minMaxYLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.minMaxZLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isXLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isYLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.isZLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.label_18.setText(_translate("MainWindow", "Step (μm) : Speed", None))
-        self.label_19.setText(_translate("MainWindow", ":", None))
-        self.groupBox_4.setTitle(_translate("MainWindow", "Eletrode Manipulators", None))
-        self.label_12.setText(_translate("MainWindow", ":", None))
-        self.xIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.yIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.zIsPosDev2LE.setText(_translate("MainWindow", ".", None))
-        self.label_6.setText(_translate("MainWindow", ":", None))
-        self.xIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.yIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.zIsPosDev1LE.setText(_translate("MainWindow", ".", None))
-        self.activateDev1.setText(_translate("MainWindow", " # 1", None))
-        self.activateDev2.setText(_translate("MainWindow", "# 2", None))
-        self.label.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.label_23.setText(_translate("MainWindow", "change pos. (μm)", None))
-        self.label_24.setText(_translate("MainWindow", "Step (μm) : Speed", None))
-        self.label_5.setText(_translate("MainWindow", "Track Stage", None))
-        self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
-        self.trackStageXMovementDev1Btn.setText(_translate("MainWindow", "x-Movement", None))
-        self.trackStageZMovementDev2Btn.setText(_translate("MainWindow", "z-Movement", None))
-        self.trackStageXMovementDev2Btn.setText(_translate("MainWindow", "x-Movement", None))
-        self.controllerActivateBtn.setText(_translate("MainWindow", "Activate Controller", None))
-        self.listenToSocketBtn.setText(_translate("MainWindow", "Listen to Socket", None))
-        self.dockWidget_6.setWindowTitle(_translate("MainWindow", "Location Panel", None))
-        self.groupBox.setTitle(_translate("MainWindow", "Home Locations", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "#", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "x", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "y", None))
-        item = self.homeLocationsTable.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "z", None))
-        self.recordHomeLocationBtn.setText(_translate("MainWindow", "Record ", None))
-        self.removeHomeLocationBtn.setText(_translate("MainWindow", " Remove", None))
-        self.updateHomeLocationBtn.setText(_translate("MainWindow", "Update ", None))
-        self.moveToHomeLocationBtn.setText(_translate("MainWindow", "Move To", None))
-        self.groupBox_2.setTitle(_translate("MainWindow", "Cell Locations", None))
-        self.electrode1MLIBtn.setText(_translate("MainWindow", "E1 MLI", None))
-        self.electrode1PCBtn.setText(_translate("MainWindow", "E1 PC", None))
-        item = self.cellListTable.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "#", None))
-        item = self.cellListTable.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "type", None))
-        item = self.cellListTable.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column", None))
-        item = self.cellListTable.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "depth", None))
-        item = self.cellListTable.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "location", None))
-        self.electrode2MLIBtn.setText(_translate("MainWindow", "E2 MLI", None))
-        self.electrode2PCBtn.setText(_translate("MainWindow", "E2 PC", None))
-        self.moveToItemBtn.setText(_translate("MainWindow", "Move to ", None))
-        self.updateItemLocationBtn.setText(_translate("MainWindow", "Update", None))
-        self.recordDepthBtn.setText(_translate("MainWindow", "Record Depth", None))
-        self.removeItemBtn.setText(_translate("MainWindow", "Remove", None))
-        self.loadLocationsBtn.setText(_translate("MainWindow", "Load Locations", None))
-        self.saveLocationsBtn.setText(_translate("MainWindow", "Save Locations", None))
+        #if 'z' in axis:
+        #    movementSize = moveStep
+        #else:
+        #    movementSize= -1.*moveStep
+        self.luigsNeumann.setPositioningVelocityFast(1,axis,1000)
+        self.luigsNeumann.setPositioningVelocityFast(2,axis,1000)
+        #if abs(movementSize) > self.locationDiscrepancy:
+        while any(abs(self.setDev1 - self.isDev1) > self.locationDiscrepancy) or any(abs(self.setDev2 - self.isDev2) > self.locationDiscrepancy):
+            if dev == 1:
+                movement = (self.setDev1 - self.isDev1)[np.where(self.axes==axis)[0][0]]
+                if not 'z' in axis:
+                   movement = -movement
+                with self.sm5Lock : #.acquire()
+                    #print 1,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(1,axis)
+                    self.luigsNeumann.goVariableFastToRelativePosition(1,axis,float(movement))
+            elif dev == 2:
+                movement = (self.setDev2 - self.isDev2)[np.where(self.axes==axis)[0][0]]
+                if not 'z' in axis:
+                   movement = -movement
+                with self.sm5Lock : #.acquire()
+                    #print 2,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(2,axis)
+                    self.luigsNeumann.goVariableFastToRelativePosition(2,axis,float(movement))
+            # update locations
+            self.SM5_getPosition(dev,axis)
+            # show new loctions in gui
+            self.isManipulatorPositionChanged.emit()
+        
+        #self.updateManipulatorLocations(axis)
+        # release update thread here
+        #self.sm5Lock.release()
+        #self.initializeSetLocations()
+    #################################################################################################
+    def getMinMaxOfStage(self):
+        # read maximal and minimal values
+        self.minStage = np.zeros(3)
+        self.maxStage = np.zeros(3)
+        
+        for i in range(3):
+            with self.c843Lock:
+                (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
+            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
+            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
+        
 
+    #########################################################################################
+    def closeConnections(self):
+        
+        print 'closing connections to hardware',
+        
+        # trick to stop socket.accept() call
+        try:
+            self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
+            self.socketClose.connect(('172.20.61.89',params.port))
+            self.socketClose.send('disconnect')
+            self.socketClose.close()
+        except socket.error:
+            pass
+        
+        self.sock.close()
+        try : 
+            self.connection
+        except AttributeError:
+            pass
+        else:
+            self.connection.close()
+        
+        # delete class istances
+        try :
+            self.c843
+        except AttributeError:
+            pass
+        else:
+            del self.c843
+
+        #####################################################
+        try :
+            self.luigsNeumann
+        except AttributeError:
+            pass
+        else:
+            del self.luigsNeumann
+
+        print 'done'
+
+##########################################################
+if __name__ == "__main__":
+    app = QtGui.QApplication(sys.argv)
+    form = manipulatorControl()
+    #form.show()
+    app.exec_()        
+
+    

@@ -41,7 +41,7 @@
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
-     <width>456</width>
+     <width>535</width>
      <height>143</height>
     </size>
    </property>
@@ -1271,6 +1271,18 @@
         </size>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
         <item>
          <widget class="QPushButton" name="controllerActivateBtn">
           <property name="maximumSize">
