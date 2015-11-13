@@ -22,9 +22,11 @@ smallSpeed = 0.05
 mediumSpeed = 0.2
 coarseSpeed = 1.5
 
-defaultXLocation = 10.
-defaultYLocation = 10.
-defaultZLocation = 18100. #6000.
+defaultXLocation = 12000.
+defaultYLocation = 12000.
+defaultZLocation = 6000.
+
+maximalStageMoves = 8.
 
 ###################################################
 # Luigs and Neumann

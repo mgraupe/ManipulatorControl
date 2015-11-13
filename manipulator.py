@@ -76,6 +76,7 @@ class manipulatorControl(QtCore.QObject):
         self.axes         = np.array(['x','y','z'])
         self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
         self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
+        self.maxLoops = params.maximalStageMoves
         
         # movement parameters
         self.stepWidths = collections.OrderedDict([('fine',params.fineStepWidth),('small',params.smallStepWidth),('medium',params.mediumStepWidth),('coarse',params.coarseStepWidth)])
@@ -190,19 +191,7 @@ class manipulatorControl(QtCore.QObject):
             with self.sm5Lock:
                 self.isDev1[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(1,axis)
                 self.isDev2[np.where(self.axes==axis)[0][0]] = self.luigsNeumann.getPosition(2,axis)
-                    
-            #if 'x' in axis:
-            #    with self.sm5Lock:
-            #        self.isDev1[0] = self.luigsNeumann.getPosition(1,'x')
-            #        self.isDev2[0] = self.luigsNeumann.getPosition(2,'x')
-            #if 'y' in axis:
-            #    with self.sm5Lock:
-            #        self.isDev1[1] = self.luigsNeumann.getPosition(1,'y')
-            #        self.isDev2[1] = self.luigsNeumann.getPosition(2,'y')
-            #if 'z' in axis:
-            #    with self.sm5Lock:
-            #        self.isDev1[2] = self.luigsNeumann.getPosition(1,'z')
-            #        self.isDev2[2] = self.luigsNeumann.getPosition(2,'z')
+
         self.isManipulatorPositionChanged.emit()
     #################################################################################################
     def SM5_copyIsToSetLoctions(self):
@@ -252,6 +241,8 @@ class manipulatorControl(QtCore.QObject):
             moveStep = float(data[2])
             self.choseRightSpeed(abs(moveStep-self.isStage[np.where(self.axes==data[1])[0][0]]))
             print np.where(self.axes==data[1])[0][0],moveStep,'absolute'
+            self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
+            # second call for higher move precision
             self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
             print 'move done'
             self.moveSpeed = self.moveSpeedBefore
@@ -317,14 +308,10 @@ class manipulatorControl(QtCore.QObject):
             self.setStage[axis] = self.maxStage[axis]
         
         self.setStagePositionChanged.emit()
-        # update set locations
-        #if axis==0:
-        #    self.setXLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        #elif axis==1:
-        #    self.setYLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        #elif axis==2:
-        #    self.setZLocationLineEdit.setText(str(round(self.setStage[axis],self.precision)))
-        while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy):
+
+        nLoops = 0
+        while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy) and (nLoops<self.maxLoops):
+            print 'loop', nLoops
             #print axis, self.setStage[axis], self.isStage[axis]
             wait = True
             while wait:
@@ -332,9 +319,13 @@ class manipulatorControl(QtCore.QObject):
                     isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
                 if not isMoving: 
                     wait = False
+            #self.choseRightSpeed(abs(self.setStage[axis]-self.isStage[axis]))
             with self.c843Lock:
                 self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            #self.moveSpeed = self.moveSpeedBefore
+            #self.C843_propagateSpeeds()
             self.C843_get_position()
+            nLoops+=1
         self.isStagePositionChanged.emit()
     
     #################################################################################################
@@ -355,44 +346,25 @@ class manipulatorControl(QtCore.QObject):
     def moveManipulatorToNewLocation(self,dev,axis,moveStep):
         if dev == 1:
             self.setDev1[np.where(self.axes==axis)[0][0]] += moveStep
-            #self.luigsNeumann.getPosition(1,axis)
-            #if axis == 'x':
-            #    self.setXDev1-= moveStep
-            #elif axis == 'y':
-            #    self.setYDev1-= moveStep
-            #elif axis == 'z':
-            #    self.setZDev1+= moveStep
         elif dev == 2:
             self.setDev2[np.where(self.axes==axis)[0][0]] += moveStep
-            #if axis == 'x':
-            #    self.setXDev2-= moveStep
-            #elif axis == 'y':
-            #    self.setYDev2-= moveStep
-            #elif axis == 'z':
-            #    self.setZDev2+= moveStep
                 
         self.setManipulatorPositionChanged.emit()
 
-        #if 'z' in axis:
-        #    movementSize = moveStep
-        #else:
-        #    movementSize= -1.*moveStep
-        self.luigsNeumann.setPositioningVelocityFast(1,axis,1000)
-        self.luigsNeumann.setPositioningVelocityFast(2,axis,1000)
         #if abs(movementSize) > self.locationDiscrepancy:
         while any(abs(self.setDev1 - self.isDev1) > self.locationDiscrepancy) or any(abs(self.setDev2 - self.isDev2) > self.locationDiscrepancy):
             if dev == 1:
                 movement = (self.setDev1 - self.isDev1)[np.where(self.axes==axis)[0][0]]
                 if not 'z' in axis:
                    movement = -movement
-                with self.sm5Lock : #.acquire()
+                with self.sm5Lock : 
                     #print 1,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(1,axis)
                     self.luigsNeumann.goVariableFastToRelativePosition(1,axis,float(movement))
             elif dev == 2:
                 movement = (self.setDev2 - self.isDev2)[np.where(self.axes==axis)[0][0]]
                 if not 'z' in axis:
                    movement = -movement
-                with self.sm5Lock : #.acquire()
+                with self.sm5Lock :
                     #print 2,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(2,axis)
                     self.luigsNeumann.goVariableFastToRelativePosition(2,axis,float(movement))
             # update locations
@@ -400,10 +372,6 @@ class manipulatorControl(QtCore.QObject):
             # show new loctions in gui
             self.isManipulatorPositionChanged.emit()
         
-        #self.updateManipulatorLocations(axis)
-        # release update thread here
-        #self.sm5Lock.release()
-        #self.initializeSetLocations()
     #################################################################################################
     def getMinMaxOfStage(self):
         # read maximal and minimal values
@@ -413,9 +381,6 @@ class manipulatorControl(QtCore.QObject):
         for i in range(3):
             with self.c843Lock:
                 (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
-            #(self.yMin,self.yMax) = self.c843.get_min_max_travel_range(2)
-            #(self.zMin,self.zMax) = self.c843.get_min_max_travel_range(3)
-        
 
     #########################################################################################
     def closeConnections(self):

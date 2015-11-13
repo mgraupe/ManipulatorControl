@@ -17,14 +17,8 @@ import manipulatorTemplate
 #################################################################
 class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
-    #setStagePositionChanged = Signal()
-    #isStagePositionChanged = Signal()
-    #setManipulatorPositionChanged = Signal()
-    #isManipulatorPositionChanged = Signal()
-    
     def __init__(self,dev):
         
-        #super(QtCore.QObject,self).__init__()
         self.today_date = time.strftime("%Y%m%d")[2:]
         
         self.dev = dev
@@ -82,7 +76,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.disableAndEnableBtns(False)
         self.enableDisableControllerBtns(False)
         
-        #self.activate = Thread(target=self.controlerInput)
         self.receiveControlerInput = Thread(target=self.controlerInput)
         self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
         self.socketListenThread = Thread(target=self.socketListening) # listenThread
@@ -146,7 +139,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.dev.setStagePositionChanged.connect(self.updateSetStagePositions)
         self.dev.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
         self.dev.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
-        #self.dev.programIsClosing.connect(self.endThreadsSaveLocations)
         
     #################################################################################################
     def connectSM5_c843(self):
@@ -250,7 +242,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             self.ui.refNegativeBtn.setEnabled(False)
             
             self.updateStageLocations()
-            #self.initializeSetLocations()
             self.getMinMaxOfStage()
             self.setMovementValues(self.dev.defaultMoveSpeed)
             # moves the stage back to the default location
@@ -338,24 +329,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     print 'socket connection closed due to error'
                     self.activateSocket()
                     break
-                #self.c.close()
         print 'after thread'
         self.dev.socket_close_connection()
-        #self.ui.listenToSocketBtn.setChecked(False)
-        #self.ui.listenToSocketBtn.setText('Listen to Socket')
-        #self.ui.listenToSocketBtn.setStyleSheet('background-color:None')
-        #print 'thread ended by remote host'
-        #print do_read
-        #time.sleep(0.1)
-            
-        #self.c,addr = self.s.accept() #Establish a connection with the client
-        #print "Got connection from", addr
-        #rawDataReceived =  self.c.recv(1024)
-            
-        #print rawDataReceived
-        #self.c.send('successful')
-        #self.c.close()
-        #time.sleep(0.5)
+
     #################################################################################################
     def controlerInput(self):
         # Initialize the joysticks
@@ -389,15 +365,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             setZ = self.dev.setStage[2]
             if joystick.get_button( 4 ):
                 self.dev.moveStageToNewLocation(2,-self.dev.moveStep)
-                #setZ -= self.moveStep
-                #self.moveStageToNewLocation(2,-self.moveStep)
             if joystick.get_button( 6 ) :
                 self.dev.moveStageToNewLocation(2,self.dev.moveStep)
-                #with self.c843Lock:
-                #    setZ += self.moveStep
-                #    print '3.3'
-                #    self.moveStageToNewLocation(2,self.moveStep)
-            #print '4'
             # change speed settings
             if joystick.get_button( 0 ):
                 self.setMovementValues('fine')
@@ -419,35 +388,20 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     #print 1,'x',self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',self.dev.manip1MoveStep)
-                    #self.setXDev1+= self.manip1MoveStep
-                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',-2.)
-                    #time.sleep(0.2)
                 if self.ui.activateDev2.isChecked():
                     #print 2,'x',self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'x',self.dev.manip2MoveStep)
-                    #self.setXDev2+= self.manip2MoveStep
-                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',-2.)
-                    #time.sleep(0.2)
-                #self.updateManipulatorLocations('x')
             if joystick.get_button( 5 ):
                 if self.ui.activateDev1.isChecked():
                     #print 1,'x',-1*self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',-1*self.dev.manip1MoveStep)
-                    #self.setXDev1-= self.manip1MoveStep
-                    #self.luigsNeumann.goVariableFastToRelativePosition(1,'x',2.)
-                    #time.sleep(0.2)
                 if self.ui.activateDev2.isChecked():
                     #print 2,'x',-1*self.dev.manip1MoveStep
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'x',-1*self.dev.manip2MoveStep)
-                    #self.setXDev2-= self.manip2MoveStep
-                    #self.luigsNeumann.goVariableFastToRelativePosition(2,'x',2.)
-                    #time.sleep(0.2)
-                #self.updateManipulatorLocations('x')
-
-            # Dev 1
+            # Manipulator Dev 1
             if self.ui.activateDev1.isChecked() and self.ui.trackStageZMovementDev1Btn.isChecked():
                 mov = oldSetZ - setZ
                 if mov:
@@ -459,41 +413,20 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 if mov:
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',-1*mov)
-            # Dev 2
+            # Manipulator Dev 2
             if self.ui.activateDev2.isChecked() and self.ui.trackStageZMovementDev2Btn.isChecked():
                 mov = oldSetZ - setZ
                 if mov:
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'z',-1*mov)
-                    #self.setZDev2-= mov
-                    #self.goVariableFastToRelativePosition(2,'z',mov)
-                    #self.updateManipulatorLocations('z')
             elif self.ui.activateDev2.isChecked() and self.ui.trackStageXMovementDev2Btn.isChecked():
                 mov = (oldSetZ - setZ)/np.cos(self.dev.alphaDev2*np.pi/180.)
                 if mov:
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'x',-1*mov)
-                    #self.setXDev2-= mov
-                    #self.goVariableFastToRelativePosition(2,'x',mov)
-                    #self.updateManipulatorLocations('x')
             oldSetZ = self.dev.setStage[2]
             # Limit to 10 frames per second
-            self.clock.tick(20)
-            ##
-            #if abs(self.setXDev1)>self.locationDiscrepancy:
-                #print 'difference : ', abs(self.setXDev1), self.setXDev1, self.isXDev1
-                #self.moveManipulatorToNewLocation(1,'x',self.setXDev1)
-                #self.setXDev1 = 0.
-            #if abs(self.setXDev2)>self.locationDiscrepancy:
-                #self.moveManipulatorToNewLocation(2,'x',self.setXDev2)
-                #self.setXDev2 = 0.
-            #if abs(self.setZDev1)>self.locationDiscrepancy:
-                #self.moveManipulatorToNewLocation(1,'z',self.setZDev1)
-                #self.setZDev1 = 0.
-            #if abs(self.setZDev2)>self.locationDiscrepancy:
-                #self.moveManipulatorToNewLocation(2,'z',self.setZDev2)
-                #self.setZDev2 = 0.
-            #print '10'
+            self.clock.tick(10)
     #################################################################################################
     def getMinMaxOfStage(self):
         self.dev.getMinMaxOfStage()
@@ -576,9 +509,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     
     #################################################################################################
     def recordCell(self,nElectrode,identity):
-        #self.cellListTable.insertRow(3)
-        
-        #xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         xyzU = self.dev.isStage
         
         nC = len(self.cells)
@@ -599,24 +529,11 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     #################################################################################################
     def updateTable(self):
         print len(self.cells), self.rowC
-        # add row if table gets filled up
-        #if (len(self.cells)+1) == (self.rowC):
-        #    self.cellListTable.insertRow(self.rowC)
-        #    self.cellListTable.setRowHeight(self.rowC,self.rowHeight)
-        #    self.rowC+=1
-        
         # expand table when list is loaded directly from file
         while (len(self.cells)+1) > (self.rowC):
             self.ui.cellListTable.insertRow(self.rowC)
             self.ui.cellListTable.setRowHeight(self.rowC,self.rowHeight)
             self.rowC+=1
-            
-        
-        #if self.surfaceRecorded:
-        #	for r in range(len(self.cells)):
-        #		if self.cells[r]['type']=='surface':
-        #			zSurface = self.cells[r]['location'][2]
-        
         for r in range(len(self.cells)):
             for c in range(5):
                 if c==0:
@@ -653,7 +570,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         print 'move to :', xyz
         
         for i in range(3):
-            #self.setStage[i] = self.cells[row]['location'][i]
             self.dev.moveStageToNewLocation(i,self.cells[row]['location'][i],moveType='absolute')
 
         self.unSetStatusMessage('moving stage to cell')
@@ -664,8 +580,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         for index in sorted(r):
             row = index.row()
             nR +=1
-        #xyz = self.dev.isStage
-        #xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         self.cells[row]['location'] = np.array([round(self.dev.isStage[0],self.dev.precision),round(self.dev.isStage[1],self.dev.precision),round(self.dev.isStage[2],self.dev.precision)])
         self.updateTable()
         #self.repaint()
@@ -687,14 +601,10 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             for i in range(row,(nCells-1)):
                 self.cells[i] = self.cells[i+1]
             del self.cells[(nCells-1)]
-        #print self.cells
         self.updateTable()
         self.ui.cellListTable.removeRow((nCells-1))
         self.ui.cellListTable.insertRow((nCells-1))
         self.ui.cellListTable.setRowHeight((nCells-1),self.rowHeight)
-        #self.repaint()
-        #self.rowC-=1
-        #self.nItem-=1
     #################################################################################################
     def recordDepth(self):
         
@@ -703,9 +613,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         for index in sorted(r):
             row = index.row()
             nR+=1
-        
-        #xyzU = self.dev.isStage
-        #self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         
         self.cells[row]['depth'] = (self.cells[row]['location'][2] - round(self.dev.isStage[2],self.dev.precision))
 
@@ -716,7 +623,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def saveLocations(self):
         print self.today_date
         saveDir = 'C:\\Users\\2-photon\\experiments\\ManipulatorControl\\cell_locations_'+self.today_date+'.p'
-        #saveDir = 'C:\\Users\\reyesadmin\\experiments\\in_vivo_data_mg\\140410\\misc\\locations.p'
         filename = QtGui.QFileDialog.getSaveFileName(self, 'Save File',saveDir, '.p')
         print str(filename),filename
         if filename:
@@ -748,25 +654,12 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 
     #################################################################################################
     def updateHomeTable(self):
-        #print len(self.homeLocs), self.rowHomeC
-        # add row if table gets filled up
-        #if (len(self.homeLocs)+1) == (self.rowHomeC):
-        #    self.homeLocationsTable.insertRow(self.rowHomeC)
-        #    self.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
-        #    self.rowHomeC+=1
-        
         # expand table when list is loaded directly from file
         while (len(self.homeLocs)+1) > (self.rowHomeC):
             self.ui.homeLocationsTable.insertRow(self.rowHomeC)
             self.ui.homeLocationsTable.setRowHeight(self.rowHomeC,self.rowHeight)
             self.rowHomeC+=1
-            
-        
-        #if self.surfaceRecorded:
-        #       for r in range(len(self.homeLocs)):
-        #               if self.homeLocs[r]['type']=='surface':
-        #                       zSurface = self.homeLocs[r]['location'][2]
-        
+
         for r in range(len(self.homeLocs)):
             for c in range(4):
                 if c==0:
@@ -779,8 +672,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     self.ui.homeLocationsTable.setItem(r, c, QtGui.QTableWidgetItem(str(round(self.dev.isStage[2]-self.homeLocs[r]['z'],self.dev.precision))))
     #################################################################################################
     def recordHomeLocation(self):
-        #self.cellListTable.insertRow(3)
-        #xyzU = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
         nC = len(self.homeLocs)
         
         self.homeLocs[nC] = {}
@@ -799,9 +690,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         r = self.ui.homeLocationsTable.selectionModel().selectedRows()
         for index in sorted(r):
             row = index.row()
-
-        #xyz = self.c843.get_all_positions((self.stageNumbers[0],self.stageNumbers[1],self.stageNumbers[2]))
-        #xyz = self.dev.isStage
         
         self.homeLocs[row]['x'] = round(self.dev.isStage[0],self.dev.precision) 
         self.homeLocs[row]['y'] = round(self.dev.isStage[1],self.dev.precision) 
@@ -823,14 +711,11 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             for i in range(row,(nLocations-1)):
                 self.homeLocs[i] = self.homeLocs[i+1]
             del self.homeLocs[(nLocations-1)]
-        #print self.cells
         self.updateHomeTable()
         self.ui.homeLocationsTable.removeRow((nLocations-1))
         self.ui.homeLocationsTable.insertRow((nLocations-1))
         self.ui.homeLocationsTable.setRowHeight((nLocations-1),self.rowHeight)
         self.repaint()
-        #self.rowC-=1
-        #self.nItem-=1
     #################################################################################################
     def moveToHomeLocation(self):
         
@@ -841,12 +726,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             row = index.row()
 
         print 'row: ',row
-        #xyz = ([self.homeLocs[row]['x'],self.homeLocs[row]['y'],self.homeLocs[row]['z']])
-        #print xyz
-        
+
         for i in range(3):
-            #self.setStage[i] = self.homeLocs[row][self.axes[i]]
-            #self.dev.moveStageToNewLocation(i,self.cells[row]['location'][i],moveType='absolute')
             self.dev.moveStageToNewLocation(i,self.homeLocs[row][self.axes[i]],moveType='absolute')
         
         self.unSetStatusMessage('moving stage to home location')
