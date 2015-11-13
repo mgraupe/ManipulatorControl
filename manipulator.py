@@ -326,7 +326,6 @@ class manipulatorControl(QtCore.QObject):
             #self.C843_propagateSpeeds()
             self.C843_get_position()
             nLoops+=1
-        self.isStagePositionChanged.emit()
     
     #################################################################################################
     def setSM5Speed(self,dev,speed):
