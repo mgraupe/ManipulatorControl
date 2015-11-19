@@ -42,7 +42,7 @@
    <property name="minimumSize">
     <size>
      <width>535</width>
-     <height>143</height>
+     <height>135</height>
     </size>
    </property>
    <property name="font">
@@ -68,6 +68,9 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_6">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <item row="5" column="0" colspan="2">
       <widget class="QWidget" name="horizontalWidget" native="true">
        <property name="minimumSize">
@@ -1114,7 +1117,7 @@
         <item row="3" column="0">
          <widget class="QLabel" name="label_23">
           <property name="text">
-           <string>change pos. (μm)</string>
+           <string>set pos. (μm)</string>
           </property>
          </widget>
         </item>

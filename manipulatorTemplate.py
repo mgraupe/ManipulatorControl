@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulatorTemplate.ui'
 #
-# Created: Thu Nov 12 16:41:45 2015
+# Created: Thu Nov 19 10:30:06 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -38,7 +38,7 @@ class Ui_MainWindow(object):
         self.gridLayout_3.setObjectName(_fromUtf8("gridLayout_3"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setMinimumSize(QtCore.QSize(535, 143))
+        self.dockWidget.setMinimumSize(QtCore.QSize(535, 135))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
@@ -50,6 +50,7 @@ class Ui_MainWindow(object):
         self.dockWidgetContents = QtGui.QWidget()
         self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
         self.gridLayout_6 = QtGui.QGridLayout(self.dockWidgetContents)
+        self.gridLayout_6.setSpacing(4)
         self.gridLayout_6.setObjectName(_fromUtf8("gridLayout_6"))
         self.horizontalWidget = QtGui.QWidget(self.dockWidgetContents)
         self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 0))
@@ -710,7 +711,7 @@ class Ui_MainWindow(object):
         self.activateDev1.setText(_translate("MainWindow", " # 1", None))
         self.activateDev2.setText(_translate("MainWindow", "# 2", None))
         self.label.setText(_translate("MainWindow", "cur. pos. (μm)", None))
-        self.label_23.setText(_translate("MainWindow", "change pos. (μm)", None))
+        self.label_23.setText(_translate("MainWindow", "set pos. (μm)", None))
         self.label_24.setText(_translate("MainWindow", "Step (μm) : Speed", None))
         self.label_5.setText(_translate("MainWindow", "Track Stage", None))
         self.trackStageZMovementDev1Btn.setText(_translate("MainWindow", "z-Movement", None))
