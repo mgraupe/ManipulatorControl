@@ -124,10 +124,10 @@ class manipulatorControl(QtCore.QObject):
         self.luigsNeumann = LandNSM5.LandNSM5()
         self.isDev1 = np.zeros(3)
         self.isDev2 = np.zeros(3)
-        self.SM5_getPosition()
-        self.setDev1 = np.copy(self.isDev1)
-        self.setDev2 = np.copy(self.isDev2)
-        self.setManipulatorPositionChanged.emit()
+        #self.SM5_getPosition()
+        #self.setDev1 = np.copy(self.isDev1)
+        #self.setDev2 = np.copy(self.isDev2)
+        #self.setManipulatorPositionChanged.emit()
     
     #################################################################################################
     def is_SM5_connected(self):

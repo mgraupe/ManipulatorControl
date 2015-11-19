@@ -17,6 +17,9 @@ import manipulatorTemplate
 #################################################################
 class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,Thread):
     
+    listenControlerButtonChanged = QtCore.Signal(object)
+    listenSocketButtonChanged = QtCore.Signal(object)
+    
     def __init__(self,dev):
         
         self.today_date = time.strftime("%Y%m%d")[2:]
@@ -140,6 +143,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.dev.isManipulatorPositionChanged.connect(self.updateIsManipulatorPositions)
         self.dev.setManipulatorPositionChanged.connect(self.updateSetManipulatorPositions)
         
+        self.listenControlerButtonChanged.connect(self.listenControlerButtonState)
+        self.listenSocketButtonChanged.connect(self.listenSocketButtonState)
+        
     #################################################################################################
     def connectSM5_c843(self):
         self.setStatusMessage('initializing C843')
@@ -257,15 +263,13 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def activateController(self):
         #
         if self.receiveControlerInput.is_alive():
-            self.ui.controllerActivateBtn.setText('Activate controller')
-            self.ui.controllerActivateBtn.setStyleSheet('background-color:None')
+            self.listenControlerButtonChanged.emit('inactive')
             self.listenToControler=False
             self.receiveControlerInput = Thread(target=self.controlerInput)
             self.enableDisableControllerBtns(False)
             print 'controler inactive'
         else:
-            self.ui.controllerActivateBtn.setText('Deactivate Controller')
-            self.ui.controllerActivateBtn.setStyleSheet('background-color:red')
+            self.listenControlerButtonChanged.emit('active')
             self.enableDisableControllerBtns(True)
             self.receiveControlerInput.start()
             print 'controler active'
@@ -274,16 +278,12 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def activateSocket(self):
         #
         if self.socketListenThread.is_alive():
-            self.ui.listenToSocketBtn.setChecked(False)
-            self.ui.listenToSocketBtn.setText('Listen to Socket')
-            self.ui.listenToSocketBtn.setStyleSheet('background-color:None')
+            self.listenSocketButtonChanged.emit('inactive')
             self.listenToSocket=False
             self.socketListenThread = Thread(target=self.socketListening)
             print 'socket inactive'
         else:
-            self.ui.listenToSocketBtn.setChecked(True)
-            self.ui.listenToSocketBtn.setText('Stop listening to Socket')
-            self.ui.listenToSocketBtn.setStyleSheet('background-color:red')
+            self.listenSocketButtonChanged.emit('active')
             self.socketListenThread.start()
             print 'socket active'
     
@@ -816,6 +816,26 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.trackStageXMovementDev1Btn.setEnabled(newSetting)
         self.ui.trackStageZMovementDev2Btn.setEnabled(newSetting)
         self.ui.trackStageXMovementDev2Btn.setEnabled(newSetting)
+    
+    ###################################################################################################
+    def listenControlerButtonState(self, newState):
+        if newState == 'inactive':
+            self.ui.controllerActivateBtn.setText('Activate controller')
+            self.ui.controllerActivateBtn.setStyleSheet('background-color:None')
+        elif newState == 'active':
+            self.ui.controllerActivateBtn.setText('Deactivate Controller')
+            self.ui.controllerActivateBtn.setStyleSheet('background-color:red')
+    
+    ###################################################################################################
+    def listenSocketButtonState(self, newState):
+        if newState == 'inactive':
+            self.ui.listenToSocketBtn.setChecked(False)
+            self.ui.listenToSocketBtn.setText('Listen to Socket')
+            self.ui.listenToSocketBtn.setStyleSheet('background-color:None')
+        elif newState == 'active':
+            self.ui.listenToSocketBtn.setChecked(True)
+            self.ui.listenToSocketBtn.setText('Stop listening to Socket')
+            self.ui.listenToSocketBtn.setStyleSheet('background-color:red')
     
     #########################################################################################
     def closeEvent(self, event):
