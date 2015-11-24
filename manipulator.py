@@ -2,21 +2,10 @@
 import os
 import sys
 from os.path import join, dirname, isdir
-import glob
-import h5py
 import pdb
 import time
 import numpy as np
-import platform
-import matplotlib.pyplot as plt
-from matplotlib import rcParams
-from matplotlib.ticker import MultipleLocator
-from matplotlib.widgets import Slider, RadioButtons
-from threading import *
 import re
-import pickle
-from functools import partial
-import pygame
 import socket
 import select
 import collections
