@@ -9,7 +9,7 @@ import re
 import socket
 import select
 import collections
-import params
+from threading import *
 from PyQt4 import QtCore, QtGui
 
 #from shapely.geometry import MultiPolygon, Polygon
@@ -21,6 +21,7 @@ from PyQt4 import QtCore, QtGui
 
 import c843_class
 import LandNSM5
+import params
 from manipulatorGUI import manipulatorControlGui
 
 #################################################################
