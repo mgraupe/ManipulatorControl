@@ -17,7 +17,7 @@ Features
 
 
 ### Main Window
-![alt text](manipulator_gui.png "Example session of the Manipulator Control Program")
+![alt text](manipulatorControlScreenshot.png "Example session of the Manipulator Control Program")
 
 
 Built
