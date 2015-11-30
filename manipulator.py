@@ -71,6 +71,8 @@ class manipulatorControl(QtCore.QObject):
         # movement parameters
         self.stepWidths = collections.OrderedDict([('fine',params.fineStepWidth),('small',params.smallStepWidth),('medium',params.mediumStepWidth),('coarse',params.coarseStepWidth)])
         
+        self.stepPrecision = collections.OrderedDict([('fine',params.fineStepPrecision),('small',params.smallStepPrecision),('medium',params.mediumStepPrecision),('coarse',params.coarseStepPrecision)])
+        
         self.speeds = collections.OrderedDict([('fine',params.fineSpeed),('small',params.smallSpeed),('medium',params.mediumSpeed),('coarse',params.coarseSpeed)])
         
         self.defaultMoveSpeed = 'fine'
@@ -225,6 +227,7 @@ class manipulatorControl(QtCore.QObject):
             self.choseRightSpeed(abs(moveStep))
             self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
             self.moveSpeed = self.moveSpeedBefore
+            self.movePrecision =  self.movePrecisionBefore 
             self.C843_propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'absoluteMoveTo':
@@ -233,9 +236,10 @@ class manipulatorControl(QtCore.QObject):
             print np.where(self.axes==data[1])[0][0],moveStep,'absolute'
             self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
             # second call for higher move precision
-            self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
+            #self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
             print 'move done'
             self.moveSpeed = self.moveSpeedBefore
+            self.movePrecision =  self.movePrecisionBefore 
             self.C843_propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'checkMovement':
@@ -256,9 +260,14 @@ class manipulatorControl(QtCore.QObject):
     #################################################################################################
     def choseRightSpeed(self,stepSize):
         self.moveSpeedBefore = self.moveSpeed
+        self.movePrecisionBefore = self.movePrecision
+        # start from finest movement
+        self.moveSpeed = self.speeds['fine']
+        self.movePrecision = self.stepPrecision['fine']
         for key, value in self.stepWidths.iteritems():
             if abs(stepSize) >= value:
                 self.moveSpeed = self.speeds[key]
+                self.movePrecision = self.stepPrecision[key]
             else :
                 break
         #print stepSize, self.moveSpeed
@@ -268,13 +277,15 @@ class manipulatorControl(QtCore.QObject):
     def determine_stage_speed(self,moveSize):
         self.moveStep = self.stepWidths[moveSize]
         self.moveSpeed = self.speeds[moveSize]
+        self.movePrecision = self.stepPrecision[moveSize]
         self.C843_propagateSpeeds()
     #################################################################################################
     def moveStageToDefaultLocation(self):
         for i in range(3):
             self.choseRightSpeed(self.defaultLocations[i]-self.isStage[i])
             self.moveStageToNewLocation(i,self.defaultLocations[i],moveType='absolute')
-        self.moveSpeed = self.moveSpeedBefore
+            self.moveSpeed = self.moveSpeedBefore
+            self.movePrecision =  self.movePrecisionBefore 
         self.C843_propagateSpeeds()
     
     #################################################################################################
@@ -300,8 +311,8 @@ class manipulatorControl(QtCore.QObject):
         self.setStagePositionChanged.emit()
 
         nLoops = 0
-        while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy) and (nLoops<self.maxLoops):
-            print 'loop', nLoops
+        #while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy) and (nLoops<self.maxLoops):
+        while (abs(self.setStage[axis] - self.isStage[axis])>= self.movePrecision):
             #print axis, self.setStage[axis], self.isStage[axis]
             wait = True
             while wait:
@@ -316,7 +327,7 @@ class manipulatorControl(QtCore.QObject):
             #self.C843_propagateSpeeds()
             self.C843_get_position()
             nLoops+=1
-    
+        print 'loops', nLoops, ' to reach precision : ', self.movePrecision
     #################################################################################################
     def setSM5Speed(self,dev,speed):
         with self.sm5Lock:

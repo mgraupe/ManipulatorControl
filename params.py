@@ -8,7 +8,7 @@ heightSize = 971
 ###################################################
 # precision of values to show and store
 precision = 1
-locationDiscrepancy = 0.1
+locationDiscrepancy = 0.5
 
 ###################################################
 # C843
@@ -21,6 +21,12 @@ fineSpeed = 0.01
 smallSpeed = 0.05
 mediumSpeed = 0.2
 coarseSpeed = 1.5
+
+fineStepPrecision = 0.05
+smallStepPrecision = 0.1
+mediumStepPrecision = 0.5
+coarseStepPrecision  = 1.
+
 
 defaultXLocation = 12000.
 defaultYLocation = 12000.
