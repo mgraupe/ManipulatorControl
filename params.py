@@ -22,8 +22,8 @@ smallSpeed = 0.05
 mediumSpeed = 0.2
 coarseSpeed = 1.5
 
-fineStepPrecision = 0.05
-smallStepPrecision = 0.1
+fineStepPrecision = 0.1
+smallStepPrecision = 0.2
 mediumStepPrecision = 0.5
 coarseStepPrecision  = 1.
 
