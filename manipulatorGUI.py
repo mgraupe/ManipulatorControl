@@ -110,6 +110,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
         self.ui.stepLineEdit.editingFinished.connect(self.setC843StepValue)
         self.ui.speedLineEdit.editingFinished.connect(self.setC843SpeedValue)
+        self.ui.precisionLineEdit.editingFinished.connect(self.setC843PrecisionValue)
         
         self.ui.device1StepLE.editingFinished.connect(self.setSM5Step)
         self.ui.device2StepLE.editingFinished.connect(self.setSM5Step)
@@ -445,21 +446,28 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         elif moveSize == 'coarse':
             self.ui.coarseBtn.setChecked(True)
         #
-        self.dev.determine_stage_speed(moveSize)
+        self.dev.setMovementValuesStage(moveSize)
         
         self.ui.stepLineEdit.setText(str(self.dev.moveStep))
         self.ui.speedLineEdit.setText(str(self.dev.moveSpeed))
+        self.ui.precisionLineEdit.setText(str(self.dev.movePrecision))
         
         #self.propagateSpeeds()
     #################################################################################################
     def setC843StepValue(self):
         moveStep = float(self.ui.stepLineEdit.text())
-        self.dev.setC843StepValue(moveStep)
+        self.dev.setMovementValuesStage(None,moveStep,None,None)
         
     #################################################################################################
     def setC843SpeedValue(self):
         moveSpeed = float(self.ui.speedLineEdit.text())
-        self.dev.setC843SpeedValue(moveSpeed)
+        self.dev.setMovementValuesStage(None,None,moveSpeed,None)
+    
+    #################################################################################################
+    def setC843PrecisionValue(self):
+        movePrecision = float(self.ui.speedLineEdit.text())
+        self.dev.setMovementValuesStage(None,None,None,movePrecision)
+    
     
     #################################################################################################
     def readSM5SpeedFromDevice(self):

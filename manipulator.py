@@ -274,11 +274,20 @@ class manipulatorControl(QtCore.QObject):
         self.C843_propagateSpeeds()
     
     #################################################################################################
-    def determine_stage_speed(self,moveSize):
-        self.moveStep = self.stepWidths[moveSize]
-        self.moveSpeed = self.speeds[moveSize]
-        self.movePrecision = self.stepPrecision[moveSize]
+    def setMovementValuesStage(self,moveSize,moveSt=None,moveSp=None,movePr=None):
+        if moveSize:
+            self.moveStep = self.stepWidths[moveSize]
+            self.moveSpeed = self.speeds[moveSize]
+            self.movePrecision = self.stepPrecision[moveSize]
+        else:
+            if moveSt:
+                self.moveStep = moveSt 
+            if moveSp:
+                self.moveSpeed = moveSp
+            if movePr:
+                self.movePrecision = movePr
         self.C843_propagateSpeeds()
+        
     #################################################################################################
     def moveStageToDefaultLocation(self):
         for i in range(3):
