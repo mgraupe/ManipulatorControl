@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\manipulatorTemplate.ui'
 #
-# Created: Thu Nov 19 10:30:06 2015
+# Created: Wed Dec 02 09:46:10 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -294,6 +294,13 @@ class Ui_MainWindow(object):
         self.speedLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.speedLineEdit.setObjectName(_fromUtf8("speedLineEdit"))
         self.horizontalLayout_11.addWidget(self.speedLineEdit)
+        self.label_3 = QtGui.QLabel(self.horizontalWidget7)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.horizontalLayout_11.addWidget(self.label_3)
+        self.precisionLineEdit = QtGui.QLineEdit(self.horizontalWidget7)
+        self.precisionLineEdit.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
+        self.precisionLineEdit.setObjectName(_fromUtf8("precisionLineEdit"))
+        self.horizontalLayout_11.addWidget(self.precisionLineEdit)
         self.gridLayout_2.addWidget(self.horizontalWidget7, 5, 1, 1, 1)
         self.gridLayout_5.addWidget(self.groupBox_3, 1, 0, 1, 3)
         self.groupBox_4 = QtGui.QGroupBox(self.dockWidgetContents_5)
@@ -697,8 +704,9 @@ class Ui_MainWindow(object):
         self.isXLocationValueLabel.setText(_translate("MainWindow", ".", None))
         self.isYLocationValueLabel.setText(_translate("MainWindow", ".", None))
         self.isZLocationValueLabel.setText(_translate("MainWindow", ".", None))
-        self.label_18.setText(_translate("MainWindow", "Step (μm) : Speed", None))
+        self.label_18.setText(_translate("MainWindow", "Step(μm):Speed:Precision", None))
         self.label_19.setText(_translate("MainWindow", ":", None))
+        self.label_3.setText(_translate("MainWindow", ":", None))
         self.groupBox_4.setTitle(_translate("MainWindow", "Eletrode Manipulators", None))
         self.label_12.setText(_translate("MainWindow", ":", None))
         self.xIsPosDev2LE.setText(_translate("MainWindow", ".", None))
