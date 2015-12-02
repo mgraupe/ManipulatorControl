@@ -23,9 +23,9 @@ mediumSpeed = 0.2
 coarseSpeed = 1.5
 
 fineStepPrecision = 0.1
-smallStepPrecision = 0.2
-mediumStepPrecision = 0.5
-coarseStepPrecision  = 1.
+smallStepPrecision = 0.5
+mediumStepPrecision = 1.
+coarseStepPrecision  = 3.
 
 
 defaultXLocation = 12000.

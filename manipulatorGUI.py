@@ -342,6 +342,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
         
+        oldSetZ = self.dev.setStage[2]
         self.listenToControler = True
         while self.listenToControler:
             for event in pygame.event.get(): # User did something
@@ -363,7 +364,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             if abs(yAxis) > 0.5 :
                 self.dev.moveStageToNewLocation(1,-np.sign(yAxis)*self.dev.moveStep)
             # z-Axis up and down is button 4 and 6
-            setZ = self.dev.setStage[2]
             if joystick.get_button( 4 ):
                 self.dev.moveStageToNewLocation(2,-self.dev.moveStep)
             if joystick.get_button( 6 ) :
@@ -403,6 +403,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'x',-1*self.dev.manip2MoveStep)
             # Manipulator Dev 1
+            setZ = self.dev.setStage[2]
             if self.ui.activateDev1.isChecked() and self.ui.trackStageZMovementDev1Btn.isChecked():
                 mov = oldSetZ - setZ
                 if mov:
@@ -465,7 +466,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     
     #################################################################################################
     def setC843PrecisionValue(self):
-        movePrecision = float(self.ui.speedLineEdit.text())
+        movePrecision = float(self.ui.precisionLineEdit.text())
         self.dev.setMovementValuesStage(None,None,None,movePrecision)
     
     
