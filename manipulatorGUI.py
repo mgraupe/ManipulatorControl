@@ -197,6 +197,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def switchOnOffC843Motors(self,axes):
         # if active : deactivate controler first
         if self.receiveControlerInput.is_alive():
+            print 'activate controler'
             self.activateController()
         # switch on or off motors
         if axes == 'xy':
@@ -319,8 +320,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                         self.dev.socket_send_data('OK..'+data)
                         print 'socket connection was closed by remote host'
                         self.activateSocket()
-                        #self.listenToSocket = False
-                        #self.listenThread = Thread(target=self.socketListening)
                         break
                     if not 'getPos' in data:
                         print "Got data: ", data
@@ -829,9 +828,11 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     ###################################################################################################
     def listenControlerButtonState(self, newState):
         if newState == 'inactive':
+            self.ui.controllerActivateBtn.setChecked(False)
             self.ui.controllerActivateBtn.setText('Activate controller')
             self.ui.controllerActivateBtn.setStyleSheet('background-color:None')
         elif newState == 'active':
+            self.ui.controllerActivateBtn.setChecked(True)
             self.ui.controllerActivateBtn.setText('Deactivate Controller')
             self.ui.controllerActivateBtn.setStyleSheet('background-color:red')
     
