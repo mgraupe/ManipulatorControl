@@ -319,7 +319,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     if data == 'disconnect':
                         self.dev.socket_send_data('OK..'+data)
                         print 'socket connection was closed by remote host'
-                        self.activateSocket()
+                        self.activateSocket() # fist close connection
+                        self.activateSocket() # then re-initiate listening
                         break
                     if not 'getPos' in data:
                         print "Got data: ", data
