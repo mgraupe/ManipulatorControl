@@ -58,6 +58,7 @@ class manipulatorControl(QtCore.QObject):
         # precision of values to show and store
         self.precision = params.precision
         self.locationDiscrepancy = params.locationDiscrepancy
+        self.focusDistance = params.focusDistance
         
         # angles of the manipulators with respect to a vertical line
         self.alphaDev1 = params.alphaDev1
@@ -299,6 +300,15 @@ class manipulatorControl(QtCore.QObject):
             self.moveStageToNewLocation(i,self.defaultLocations[i],moveType='absolute')
             self.moveSpeed = self.moveSpeedBefore
             self.movePrecision =  self.movePrecisionBefore 
+        self.C843_propagateSpeeds()
+    
+    #################################################################################################
+    def moveFocus(self,newZLocation):
+        #for i in range(3):
+        self.choseRightSpeed(newZLocation-self.isStage[2])
+        self.moveStageToNewLocation(2,newZLocation)
+        self.moveSpeed = self.moveSpeedBefore
+        self.movePrecision =  self.movePrecisionBefore 
         self.C843_propagateSpeeds()
     
     #################################################################################################

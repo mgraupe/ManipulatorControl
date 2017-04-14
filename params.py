@@ -34,6 +34,8 @@ defaultZLocation = 6000.
 
 maximalStageMoves = 8.
 
+focusDistance = 6570.
+
 ###################################################
 # Luigs and Neumann
 # angles of the manipulators with respect to a vertical line

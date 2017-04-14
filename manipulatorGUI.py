@@ -108,6 +108,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.smallBtn.clicked.connect(partial(self.setMovementValues,'small'))
         self.ui.mediumBtn.clicked.connect(partial(self.setMovementValues,'medium'))
         self.ui.coarseBtn.clicked.connect(partial(self.setMovementValues,'coarse'))
+        self.ui.downFocusBtn.clicked.connect(partial(self.performFastMove,'down'))
+        self.ui.upFocusBtn.clicked.connect(partial(self.performFastMove,'up'))
         self.ui.stepLineEdit.editingFinished.connect(self.setC843StepValue)
         self.ui.speedLineEdit.editingFinished.connect(self.setC843SpeedValue)
         self.ui.precisionLineEdit.editingFinished.connect(self.setC843PrecisionValue)
@@ -258,6 +260,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         else:
             reply = QtGui.QMessageBox.warning(self, 'Warning','Reference failed.',  QtGui.QMessageBox.Ok )
         #
+        self.ui.focusLineEdit.setText(str(self.dev.focusDistance))
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes')
         
@@ -468,7 +471,14 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def setC843PrecisionValue(self):
         movePrecision = float(self.ui.precisionLineEdit.text())
         self.dev.setMovementValuesStage(None,None,None,movePrecision)
-    
+        
+    #################################################################################################
+    def performFastMove(self,direction):
+        moveDistance = float(self.ui.focusLineEdit.text())
+        if direction == 'up':
+            self.dev.moveFocus(-moveDistance)
+        elif direction == 'down':
+            self.dev.moveFocus(moveDistance)
     
     #################################################################################################
     def readSM5SpeedFromDevice(self):
@@ -817,6 +827,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.smallBtn.setEnabled(newSetting)
         self.ui.mediumBtn.setEnabled(newSetting)
         self.ui.coarseBtn.setEnabled(newSetting)
+        self.ui.downFocusBtn.setEnabled(newSetting)
+        self.ui.upFocusBtn.setEnabled(newSetting)
+        
         
         self.ui.activateDev1.setEnabled(newSetting)
         self.ui.activateDev2.setEnabled(newSetting)
