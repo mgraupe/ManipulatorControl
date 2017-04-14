@@ -749,14 +749,14 @@
            <item>
             <widget class="QPushButton" name="downFocusBtn">
              <property name="text">
-              <string>DOWN (4x Obj.)</string>
+              <string>DOWN (20x Obj.)</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="upFocusBtn">
              <property name="text">
-              <string>UP (20x Obj.)</string>
+              <string>UP (4x Obj.)</string>
              </property>
             </widget>
            </item>
