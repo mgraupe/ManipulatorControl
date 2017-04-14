@@ -222,9 +222,13 @@ class manipulatorControl(QtCore.QObject):
         elif data[0] == 'relativeMoveTo':
             moveStep = float(data[2])
             self.C843_get_position()
-            oldIsStage = copy(self.isStage)
+            print data[1], data[2], self.axes
+            oldIsStage = np.copy(self.isStage)
             # to do : implemente loop to converge against precise target location
             self.choseRightSpeed(abs(moveStep))
+            #pdb.set_trace()
+            print np.where(self.axes==data[1])[0][0],moveStep,'relative'
+            #pdb.set_trace()
             self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep)
             self.moveSpeed = self.moveSpeedBefore
             self.movePrecision =  self.movePrecisionBefore 
