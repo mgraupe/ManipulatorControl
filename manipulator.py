@@ -147,7 +147,12 @@ class manipulatorControl(QtCore.QObject):
     def C843_openReferenceFile(self,fileName):
         with self.c843Lock:
             self.c843.openReferenceFile(fileName)
-        
+    
+    #################################################################################################
+    def C843_saveLocations(self):
+        with self.c843Lock:
+            self.c843.saveStageLocations()
+            
     #################################################################################################
     def C843_reference_state(self,moveStage):
         ref = [False]*3

@@ -74,18 +74,8 @@ class c843_class(object):
 		# save file only if there is no internal error
 		errorCode = c_long()
 		errorCode = self.c843.C843_GetError(self.iID)
-		# save locations in case there is no error
-		#if not errorCode:
-		#date_time = time.strftime("%Y%m%d_%H:%M")[2:]
-		if self.glvar['1']['referenced'] and self.glvar['2']['referenced'] and self.glvar['3']['referenced']:
-			print 'stage locations saved'
-			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
-		#else : 
-		#	# delete old reference file
-		#	if os.path.isfile(self.fnameLocations): 
-		#		os.remove(self.fnameLocations)
-		#		print 'old location file removed'
-		#	print 'c843 closed with error code ', errorCode
+		
+		self.saveStageLocations()
 		
 		self.c843.C843_CloseConnection(self.iID)
 		self.glvar['c843_connected'] = 0
@@ -111,6 +101,12 @@ class c843_class(object):
 			self.loc['2'] = None
 			self.loc['3'] = None
 			self.referenceLocations=False
+	###############################################################
+	def saveStageLocations(self):
+		if self.glvar['1']['referenced'] and self.glvar['2']['referenced'] and self.glvar['3']['referenced']:
+			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
+			sprint 'stage locations saved'
+			
 	###############################################################
 	def init_stage(self,nAxis):
 		# e.g. 1,2 or 3

@@ -82,6 +82,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.receiveControlerInput = Thread(target=self.controlerInput)
         self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
         self.socketListenThread = Thread(target=self.socketListening) # listenThread
+        self.saveStageLocationThread = Thread(target=self.saveStage) 
         
     ####################################################
     # connect signals to actions
@@ -263,7 +264,15 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.focusLineEdit.setText(str(self.dev.focusDistance))
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes')
+        self.saveStageLocationThread.start()
         
+    #################################################################################################
+    def saveStage(self):
+        self.stageSaving=True
+        while self.stageSaving:
+            self.dev.C843_saveLocations()
+            time.sleep(10.)
+            
     #################################################################################################
     def activateController(self):
         #
@@ -867,6 +876,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.updateManiuplators = False
         self.listenToSocket = False
         self.listenToControler = False
+        self.stageSaving = False
         time.sleep(.2)
         self.dev.closeConnections()
         
