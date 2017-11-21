@@ -105,7 +105,7 @@ class c843_class(object):
 	def saveStageLocations(self):
 		if self.glvar['1']['referenced'] and self.glvar['2']['referenced'] and self.glvar['3']['referenced']:
 			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
-			sprint 'stage locations saved'
+			#print 'stage locations saved'
 			
 	###############################################################
 	def init_stage(self,nAxis):

@@ -264,7 +264,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.focusLineEdit.setText(str(self.dev.focusDistance))
         self.disableAndEnableBtns(True)
         self.unSetStatusMessage('referencing axes')
-        self.saveStageLocationThread.start()
+        if not self.saveStageLocationThread.is_alive():
+            self.saveStageLocationThread.start()
         
     #################################################################################################
     def saveStage(self):
