@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>534</width>
-    <height>971</height>
+    <height>1034</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -323,7 +323,7 @@
    <property name="minimumSize">
     <size>
      <width>538</width>
-     <height>427</height>
+     <height>487</height>
     </size>
    </property>
    <property name="font">
@@ -793,6 +793,33 @@
         <property name="spacing">
          <number>4</number>
         </property>
+        <item row="6" column="1" colspan="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_20">
+           <item>
+            <widget class="QPushButton" name="pushButton_2">
+             <property name="text">
+              <string>On</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>On</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_10">
+          <property name="text">
+           <string>Horizontal Move</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <property name="minimumSize">
@@ -1161,35 +1188,7 @@
           </layout>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>cur. pos. (μm)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>set pos. (μm)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_24">
-          <property name="text">
-           <string>Step (μm) : Speed</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Track Stage</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
+        <item row="9" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <property name="minimumSize">
            <size>
@@ -1263,7 +1262,7 @@
           </layout>
          </widget>
         </item>
-        <item row="5" column="2">
+        <item row="9" column="2">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <property name="spacing">
@@ -1314,6 +1313,67 @@
             </widget>
            </item>
           </layout>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>cur. pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_23">
+          <property name="text">
+           <string>set pos. (μm)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string>Step (μm) : Speed</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Track Stage</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1" colspan="2">
+         <widget class="QWidget" name="horizontalWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_21">
+           <item>
+            <widget class="QLineEdit" name="device1AngleLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="device2AngleLE">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 255, 255);</string>
+             </property>
+             <property name="text">
+              <string>0</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Angle</string>
+          </property>
          </widget>
         </item>
        </layout>
