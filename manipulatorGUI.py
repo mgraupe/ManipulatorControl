@@ -183,6 +183,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 self.ui.SM5Dev2PowerBtn.setChecked(True)
                 self.readSM5SpeedFromDevice()
                 self.loadSM5StepValues()
+                self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
+                self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
                 self.autoUpdateManipulatorLocations.start()
                 
             else:
@@ -192,8 +194,6 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 self.updateManiuplators=False
                 self.autoUpdateManipulatorLocations.join()
                 self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
-                self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
-                self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
             self.dev.delete_SM5()
             self.ui.SM5Dev1PowerBtn.setChecked(False)
             self.ui.SM5Dev2PowerBtn.setChecked(False)
@@ -312,19 +312,23 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         while self.updateManiuplators:
             with self.SM5_ModLock:
                 self.dev.SM5_getPosition()
+                self.dev.SM5_copyIsToSetLoctions()
                 if self.ui.horizontalMoveDev1Btn.isChecked():
-                    movZDev1 = oldXDev1 - self.dev.isDev1[0]
-                    if movZDev1:
-                        with self.SM5_ModLock:
-                            self.dev.moveManipulatorToNewLocation(1,'z',np.sin(self.dev.alphaDev1*np.pi/180.)*movZDev1)
+                    if self.dev.isDev1[0] == 0.: # in case of reset
+                        oldXDev1 = 0.
+                    movXDev1 = oldXDev1 - self.dev.isDev1[0]
+                    if movXDev1:
+                        dd = np.sin(self.dev.alphaDev1*np.pi/180.)*movXDev1
+                        print 'move in x, z : ',  movXDev1, dd
+                        self.dev.moveManipulatorToNewLocation(1,'z',dd)
                         
                 #if self.ui.horizontalMoveDev2Btn.isChecked():
                 #    pass
-                self.dev.SM5_getPosition()
-                self.dev.SM5_copyIsToSetLoctions()
+                #self.dev.SM5_getPosition()
+                #self.dev.SM5_copyIsToSetLoctions()
                 oldXDev1 = self.dev.isDev1[0]
                 oldXDev2 = self.dev.isDev2[0]
-            time.sleep(.5)
+            time.sleep(.4)
     
     #################################################################################################  
     def socketListening(self):

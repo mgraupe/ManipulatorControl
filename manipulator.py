@@ -380,13 +380,14 @@ class manipulatorControl(QtCore.QObject):
         self.setManipulatorPositionChanged.emit()
 
         #if abs(movementSize) > self.locationDiscrepancy:
+        loops=0
         while any(abs(self.setDev1 - self.isDev1) > self.locationDiscrepancy) or any(abs(self.setDev2 - self.isDev2) > self.locationDiscrepancy):
             if dev == 1:
                 movement = (self.setDev1 - self.isDev1)[np.where(self.axes==axis)[0][0]]
                 if not 'z' in axis:
                    movement = -movement
                 with self.sm5Lock : 
-                    #print 1,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(1,axis)
+                    print 1,axis,float(movement), self.luigsNeumann.getPositioningVelocityFast(1,axis)
                     self.luigsNeumann.goVariableFastToRelativePosition(1,axis,float(movement))
             elif dev == 2:
                 movement = (self.setDev2 - self.isDev2)[np.where(self.axes==axis)[0][0]]
@@ -399,6 +400,10 @@ class manipulatorControl(QtCore.QObject):
             self.SM5_getPosition(dev,axis)
             # show new loctions in gui
             self.isManipulatorPositionChanged.emit()
+            if loops > 20 : 
+                print 'device location cannot be obtained'
+                break
+            loops+=1
         
     #################################################################################################
     def getMinMaxOfStage(self):

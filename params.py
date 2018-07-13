@@ -39,8 +39,8 @@ focusDistance = 6570.
 ###################################################
 # Luigs and Neumann
 # angles of the manipulators with respect to a vertical line
-alphaDev1 = 30. # in degrees
-alphaDev2 = 30. # in degrees
+alphaDev1 = 38. # in degrees
+alphaDev2 = 38. # in degrees
 
 manipulator1MoveStep = 2. # in um
 manipulator2MoveStep = 2. # in um
