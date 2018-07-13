@@ -84,6 +84,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.socketListenThread = Thread(target=self.socketListening) # listenThread
         self.saveStageLocationThread = Thread(target=self.saveStage) 
         
+        self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
+        self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
+        
     ####################################################
     # connect signals to actions
     def connectSignals(self):
@@ -308,7 +311,18 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         while self.updateManiuplators:
             with self.SM5_ModLock:
                 self.dev.SM5_getPosition()
+                if self.ui.horizontalMoveDev1Btn.isChecked():
+                    movZDev1 = oldXDev1 - self.dev.isDev1[0]
+                    if movZDev1:
+                    with self.SM5_ModLock:
+                        self.dev.moveManipulatorToNewLocation(1,'z',np.sin(self.dev.alphaDev1*np.pi/180.)*movZDev1)
+                        
+                #if self.ui.horizontalMoveDev2Btn.isChecked():
+                #    pass
+                self.dev.SM5_getPosition()
                 self.dev.SM5_copyIsToSetLoctions()
+                oldXDev1 = self.dev.isDev1[0]
+                oldXDev2 = self.dev.isDev2[0]
             time.sleep(.5)
     
     #################################################################################################  
@@ -424,7 +438,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                         self.dev.moveManipulatorToNewLocation(1,'z',-1*mov)
 
             elif self.ui.activateDev1.isChecked() and self.ui.trackStageXMovementDev1Btn.isChecked():
-                mov = (oldSetZ - setZ)/np.cos(self.dev.alphaDev1*np.pi/180.)
+                mov = (oldSetZ - setZ)/np.sin(self.dev.alphaDev1*np.pi/180.)
                 if mov:
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(1,'x',-1*mov)
@@ -435,7 +449,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'z',-1*mov)
             elif self.ui.activateDev2.isChecked() and self.ui.trackStageXMovementDev2Btn.isChecked():
-                mov = (oldSetZ - setZ)/np.cos(self.dev.alphaDev2*np.pi/180.)
+                mov = (oldSetZ - setZ)/np.sin(self.dev.alphaDev2*np.pi/180.)
                 if mov:
                     with self.SM5_ModLock:
                         self.dev.moveManipulatorToNewLocation(2,'x',-1*mov)

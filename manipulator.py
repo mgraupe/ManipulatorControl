@@ -60,7 +60,7 @@ class manipulatorControl(QtCore.QObject):
         self.locationDiscrepancy = params.locationDiscrepancy
         self.focusDistance = params.focusDistance
         
-        # angles of the manipulators with respect to a vertical line
+        # angles of the manipulators with respect to a horizontal line
         self.alphaDev1 = params.alphaDev1
         self.alphaDev2 = params.alphaDev2
         
