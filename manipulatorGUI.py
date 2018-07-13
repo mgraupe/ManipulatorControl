@@ -314,8 +314,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 if self.ui.horizontalMoveDev1Btn.isChecked():
                     movZDev1 = oldXDev1 - self.dev.isDev1[0]
                     if movZDev1:
-                    with self.SM5_ModLock:
-                        self.dev.moveManipulatorToNewLocation(1,'z',np.sin(self.dev.alphaDev1*np.pi/180.)*movZDev1)
+                        with self.SM5_ModLock:
+                            self.dev.moveManipulatorToNewLocation(1,'z',np.sin(self.dev.alphaDev1*np.pi/180.)*movZDev1)
                         
                 #if self.ui.horizontalMoveDev2Btn.isChecked():
                 #    pass
