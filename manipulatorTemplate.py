@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setEnabled(True)
-        MainWindow.resize(533, 1038)
+        MainWindow.resize(537, 1030)
         MainWindow.setMinimumSize(QtCore.QSize(500, 700))
         MainWindow.setMaximumSize(QtCore.QSize(16777215, 16777215))
         MainWindow.setStyleSheet(_fromUtf8("background-color: rgb(226, 226, 226);"))
@@ -132,7 +132,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dockWidget_5.sizePolicy().hasHeightForWidth())
         self.dockWidget_5.setSizePolicy(sizePolicy)
-        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 470))
+        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 460))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
