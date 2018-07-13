@@ -84,8 +84,7 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.socketListenThread = Thread(target=self.socketListening) # listenThread
         self.saveStageLocationThread = Thread(target=self.saveStage) 
         
-        self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
-        self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
+        
         
     ####################################################
     # connect signals to actions
@@ -193,6 +192,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 self.updateManiuplators=False
                 self.autoUpdateManipulatorLocations.join()
                 self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+                self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
+                self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
             self.dev.delete_SM5()
             self.ui.SM5Dev1PowerBtn.setChecked(False)
             self.ui.SM5Dev2PowerBtn.setChecked(False)
