@@ -132,7 +132,7 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.dockWidget_5.sizePolicy().hasHeightForWidth())
         self.dockWidget_5.setSizePolicy(sizePolicy)
-        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 495))
+        self.dockWidget_5.setMinimumSize(QtCore.QSize(538, 487))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
