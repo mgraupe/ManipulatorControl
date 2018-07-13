@@ -800,6 +800,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.refChoseLocationBtn.setEnabled(True)
         self.ui.refSavedLocationBtn.setEnabled(True)
         self.ui.refNegativeBtn.setEnabled(True)
+               
+        
     #################################################################################################
     def disableAndEnableBtns(self,newSetting):
         # connection panel
@@ -848,6 +850,8 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         self.ui.trackStageXMovementDev1Btn.setEnabled(newSetting)
         self.ui.trackStageZMovementDev2Btn.setEnabled(newSetting)
         self.ui.trackStageXMovementDev2Btn.setEnabled(newSetting)
+        self.ui.horizontalMoveDev1Btn.setEnabled(newSetting)
+        self.ui.horizontalMoveDev2Btn.setEnabled(newSetting)
     
     ###################################################################################################
     def listenControlerButtonState(self, newState):

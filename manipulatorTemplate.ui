@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>534</width>
-    <height>1034</height>
+    <width>533</width>
+    <height>1038</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,13 +31,7 @@
   <property name="styleSheet">
    <string notr="true">background-color: rgb(226, 226, 226);</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_3">
-    <property name="spacing">
-     <number>9</number>
-    </property>
-   </layout>
-  </widget>
+  <widget class="QWidget" name="centralwidget"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="minimumSize">
     <size>
@@ -766,6 +760,65 @@
        </layout>
       </widget>
      </item>
+     <item row="0" column="0" colspan="3">
+      <widget class="QWidget" name="horizontalWidget" native="true">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <property name="leftMargin">
+         <number>1</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>1</number>
+        </property>
+        <property name="bottomMargin">
+         <number>1</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="controllerActivateBtn">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>24</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Activate Controller</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="listenToSocketBtn">
+          <property name="text">
+           <string>Listen to Socket</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item row="2" column="0" colspan="3">
       <widget class="QGroupBox" name="groupBox_4">
        <property name="font">
@@ -793,39 +846,6 @@
         <property name="spacing">
          <number>4</number>
         </property>
-        <item row="6" column="1" colspan="2">
-         <widget class="QWidget" name="horizontalWidget" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_20">
-           <item>
-            <widget class="QPushButton" name="horizontalMoveDev1Btn">
-             <property name="text">
-              <string>On</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="horizontalMoveDev2Btn">
-             <property name="text">
-              <string>On</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Horizontal Move</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <property name="minimumSize">
@@ -1194,7 +1214,7 @@
           </layout>
          </widget>
         </item>
-        <item row="9" column="1">
+        <item row="8" column="1">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <property name="minimumSize">
            <size>
@@ -1268,7 +1288,7 @@
           </layout>
          </widget>
         </item>
-        <item row="9" column="2">
+        <item row="8" column="2">
          <widget class="QWidget" name="horizontalWidget" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <property name="spacing">
@@ -1342,10 +1362,17 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
+        <item row="8" column="0">
          <widget class="QLabel" name="label_5">
           <property name="text">
            <string>Track Stage</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Hoirzontal Move</string>
           </property>
          </widget>
         </item>
@@ -1353,12 +1380,36 @@
          <widget class="QWidget" name="horizontalWidget" native="true">
           <layout class="QHBoxLayout" name="horizontalLayout_21">
            <item>
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>angle Dev1</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QLineEdit" name="device1AngleLE">
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">
               <string>0</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="horizontalMoveDev1Btn">
+             <property name="text">
+              <string>On</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>angle Dev2</string>
              </property>
             </widget>
            </item>
@@ -1372,73 +1423,17 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="horizontalMoveDev2Btn">
+             <property name="text">
+              <string>On</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Angle</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="3">
-      <widget class="QWidget" name="horizontalWidget" native="true">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>30</height>
-        </size>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_18">
-        <property name="leftMargin">
-         <number>1</number>
-        </property>
-        <property name="topMargin">
-         <number>1</number>
-        </property>
-        <property name="rightMargin">
-         <number>1</number>
-        </property>
-        <property name="bottomMargin">
-         <number>1</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="controllerActivateBtn">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>24</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string notr="true"/>
-          </property>
-          <property name="text">
-           <string>Activate Controller</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="listenToSocketBtn">
-          <property name="text">
-           <string>Listen to Socket</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
        </layout>
@@ -1468,120 +1463,6 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_6">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" rowspan="2" colspan="4">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="font">
-        <font>
-         <weight>50</weight>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="title">
-        <string>Home Locations</string>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <property name="leftMargin">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>1</number>
-        </property>
-        <property name="rightMargin">
-         <number>2</number>
-        </property>
-        <property name="bottomMargin">
-         <number>2</number>
-        </property>
-        <item row="1" column="0" colspan="4">
-         <widget class="QTableWidget" name="homeLocationsTable">
-          <property name="styleSheet">
-           <string notr="true">background-color: rgb(255, 255, 255);</string>
-          </property>
-          <property name="rowCount">
-           <number>4</number>
-          </property>
-          <property name="columnCount">
-           <number>4</number>
-          </property>
-          <attribute name="horizontalHeaderStretchLastSection">
-           <bool>true</bool>
-          </attribute>
-          <attribute name="verticalHeaderVisible">
-           <bool>false</bool>
-          </attribute>
-          <row/>
-          <row/>
-          <row/>
-          <row/>
-          <column>
-           <property name="text">
-            <string>#</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>x</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>y</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>z</string>
-           </property>
-          </column>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="recordHomeLocationBtn">
-          <property name="text">
-           <string>Record </string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="removeHomeLocationBtn">
-          <property name="text">
-           <string> Remove</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="updateHomeLocationBtn">
-          <property name="text">
-           <string>Update </string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="moveToHomeLocationBtn">
-          <property name="text">
-           <string>Move To</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="4">
-      <widget class="Line" name="line">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="4" column="0" colspan="4">
       <widget class="QGroupBox" name="groupBox_2">
        <property name="font">
@@ -1770,6 +1651,19 @@
        </layout>
       </widget>
      </item>
+     <item row="3" column="0" colspan="4">
+      <widget class="Line" name="line">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
      <item row="5" column="2" colspan="2">
       <widget class="QPushButton" name="loadLocationsBtn">
        <property name="maximumSize">
@@ -1794,6 +1688,107 @@
        <property name="text">
         <string>Save Locations</string>
        </property>
+      </widget>
+     </item>
+     <item row="0" column="0" rowspan="2" colspan="4">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="title">
+        <string>Home Locations</string>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <property name="leftMargin">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>1</number>
+        </property>
+        <property name="rightMargin">
+         <number>2</number>
+        </property>
+        <property name="bottomMargin">
+         <number>2</number>
+        </property>
+        <item row="1" column="0" colspan="4">
+         <widget class="QTableWidget" name="homeLocationsTable">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="rowCount">
+           <number>4</number>
+          </property>
+          <property name="columnCount">
+           <number>4</number>
+          </property>
+          <attribute name="horizontalHeaderStretchLastSection">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+          <row/>
+          <row/>
+          <row/>
+          <row/>
+          <column>
+           <property name="text">
+            <string>#</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>x</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>y</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>z</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="recordHomeLocationBtn">
+          <property name="text">
+           <string>Record </string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="removeHomeLocationBtn">
+          <property name="text">
+           <string> Remove</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="updateHomeLocationBtn">
+          <property name="text">
+           <string>Update </string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="moveToHomeLocationBtn">
+          <property name="text">
+           <string>Move To</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
