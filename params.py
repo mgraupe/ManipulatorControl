@@ -12,7 +12,7 @@ locationDiscrepancy = 0.5
 
 ###################################################
 # C843
-fineStepWidth = 1.
+fineStepWidth = 2.
 smallStepWidth = 10.
 mediumStepWidth = 100.
 coarseStepWidth  = 1000.

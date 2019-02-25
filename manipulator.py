@@ -214,7 +214,7 @@ class manipulatorControl(QtCore.QObject):
         return self.connection.recv(params.dataSize)
     #################################################################################################
     def socket_send_data(self,data):
-        self.connection.send(data)
+        self.connection.send(data+'\n')
     #################################################################################################
     def socket_close_connection(self):
         self.connection.close()
