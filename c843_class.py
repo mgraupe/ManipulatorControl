@@ -116,7 +116,7 @@ class c843_class(object):
 		if nAxis==1 or nAxis==2:
 			stageName = 'PLC-85MICOS'
 		elif nAxis==3:
-			stageName = 'M-122.2DDBIS'
+			stageName = 'M-122.2DDBIS' #'M-122.2DDMG' #'M-122.2DDBIS'
 		
 		stages = c_char_p(str(stageName))
 		# Assigns szAxes to stages.

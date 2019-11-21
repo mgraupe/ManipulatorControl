@@ -17,12 +17,12 @@ smallStepWidth = 10.
 mediumStepWidth = 100.
 coarseStepWidth  = 1000.
 
-fineSpeed = 0.01
+fineSpeed = 0.02
 smallSpeed = 0.05
 mediumSpeed = 0.2
 coarseSpeed = 1.5
 
-fineStepPrecision = 0.1
+fineStepPrecision = 0.2
 smallStepPrecision = 0.5
 mediumStepPrecision = 1.
 coarseStepPrecision  = 3.
