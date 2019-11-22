@@ -156,9 +156,9 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     def connectSM5_c843(self):
         self.setStatusMessage('initializing C843')
         try:
-            self.dev.c843
+            self.dev.stageClass
         except AttributeError:
-            self.dev.init_C843()
+            self.dev.init_stageClass()
             self.ui.C843XYPowerBtn.setChecked(True)
             self.ui.C843ZPowerBtn.setChecked(True)
             self.enableReferencePowerBtns()
@@ -167,36 +167,36 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
                 self.activateController()
             if self.socketListenThread.is_alive():
                 self.activateSocket()
-            self.dev.delete_C843()
+            self.dev.delete_stageClass()
             self.ui.C843XYPowerBtn.setChecked(False)
             self.ui.C843ZPowerBtn.setChecked(False)
             self.disableAndEnableBtns(False)
         
         # SM5
-        self.setStatusMessage('initializing Luigs and Neumann SM5')
-        try :
-            self.dev.luigsNeumann
-        except AttributeError:
-            self.dev.init_SM5()
-            if self.dev.is_SM5_connected():
-                self.ui.SM5Dev1PowerBtn.setChecked(True)
-                self.ui.SM5Dev2PowerBtn.setChecked(True)
-                self.readSM5SpeedFromDevice()
-                self.loadSM5StepValues()
-                self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
-                self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
-                self.autoUpdateManipulatorLocations.start()
+        #self.setStatusMessage('initializing Luigs and Neumann SM5')
+        #try :
+            #self.dev.luigsNeumann
+        #except AttributeError:
+            #self.dev.init_SM5()
+            #if self.dev.is_SM5_connected():
+                #self.ui.SM5Dev1PowerBtn.setChecked(True)
+                #self.ui.SM5Dev2PowerBtn.setChecked(True)
+                #self.readSM5SpeedFromDevice()
+                #self.loadSM5StepValues()
+                #self.ui.device1AngleLE.setText(str(self.dev.alphaDev1))
+                #self.ui.device2AngleLE.setText(str(self.dev.alphaDev2))
+                #self.autoUpdateManipulatorLocations.start()
                 
-            else:
-                reply = QtGui.QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QtGui.QMessageBox.Ok )
-        else:
-            if self.autoUpdateManipulatorLocations.is_alive():
-                self.updateManiuplators=False
-                self.autoUpdateManipulatorLocations.join()
-                self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
-            self.dev.delete_SM5()
-            self.ui.SM5Dev1PowerBtn.setChecked(False)
-            self.ui.SM5Dev2PowerBtn.setChecked(False)
+            #else:
+                #reply = QtGui.QMessageBox.warning(self, 'Warning','Switch on Luigs & Neumann SM5 controller.',  QtGui.QMessageBox.Ok )
+        #else:
+            #if self.autoUpdateManipulatorLocations.is_alive():
+                #self.updateManiuplators=False
+                #self.autoUpdateManipulatorLocations.join()
+                #self.autoUpdateManipulatorLocations = Thread(target=self.autoUpdateManip)
+            #self.dev.delete_SM5()
+            #self.ui.SM5Dev1PowerBtn.setChecked(False)
+            #self.ui.SM5Dev2PowerBtn.setChecked(False)
         #
         self.unSetStatusMessage('initializing stages')
     
@@ -251,17 +251,17 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
         if fileName:
             self.dev.C843_openReferenceFile(fileName)
         
-        if  self.dev.C843_reference_state(moveStage):
+        if self.dev.C843_reference_state(moveStage):
             self.ui.refChoseLocationBtn.setEnabled(False)
             self.ui.refSavedLocationBtn.setEnabled(False)
             self.ui.refNegativeBtn.setEnabled(False)
-            
             self.updateStageLocations()
             self.getMinMaxOfStage()
             self.setMovementValues(self.dev.defaultMoveSpeed)
             # moves the stage back to the default location
             if moveStage:
                 self.dev.moveStageToDefaultLocation()
+                
         else:
             reply = QtGui.QMessageBox.warning(self, 'Warning','Reference failed.',  QtGui.QMessageBox.Ok )
         #
@@ -391,15 +391,15 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             #print xAxis, yAxis
             # x-Axis
             if abs(xAxis) > 0.5 :
-                self.dev.moveStageToNewLocation(0,-np.sign(xAxis)*self.dev.moveStep)
+                self.dev.moveStageToNewLocation(0,np.sign(xAxis)*self.dev.moveStep)
             # y-Axis
             if abs(yAxis) > 0.5 :
-                self.dev.moveStageToNewLocation(1,-np.sign(yAxis)*self.dev.moveStep)
+                self.dev.moveStageToNewLocation(1,np.sign(yAxis)*self.dev.moveStep)
             # z-Axis up and down is button 4 and 6
             if joystick.get_button( 4 ):
-                self.dev.moveStageToNewLocation(2,-self.dev.moveStep)
-            if joystick.get_button( 6 ) :
                 self.dev.moveStageToNewLocation(2,self.dev.moveStep)
+            if joystick.get_button( 6 ) :
+                self.dev.moveStageToNewLocation(2,-self.dev.moveStep)
             # change speed settings
             if joystick.get_button( 0 ):
                 self.setMovementValues('fine')

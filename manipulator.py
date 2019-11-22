@@ -19,6 +19,7 @@ from PyQt4 import QtCore, QtGui
 #from random import shuffle
 #import warnings as wa
 
+import c863_class
 import c843_class
 import LandNSM5
 import params
@@ -47,6 +48,7 @@ class manipulatorControl(QtCore.QObject):
         self.today_date = time.strftime("%Y%m%d")[2:]
         
         #self.connectSignals()
+        self.stage = params.stage
         
         # parameters for socket connection
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #Create a socket object
@@ -65,7 +67,7 @@ class manipulatorControl(QtCore.QObject):
         self.alphaDev2 = params.alphaDev2
         
         self.axes         = np.array(['x','y','z'])
-        self.stageAxes    = collections.OrderedDict([('x',2),('y',1),('z',3)])
+        self.stageAxes    = collections.OrderedDict([('x',1),('y',2),('z',3)])
         self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
         self.maxLoops = params.maximalStageMoves
         
@@ -80,7 +82,7 @@ class manipulatorControl(QtCore.QObject):
         
         self.defaultLocations = np.array([params.defaultXLocation,params.defaultYLocation,params.defaultZLocation])
         self.sm5Lock = Lock()
-        self.c843Lock = Lock()
+        self.stageLock = Lock()
 
     
     #################################################################################################
@@ -88,11 +90,11 @@ class manipulatorControl(QtCore.QObject):
     def __del__(self):
         # sutter class
         try: 
-            self.c843
+            self.stageClass
         except AttributeError:
             pass
         else:
-            del self.c843
+            del self.stageClass
         # tdt class
         try: 
             self.luigsNeumann
@@ -102,16 +104,25 @@ class manipulatorControl(QtCore.QObject):
             del self.luigsNeumann
     
     #################################################################################################
-    def init_C843(self):
+    def init_stageClass(self):
         
-        self.c843 = c843_class.c843_class()
-        self.c843.init_stage(self.stageAxes['x'])
-        self.c843.init_stage(self.stageAxes['y'])
-        self.c843.init_stage(self.stageAxes['z'])
-        self.isStage = np.zeros(3)
+        if self.stage == 'C843':
+            self.stageClass = c843_class.c843_class()
+            self.stageClass.init_stage(self.stageAxes['x'])
+            self.stageClass.init_stage(self.stageAxes['y'])
+            self.stageClass.init_stage(self.stageAxes['z'])
+            self.isStage = np.zeros(3)
+        elif self.stage == 'C863':
+            self.stageClass = c863_class.c863_class()
+            self.stageClass.init_stage(self.stageAxes['x'])
+            self.stageClass.init_stage(self.stageAxes['y'])
+            self.stageClass.init_stage(self.stageAxes['z'])
+            self.isStage = np.zeros(3)
+        else:
+            print 'define valid stage name'
     #################################################################################################
-    def delete_C843(self):
-        del self.c843
+    def delete_stageClass(self):
+        del self.stageClass
     #################################################################################################
     def init_SM5(self):
         self.luigsNeumann = LandNSM5.LandNSM5()
@@ -132,8 +143,8 @@ class manipulatorControl(QtCore.QObject):
     
     #################################################################################################
     def C843_switch_servo_on_off(self,axis):
-        with self.c843Lock:
-            self.c843.switch_servo_on_off(self.stageAxes[axis])
+        with self.stageLock:
+            self.stageClass.switch_servo_on_off(self.stageAxes[axis])
     
     #################################################################################################
     def SM5_switch_on_axis(self,device,axis):
@@ -145,20 +156,20 @@ class manipulatorControl(QtCore.QObject):
     
     #################################################################################################
     def C843_openReferenceFile(self,fileName):
-        with self.c843Lock:
-            self.c843.openReferenceFile(fileName)
+        with self.stageLock:
+            self.stageClass.openReferenceFile(fileName)
     
     #################################################################################################
     def C843_saveLocations(self):
-        with self.c843Lock:
-            self.c843.saveStageLocations()
+        with self.stageLock:
+            self.stageClass.saveStageLocations()
             
     #################################################################################################
     def C843_reference_state(self,moveStage):
         ref = [False]*3
-        with self.c843Lock:
+        with self.stageLock:
             for i in range(3):
-                ref[i] = self.c843.reference_stage(self.stageAxes[self.axes[i]],moveStage)
+                ref[i] = self.stageClass.reference_stage(self.stageAxes[self.axes[i]],moveStage)
         self.isStage = np.zeros(3)
         self.C843_get_position()
         self.setStage = np.copy(self.isStage)
@@ -173,9 +184,9 @@ class manipulatorControl(QtCore.QObject):
     
     #################################################################################################
     def C843_get_position(self):
-        with self.c843Lock:
+        with self.stageLock:
             for i in range(3):
-                self.isStage[i] = self.c843.get_position(self.stageNumbers[i])
+                self.isStage[i] = self.stageClass.get_position(self.stageNumbers[i])
         self.isStagePositionChanged.emit()
     
     #################################################################################################
@@ -247,15 +258,14 @@ class manipulatorControl(QtCore.QObject):
             self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
             # second call for higher move precision
             #self.moveStageToNewLocation(np.where(self.axes==data[1])[0][0],moveStep,moveType='absolute')
-            print 'move done'
             self.moveSpeed = self.moveSpeedBefore
             self.movePrecision =  self.movePrecisionBefore 
             self.C843_propagateSpeeds()
             return (1,self.isStage[0],self.isStage[1],self.isStage[2])
         elif data[0] == 'checkMovement':
-            isXMoving = self.c843.check_for_movement(self.stageAxes['x'])
-            isYMoving = self.c843.check_for_movement(self.stageAxes['y'])
-            isZMoving = self.c843.check_for_movement(self.stageAxes['z'])
+            isXMoving = self.stageClass.check_for_movement(self.stageAxes['x'])
+            isYMoving = self.stageClass.check_for_movement(self.stageAxes['y'])
+            isZMoving = self.stageClass.check_for_movement(self.stageAxes['z'])
             if any((isXMoving,isYMoving,isZMoving)):
                 return 1
             else:
@@ -301,11 +311,15 @@ class manipulatorControl(QtCore.QObject):
     #################################################################################################
     def moveStageToDefaultLocation(self):
         for i in range(3):
+            print('a')
             self.choseRightSpeed(self.defaultLocations[i]-self.isStage[i])
+            print('b')
             self.moveStageToNewLocation(i,self.defaultLocations[i],moveType='absolute')
+            print('c')
             self.moveSpeed = self.moveSpeedBefore
             self.movePrecision =  self.movePrecisionBefore 
         self.C843_propagateSpeeds()
+        print('d')
     
     #################################################################################################
     def moveFocus(self,newZLocation):
@@ -318,9 +332,9 @@ class manipulatorControl(QtCore.QObject):
     
     #################################################################################################
     def C843_propagateSpeeds(self):
-        with self.c843Lock:
+        with self.stageLock:
             for i in range(3):
-                self.c843.set_velocity(self.stageNumbers[i],self.moveSpeed)
+                self.stageClass.set_velocity(self.stageNumbers[i],self.moveSpeed)
     
     #################################################################################################
     def moveStageToNewLocation(self,axis,moveStep,moveType='relative'):
@@ -341,16 +355,18 @@ class manipulatorControl(QtCore.QObject):
         nLoops = 0
         #while (abs(self.setStage[axis] - self.isStage[axis])> self.locationDiscrepancy) and (nLoops<self.maxLoops):
         while (abs(self.setStage[axis] - self.isStage[axis])>= self.movePrecision):
-            #print axis, self.setStage[axis], self.isStage[axis]
+            print axis, self.setStage[axis], self.isStage[axis]
             wait = True
             while wait:
-                with self.c843Lock:
-                    isMoving = self.c843.check_for_movement(self.stageNumbers[axis])
+                with self.stageLock:
+                    isMoving = self.stageClass.check_for_movement(self.stageNumbers[axis])
                 if not isMoving: 
                     wait = False
+                print 'waiting due to movement'
             #self.choseRightSpeed(abs(self.setStage[axis]-self.isStage[axis]))
-            with self.c843Lock:
-                self.c843.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
+            with self.stageLock:
+                print('1')
+                self.stageClass.move_to_absolute_position(self.stageNumbers[axis],self.setStage[axis])
             #self.moveSpeed = self.moveSpeedBefore
             #self.C843_propagateSpeeds()
             self.C843_get_position()
@@ -412,8 +428,8 @@ class manipulatorControl(QtCore.QObject):
         self.maxStage = np.zeros(3)
         
         for i in range(3):
-            with self.c843Lock:
-                (self.minStage[i],self.maxStage[i]) = self.c843.get_min_max_travel_range(self.stageNumbers[i])
+            with self.stageLock:
+                (self.minStage[i],self.maxStage[i]) = self.stageClass.get_min_max_travel_range(self.stageNumbers[i])
 
     #########################################################################################
     def closeConnections(self):
@@ -421,15 +437,15 @@ class manipulatorControl(QtCore.QObject):
         print 'closing connections to hardware',
         
         # trick to stop socket.accept() call
-        try:
-            self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
-            self.socketClose.connect(('172.20.61.89',params.port))
-            self.socketClose.send('disconnect')
-            self.socketClose.close()
-        except socket.error:
-            pass
+        #try:
+            #self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
+            #self.socketClose.connect(('172.20.61.89',params.port))
+            #self.socketClose.send('disconnect')
+            #self.socketClose.close()
+        #except socket.error:
+            #pass
         
-        self.sock.close()
+        #self.sock.close()
         try : 
             self.connection
         except AttributeError:
@@ -439,11 +455,11 @@ class manipulatorControl(QtCore.QObject):
         
         # delete class istances
         try :
-            self.c843
+            self.stageClass
         except AttributeError:
             pass
         else:
-            del self.c843
+            del self.stageClass
 
         #####################################################
         try :

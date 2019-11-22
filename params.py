@@ -11,7 +11,9 @@ precision = 1
 locationDiscrepancy = 0.5
 
 ###################################################
-# C843
+# stage class : C843 or C863
+
+stage = 'C863' # or 'C843'
 fineStepWidth = 2.
 smallStepWidth = 10.
 mediumStepWidth = 100.
@@ -20,7 +22,7 @@ coarseStepWidth  = 1000.
 fineSpeed = 0.02
 smallSpeed = 0.05
 mediumSpeed = 0.2
-coarseSpeed = 1.5
+coarseSpeed = 0.75
 
 fineStepPrecision = 0.2
 smallStepPrecision = 0.5
@@ -28,9 +30,9 @@ mediumStepPrecision = 1.
 coarseStepPrecision  = 3.
 
 
-defaultXLocation = 12000.
-defaultYLocation = 12000.
-defaultZLocation = 6000.
+defaultXLocation = 24000. #12000.
+defaultYLocation = 24000. #12000.
+defaultZLocation = 24000. #6000.
 
 maximalStageMoves = 8.
 
@@ -47,6 +49,6 @@ manipulator2MoveStep = 2. # in um
         
 ###################################################
 # parameters for socket connection
-host = '172.20.61.89' #socket.gethostname() #Get the local machine name
+host = '172.20.61.9' #socket.gethostname() #Get the local machine name
 port = 5555 # Reserve a port for your service
 dataSize = 1024 # size of data-packages sent back and forth
