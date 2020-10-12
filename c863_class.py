@@ -97,6 +97,7 @@ class c863_class(object):
 			if self.verbose:
 				print 'Location file exists'
 			self.loc = pickle.load(open(fName))
+			print 'loaded : ',self.loc
 			if all((not self.loc['1']==None, not self.loc['2']==None, not self.loc['3']==None)):
 				self.referenceLocations=True
 			else:
@@ -113,6 +114,7 @@ class c863_class(object):
 	def saveStageLocations(self):
 		if self.glvar['1']['referenced'] and self.glvar['2']['referenced'] and self.glvar['3']['referenced']:
 			pickle.dump(self.loc,open(self.fnameLocations,"wb"))
+			print 'saved :', self.loc
 			#print 'stage locations saved'
 			
 	###############################################################
@@ -242,7 +244,7 @@ class c863_class(object):
 		minTravelRange = self.glvar[str(nAxis)]['instance'].qTMN()
 		minTravelRange = minTravelRange['1']
 		
-		self.loc[str(nAxis)] = self.get_position(nAxis)/self.scaling_factor
+		self.loc[str(nAxis)] = self.get_position(nAxis) #/self.scaling_factor
 		
 		self.glvar[str(nAxis)]['referenced'] = 1
 		self.glvar[str(nAxis)]['minMaxTravelRange'] = array([minTravelRange,maxTravelRange])

@@ -1,7 +1,7 @@
 ###################################################
 # Gui placement and size on computer screen
 xLocation = -3600
-yLocation = -950
+yLocation = -1000
 widthSize = 537
 heightSize = 971
 

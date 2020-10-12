@@ -162,7 +162,12 @@ class manipulatorControl(QtCore.QObject):
     #################################################################################################
     def C843_saveLocations(self):
         with self.stageLock:
-            self.stageClass.saveStageLocations()
+            try: 
+                self.stageClass
+            except AttributeError:
+                pass
+            else:
+                self.stageClass.saveStageLocations()
             
     #################################################################################################
     def C843_reference_state(self,moveStage):
@@ -437,13 +442,13 @@ class manipulatorControl(QtCore.QObject):
         print 'closing connections to hardware',
         
         # trick to stop socket.accept() call
-        try:
-            self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
-            self.socketClose.connect(('172.20.61.89',params.port))
-            self.socketClose.send('disconnect')
-            self.socketClose.close()
-        except socket.error:
-            pass
+        #try:
+        #    self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
+        #    self.socketClose.connect(('172.20.61.89',params.port))
+        #    self.socketClose.send('disconnect')
+        #    self.socketClose.close()
+        #except socket.error:
+        #    pass
         
         self.sock.close()
         print 'socket closed',
