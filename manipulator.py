@@ -68,7 +68,7 @@ class manipulatorControl(QtCore.QObject):
         
         self.axes         = np.array(['x','y','z'])
         self.stageAxes    = collections.OrderedDict([('x',1),('y',2),('z',3)])
-        self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['x']),(1,self.stageAxes['y']),(2,self.stageAxes['z'])])
+        self.stageNumbers = collections.OrderedDict([(0,self.stageAxes['y']),(1,self.stageAxes['x']),(2,self.stageAxes['z'])])
         self.maxLoops = params.maximalStageMoves
         
         # movement parameters
@@ -285,7 +285,7 @@ class manipulatorControl(QtCore.QObject):
         self.moveSpeed = self.speeds['fine']
         self.movePrecision = self.stepPrecision['fine']
         for key, value in self.stepWidths.iteritems():
-            if abs(stepSize) >= value:
+            if abs(stepSize) >= value[0]:
                 self.moveSpeed = self.speeds[key]
                 self.movePrecision = self.stepPrecision[key]
             else :
@@ -301,7 +301,7 @@ class manipulatorControl(QtCore.QObject):
             self.movePrecision = self.stepPrecision[moveSize]
         else:
             if moveSt:
-                self.moveStep = moveSt 
+                self.moveStep = [moveSt,moveSt,moveSt] 
             if moveSp:
                 self.moveSpeed = moveSp
             if movePr:
@@ -437,21 +437,24 @@ class manipulatorControl(QtCore.QObject):
         print 'closing connections to hardware',
         
         # trick to stop socket.accept() call
-        #try:
-            #self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
-            #self.socketClose.connect(('172.20.61.89',params.port))
-            #self.socketClose.send('disconnect')
-            #self.socketClose.close()
-        #except socket.error:
-            #pass
+        try:
+            self.socketClose = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket object
+            self.socketClose.connect(('172.20.61.89',params.port))
+            self.socketClose.send('disconnect')
+            self.socketClose.close()
+        except socket.error:
+            pass
         
-        #self.sock.close()
+        self.sock.close()
+        print 'socket closed',
         try : 
             self.connection
         except AttributeError:
             pass
         else:
             self.connection.close()
+        
+        print 'connection closed',
         
         # delete class istances
         try :
@@ -460,6 +463,8 @@ class manipulatorControl(QtCore.QObject):
             pass
         else:
             del self.stageClass
+        
+        print 'stage class closed',
 
         #####################################################
         try :

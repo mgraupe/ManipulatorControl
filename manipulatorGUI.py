@@ -391,15 +391,15 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
             #print xAxis, yAxis
             # x-Axis
             if abs(xAxis) > 0.5 :
-                self.dev.moveStageToNewLocation(0,np.sign(xAxis)*self.dev.moveStep)
+                self.dev.moveStageToNewLocation(0,np.sign(xAxis)*self.dev.moveStep[0])
             # y-Axis
             if abs(yAxis) > 0.5 :
-                self.dev.moveStageToNewLocation(1,np.sign(yAxis)*self.dev.moveStep)
+                self.dev.moveStageToNewLocation(1,np.sign(yAxis)*self.dev.moveStep[1])
             # z-Axis up and down is button 4 and 6
             if joystick.get_button( 4 ):
-                self.dev.moveStageToNewLocation(2,self.dev.moveStep)
+                self.dev.moveStageToNewLocation(2,self.dev.moveStep[2])
             if joystick.get_button( 6 ) :
-                self.dev.moveStageToNewLocation(2,-self.dev.moveStep)
+                self.dev.moveStageToNewLocation(2,-self.dev.moveStep[2])
             # change speed settings
             if joystick.get_button( 0 ):
                 self.setMovementValues('fine')
@@ -489,17 +489,17 @@ class manipulatorControlGui(QtGui.QMainWindow,manipulatorTemplate.Ui_MainWindow,
     #################################################################################################
     def setC843StepValue(self):
         moveStep = float(self.ui.stepLineEdit.text())
-        self.dev.setMovementValuesStage(None,moveStep,None,None)
+        self.dev.setMovementValuesStage(None,moveSt=moveStep)
         
     #################################################################################################
     def setC843SpeedValue(self):
         moveSpeed = float(self.ui.speedLineEdit.text())
-        self.dev.setMovementValuesStage(None,None,moveSpeed,None)
+        self.dev.setMovementValuesStage(None,None,moveSp=moveSpeed)
     
     #################################################################################################
     def setC843PrecisionValue(self):
         movePrecision = float(self.ui.precisionLineEdit.text())
-        self.dev.setMovementValuesStage(None,None,None,movePrecision)
+        self.dev.setMovementValuesStage(None,None,None,movePr=movePrecision)
         
     #################################################################################################
     def performFastMove(self,direction):
